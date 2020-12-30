@@ -1,0 +1,19 @@
+Package: tablet
+Type: Package
+Title: Tabulate Descriptive Statistics in Multiple Formats
+Version: 0.1.5
+Author: Tim Bergsma
+Maintainer: Tim Bergsma <bergsmat@sgmail.com>
+Description: Creates a table of descriptive statistics
+ for factor and numeric columns in a data frame. Displays
+ these by groups, if any. Highly customizable, with support
+ for html and pdf provided by 'kableExtra'. Respects
+ original column order, column labels, and factor level order.
+ See ?tablet.data.frame and vignettes.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: dplyr (>= 1.0.2), rlang, tidyr, kableExtra (>= 0.9.0), tidyselect
+RoxygenNote: 7.1.1
+VignetteBuilder: knitr
+Suggests: knitr, magrittr, rmarkdown, yamlet, boot, testthat

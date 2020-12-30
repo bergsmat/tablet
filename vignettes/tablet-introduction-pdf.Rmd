@@ -1,0 +1,295 @@
+---
+title: "An Introduction to Tablet for PDF"
+author: "Tim Bergsma"
+date: "`r Sys.Date()`"
+urlcolor: blue
+output: 
+  rmarkdown::pdf_document:
+    toc: true
+    keep_tex: true
+vignette: >
+  %\VignetteIndexEntry{An Introduction to Tablet for PDF}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+  - \usepackage{xcolor}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+#knitr::opts_chunk$set(package.startup.message = FALSE)
+```
+
+# Motivation
+
+Occasionally it is useful to generate a table of 
+summary statistics for rows of a dataset, where
+such rows represent sampling units and and columns
+may be categorical or continuous.  [table1](https://CRAN.R-project.org/package=table1)
+does exactly this, and was the inspiration for 
+```tablet```.  ```table1``` however is optimized
+for html; ```tablet``` tries to provide
+a format-neutral implementation and relies
+on [kableExtra](https://CRAN.R-project.org/package=kableExtra) to handle the rendering.
+Support for pdf is of particular interest,
+and is illustrated here.
+
+# Software
+To support our examples, we load some other packages
+and in particular locate the melanoma dataset from
+[boot](https://CRAN.R-project.org/package=boot).
+By the way, in the yaml header for the Rmd source
+file, we've added the header-includes as
+described on p. 4 of the
+```kableExtra``` [documentation](https://haozhu233.github.io/kableExtra/awesome_table_in_pdf.pdf).
+
+
+```{r software, include = FALSE}
+library(tidyr)
+library(dplyr)
+library(magrittr)
+library(kableExtra)
+library(boot)
+library(yamlet)
+library(tablet)
+# options(knitr.table.format = "latex") # not needed since kableExtra 0.9.0
+```
+
+```{r software2, eval = FALSE}
+library(tidyr)
+library(dplyr)
+library(magrittr)
+library(kableExtra)
+library(boot)
+library(yamlet)
+library(tablet)
+```
+
+
+```{r, data}
+x <- melanoma
+x %<>% select(-time, -year)
+```
+
+# Simple Case
+For starters, we'll just coerce two variables to factor
+to show that they are categorical, and then pass the whole
+thing to tablet(). Then we forward to as_kable() for rendering
+(calls kableExtra::kbl and adds some magic).
+
+```{r, easy}
+x %>%
+  mutate(
+    sex = factor(sex), 
+    ulcer = factor(ulcer)
+  ) %>%
+  tablet %>%
+  as_kable
+```
+
+# With Metadata
+
+Now we redefine the dataset, supplying metadata almost verbatim from ```?melanoma```.
+This is fairly easy using package ```yamlet```. Note that we reverse
+the authors' factor order of 1, 0 for ulcer and move status 'Alive' to 
+first position.
+
+```{r}
+x <- melanoma
+
+x %<>% decorate('
+time:      [ Survival Time Since Operation, day ]
+status:
+ - End of Study Patient Status
+ -
+  - Alive: 2
+  - Melanoma Death: 1
+  - Unrelated Death: 3
+sex:       [ Sex, [ Male: 1, Female: 0 ]]
+age:       [ Age at Time of Operation, year ]
+year:      [ Year of Operation, year ]
+thickness: [ Tumor Thickness, mm ]
+ulcer:     [ Ulceration, [ Absent: 0, Present: 1 ]]
+')
+x %<>% select(-time, -year)
+x %<>% group_by(status)
+x %<>% resolve
+x %<>% modify(
+  age, thickness, 
+  title = paste0(label, ' (', units, ')')
+)
+```
+
+* group_by(status) causes statistics to be summarized
+in columns by group.  
+
+* resolve() disambiguates 
+labels, units, and factor levels (actually creating 
+factors where appropriate, such as for sex and ulcer).
+
+* alias() substitutes labels for column names.
+
+Now we pass x to tablet() and as_kable() for a more
+informative result.
+
+```{r meta}
+x %>% tablet %>% as_kable
+```
+
+Notice that:
+
+* the order of variables down the left side is exactly their order in the dataset;
+* the order of factor levels is exactly that in x;
+* the order of groups across the top is exactly the levels (if any) of the grouping variable(s), and
+* labels and titles (highest priority) are substituted for column names.
+
+If you don't particularly care for some aspect of the
+presentation, you can jump in between tablet() and as_kable()
+to fix things up.  For example, if you don't want the "All"
+column you can just say 
+
+* ```x %>% tablet %>% select(-All) %>% as_kable```.  
+
+If you **only** want the the "All" column,
+you can just remove the group(s): 
+
+* ```x %>% ungroup %>% select(-1) %>% tablet %>% as_kable```.
+
+# Grouped Columns
+
+In tablet(), most columns are the consequences of a grouping
+variable.  Not surprisingly, grouped columns are just 
+a consequence of nested grouping variables.  To illustrate,
+we follow the [table1 vignette](https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html) by adding a grouping variable that
+groups the two kinds of death.
+
+```{r, grouped}
+x %<>% mutate(class = status)                          # copy the current group
+x %<>% modify(class, label = 'class')                  # change its label
+levels(x$status) <- c('Alive','Melanoma','Unrelated')  # tweak current group
+levels(x$class)  <- c(' ',    'Death',   'Death')      # cluster groups
+x %<>% group_by(class, status)                         # nest groups
+x %>% tablet %>% as_kable                              # render
+```
+
+# Transposed Groups
+
+Categorical observations (in principle) and grouping variables
+are all factors, and are thus transposable.
+To illustrate, we drop the column group above and instead
+nest sex within status ...
+
+```{r, transposed}
+x %<>% group_by(status, sex)
+x %<>% select(-class)
+x %>% 
+  tablet %>% 
+  as_kable %>% 
+  kable_styling(latex_options = 'scale_down')
+
+```
+
+... or nest ulceration within status ...
+
+```{r, transposed2}
+x %<>% group_by(status, ulcer)
+x %>% 
+  tablet %>% 
+  as_kable %>% 
+  kable_styling(latex_options = 'scale_down')
+
+```
+
+... or where it makes sense, use multiple levels of nesting.
+
+```{r, transposed3}
+x %<>% group_by(status, ulcer, sex)
+x %>% 
+  tablet %>% 
+  as_kable %>% 
+  kable_styling(latex_options = 'scale_down') # %>% landscape ?
+
+```
+
+# Aesthetics
+
+```tablet``` tries to give rather exhaustive control
+over formatting. Much can be achieved by replacing 
+elements of 'fun', 'fac', 'num', and 'lab' (see ```?tablet.data.frame```).  For finer control,
+you can replace these entirely.  In this example,
+we will ...
+
+* ignore categoricals (other than groups) by replacing 'fac' with something of length zero,
+
+* drop the 'N =' header material by substituting in 'lab', and
+
+* switch to '(min - max)' instead of '(min, max)'.
+
+```{r, aesthetics}
+x %<>% group_by(status)
+x %>% 
+  tablet(
+    fac = NULL,
+    lab ~ name,
+    `Median (range)` ~ med + ' (' + min + ' - ' + max + ')'
+  ) %>% 
+  as_kable
+
+```
+
+
+# Note
+
+The default presentation includes  "N = " under the header,
+but also has percent characters in the table.  Considerable
+gymnastics are required to make this work!  If you change
+the defaults you may want to consider the arguments to
+```?as_kable.tablet```.  
+
+* 'linebreaker' anticipates that 'lab' has inserted newlines before "N =". 
+* 'linebreak' invokes the eponymous kableExtra function internally.
+* 'escape' is turned off to protect resulting latex markup.
+* 'groom' is supplied to restore the usual escaping of percent characters.
+
+# Conclusion
+
+```tablet``` gives a flexible way of summarizing tables
+of observations.  It reacts to numeric columns, factors, and 
+grouping variables.  Display order derives from 
+the order of columns and factor levels in the data.
+Result columns can be grouped arbitrarily deep by
+supplying extra groups. Rendering is largely the 
+responsibility of ```kableExtra``` and can be extended.
+Further customization is possible by manipulating
+data after calling tablet() but before calling as_kable().
+Powerful results are possible with very little code.
+
+
+
+
+
+
+
+
+
+
+
+

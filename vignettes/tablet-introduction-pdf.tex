@@ -1,0 +1,599 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+\hypersetup{unicode=true,
+            pdftitle={An Introduction to Tablet for PDF},
+            pdfauthor={Tim Bergsma},
+            colorlinks=true,
+            linkcolor=Maroon,
+            citecolor=Blue,
+            urlcolor=blue,
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{An Introduction to Tablet for PDF}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Tim Bergsma}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{2020-12-30}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\hypertarget{motivation}{%
+\section{Motivation}\label{motivation}}
+
+Occasionally it is useful to generate a table of summary statistics for
+rows of a dataset, where such rows represent sampling units and and
+columns may be categorical or continuous.
+\href{https://CRAN.R-project.org/package=table1}{table1} does exactly
+this, and was the inspiration for \texttt{tablet}. \texttt{table1}
+however is optimized for html; \texttt{tablet} tries to provide a
+format-neutral implementation and relies on
+\href{https://CRAN.R-project.org/package=kableExtra}{kableExtra} to
+handle the rendering. Support for pdf is of particular interest, and is
+illustrated here.
+
+\hypertarget{software}{%
+\section{Software}\label{software}}
+
+To support our examples, we load some other packages and in particular
+locate the melanoma dataset from
+\href{https://CRAN.R-project.org/package=boot}{boot}. By the way, in the
+yaml header for the Rmd source file, we've added the header-includes as
+described on p.~4 of the \texttt{kableExtra}
+\href{https://haozhu233.github.io/kableExtra/awesome_table_in_pdf.pdf}{documentation}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyr)}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(magrittr)}
+\KeywordTok{library}\NormalTok{(kableExtra)}
+\KeywordTok{library}\NormalTok{(boot)}
+\KeywordTok{library}\NormalTok{(yamlet)}
+\KeywordTok{library}\NormalTok{(tablet)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x <-}\StringTok{ }\NormalTok{melanoma}
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{time, }\OperatorTok{-}\NormalTok{year)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{simple-case}{%
+\section{Simple Case}\label{simple-case}}
+
+For starters, we'll just coerce two variables to factor to show that
+they are categorical, and then pass the whole thing to tablet(). Then we
+forward to as\_kable() for rendering (calls kableExtra::kbl and adds
+some magic).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}
+    \DataTypeTok{sex =} \KeywordTok{factor}\NormalTok{(sex), }
+    \DataTypeTok{ulcer =} \KeywordTok{factor}\NormalTok{(ulcer)}
+\NormalTok{  ) }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{as_kable}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}[t]{ll}
+\toprule
+  & \makecell[c]{All\\(N = 205)}\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{status}}\\
+\hspace{1em}Mean (SD) & 1.79 (0.551)\\
+\hspace{1em}Median (range) & 2 (1, 3)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{sex}}\\
+\hspace{1em}0 & 126 (61.5\%)\\
+\hspace{1em}1 & 79 (38.5\%)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{age}}\\
+\hspace{1em}Mean (SD) & 52.5 (16.7)\\
+\hspace{1em}Median (range) & 54 (4, 95)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{thickness}}\\
+\hspace{1em}Mean (SD) & 2.92 (2.96)\\
+\hspace{1em}Median (range) & 1.94 (0.1, 17.4)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{ulcer}}\\
+\hspace{1em}0 & 115 (56.1\%)\\
+\hspace{1em}1 & 90 (43.9\%)\\
+\bottomrule
+\end{tabular}
+
+\hypertarget{with-metadata}{%
+\section{With Metadata}\label{with-metadata}}
+
+Now we redefine the dataset, supplying metadata almost verbatim from
+\texttt{?melanoma}. This is fairly easy using package \texttt{yamlet}.
+Note that we reverse the authors' factor order of 1, 0 for ulcer and
+move status `Alive' to first position.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x <-}\StringTok{ }\NormalTok{melanoma}
+
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{decorate}\NormalTok{(}\StringTok{'}
+\StringTok{time:      [ Survival Time Since Operation, day ]}
+\StringTok{status:}
+\StringTok{ - End of Study Patient Status}
+\StringTok{ -}
+\StringTok{  - Alive: 2}
+\StringTok{  - Melanoma Death: 1}
+\StringTok{  - Unrelated Death: 3}
+\StringTok{sex:       [ Sex, [ Male: 1, Female: 0 ]]}
+\StringTok{age:       [ Age at Time of Operation, year ]}
+\StringTok{year:      [ Year of Operation, year ]}
+\StringTok{thickness: [ Tumor Thickness, mm ]}
+\StringTok{ulcer:     [ Ulceration, [ Absent: 0, Present: 1 ]]}
+\StringTok{'}\NormalTok{)}
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{time, }\OperatorTok{-}\NormalTok{year)}
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status)}
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\NormalTok{resolve}
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{modify}\NormalTok{(}
+\NormalTok{  age, thickness, }
+  \DataTypeTok{title =} \KeywordTok{paste0}\NormalTok{(label, }\StringTok{' ('}\NormalTok{, units, }\StringTok{')'}\NormalTok{)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\item
+  group\_by(status) causes statistics to be summarized in columns by
+  group.
+\item
+  resolve() disambiguates labels, units, and factor levels (actually
+  creating factors where appropriate, such as for sex and ulcer).
+\item
+  alias() substitutes labels for column names.
+\end{itemize}
+
+Now we pass x to tablet() and as\_kable() for a more informative result.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OperatorTok{%>%}\StringTok{ }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }\NormalTok{as_kable}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}[t]{lllll}
+\toprule
+  & \makecell[c]{Alive\\(N = 134)} & \makecell[c]{Melanoma Death\\(N = 57)} & \makecell[c]{Unrelated Death\\(N = 14)} & \makecell[c]{All\\(N = 205)}\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Sex}}\\
+\hspace{1em}Male & 43 (32.1\%) & 29 (50.9\%) & 7 (50\%) & 79 (38.5\%)\\
+\hspace{1em}Female & 91 (67.9\%) & 28 (49.1\%) & 7 (50\%) & 126 (61.5\%)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Age at Time of Operation (year)}}\\
+\hspace{1em}Mean (SD) & 50 (15.9) & 55.1 (17.9) & 65.3 (10.9) & 52.5 (16.7)\\
+\hspace{1em}Median (range) & 52 (4, 84) & 56 (14, 95) & 65 (49, 86) & 54 (4, 95)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Tumor Thickness (mm)}}\\
+\hspace{1em}Mean (SD) & 2.24 (2.33) & 4.31 (3.57) & 3.72 (3.63) & 2.92 (2.96)\\
+\hspace{1em}Median (range) & 1.36 (0.1, 12.9) & 3.54 (0.32, 17.4) & 2.26 (0.16, 12.6) & 1.94 (0.1, 17.4)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Ulceration}}\\
+\hspace{1em}Absent & 92 (68.7\%) & 16 (28.1\%) & 7 (50\%) & 115 (56.1\%)\\
+\hspace{1em}Present & 42 (31.3\%) & 41 (71.9\%) & 7 (50\%) & 90 (43.9\%)\\
+\bottomrule
+\end{tabular}
+
+Notice that:
+
+\begin{itemize}
+\tightlist
+\item
+  the order of variables down the left side is exactly their order in
+  the dataset;
+\item
+  the order of factor levels is exactly that in x;
+\item
+  the order of groups across the top is exactly the levels (if any) of
+  the grouping variable(s), and
+\item
+  labels and titles (highest priority) are substituted for column names.
+\end{itemize}
+
+If you don't particularly care for some aspect of the presentation, you
+can jump in between tablet() and as\_kable() to fix things up. For
+example, if you don't want the ``All'' column you can just say
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{x\ \%\textgreater{}\%\ tablet\ \%\textgreater{}\%\ select(-All)\ \%\textgreater{}\%\ as\_kable}.
+\end{itemize}
+
+If you \textbf{only} want the the ``All'' column, you can just remove
+the group(s):
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{x\ \%\textgreater{}\%\ ungroup\ \%\textgreater{}\%\ select(-1)\ \%\textgreater{}\%\ tablet\ \%\textgreater{}\%\ as\_kable}.
+\end{itemize}
+
+\hypertarget{grouped-columns}{%
+\section{Grouped Columns}\label{grouped-columns}}
+
+In tablet(), most columns are the consequences of a grouping variable.
+Not surprisingly, grouped columns are just a consequence of nested
+grouping variables. To illustrate, we follow the
+\href{https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html}{table1
+vignette} by adding a grouping variable that groups the two kinds of
+death.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{class =}\NormalTok{ status)                          }\CommentTok{# copy the current group}
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{modify}\NormalTok{(class, }\DataTypeTok{label =} \StringTok{'class'}\NormalTok{)                  }\CommentTok{# change its label}
+\KeywordTok{levels}\NormalTok{(x}\OperatorTok{$}\NormalTok{status) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'Alive'}\NormalTok{,}\StringTok{'Melanoma'}\NormalTok{,}\StringTok{'Unrelated'}\NormalTok{)  }\CommentTok{# tweak current group}
+\KeywordTok{levels}\NormalTok{(x}\OperatorTok{$}\NormalTok{class)  <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{' '}\NormalTok{,    }\StringTok{'Death'}\NormalTok{,   }\StringTok{'Death'}\NormalTok{)      }\CommentTok{# cluster groups}
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(class, status)                         }\CommentTok{# nest groups}
+\NormalTok{x }\OperatorTok{%>%}\StringTok{ }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }\NormalTok{as_kable                              }\CommentTok{# render}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}[t]{lllll}
+\toprule
+\multicolumn{2}{c}{ } & \multicolumn{2}{c}{Death} & \multicolumn{1}{c}{ } \\
+\cmidrule(l{3pt}r{3pt}){3-4}
+  & \makecell[c]{Alive\\(N = 134)} & \makecell[c]{Melanoma\\(N = 57)} & \makecell[c]{Unrelated\\(N = 14)} & \makecell[c]{All\\(N = 205)}\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Sex}}\\
+\hspace{1em}Male & 43 (32.1\%) & 29 (50.9\%) & 7 (50\%) & 79 (38.5\%)\\
+\hspace{1em}Female & 91 (67.9\%) & 28 (49.1\%) & 7 (50\%) & 126 (61.5\%)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Age at Time of Operation (year)}}\\
+\hspace{1em}Mean (SD) & 50 (15.9) & 55.1 (17.9) & 65.3 (10.9) & 52.5 (16.7)\\
+\hspace{1em}Median (range) & 52 (4, 84) & 56 (14, 95) & 65 (49, 86) & 54 (4, 95)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Tumor Thickness (mm)}}\\
+\hspace{1em}Mean (SD) & 2.24 (2.33) & 4.31 (3.57) & 3.72 (3.63) & 2.92 (2.96)\\
+\hspace{1em}Median (range) & 1.36 (0.1, 12.9) & 3.54 (0.32, 17.4) & 2.26 (0.16, 12.6) & 1.94 (0.1, 17.4)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Ulceration}}\\
+\hspace{1em}Absent & 92 (68.7\%) & 16 (28.1\%) & 7 (50\%) & 115 (56.1\%)\\
+\hspace{1em}Present & 42 (31.3\%) & 41 (71.9\%) & 7 (50\%) & 90 (43.9\%)\\
+\bottomrule
+\end{tabular}
+
+\hypertarget{transposed-groups}{%
+\section{Transposed Groups}\label{transposed-groups}}
+
+Categorical observations (in principle) and grouping variables are all
+factors, and are thus transposable. To illustrate, we drop the column
+group above and instead nest sex within status \ldots{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status, sex)}
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{class)}
+\NormalTok{x }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{llllllll}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{Alive} & \multicolumn{2}{c}{Melanoma} & \multicolumn{2}{c}{Unrelated} & \multicolumn{1}{c}{ } \\
+\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7}
+  & \makecell[c]{Male\\(N = 43)} & \makecell[c]{Female\\(N = 91)} & \makecell[c]{Male\\(N = 29)} & \makecell[c]{Female\\(N = 28)} & \makecell[c]{Male\\(N = 7)} & \makecell[c]{Female\\(N = 7)} & \makecell[c]{All\\(N = 205)}\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textbf{Age at Time of Operation (year)}}\\
+\hspace{1em}Mean (SD) & 52.5 (16.9) & 48.8 (15.4) & 53.9 (19.7) & 56.4 (16.2) & 62.4 (11.2) & 68.1 (10.6) & 52.5 (16.7)\\
+\hspace{1em}Median (range) & 55 (12, 84) & 49 (4, 77) & 52 (19, 95) & 58 (14, 89) & 64 (49, 76) & 66 (54, 86) & 54 (4, 95)\\
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textbf{Tumor Thickness (mm)}}\\
+\hspace{1em}Mean (SD) & 2.73 (2.49) & 2.02 (2.22) & 4.63 (3.47) & 3.99 (3.71) & 4.83 (4.19) & 2.6 (2.84) & 2.92 (2.96)\\
+\hspace{1em}Median (range) & 1.62 (0.16, 8.38) & 1.29 (0.1, 12.9) & 4.04 (0.81, 14.7) & 3.14 (0.32, 17.4) & 4.84 (0.65, 12.6) & 1.45 (0.16, 8.54) & 1.94 (0.1, 17.4)\\
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textbf{Ulceration}}\\
+\hspace{1em}Absent & 24 (55.8\%) & 68 (74.7\%) & 8 (27.6\%) & 8 (28.6\%) & 4 (57.1\%) & 3 (42.9\%) & 115 (56.1\%)\\
+\hspace{1em}Present & 19 (44.2\%) & 23 (25.3\%) & 21 (72.4\%) & 20 (71.4\%) & 3 (42.9\%) & 4 (57.1\%) & 90 (43.9\%)\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\ldots{} or nest ulceration within status \ldots{}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status, ulcer)}
+\NormalTok{x }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{llllllll}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{Alive} & \multicolumn{2}{c}{Melanoma} & \multicolumn{2}{c}{Unrelated} & \multicolumn{1}{c}{ } \\
+\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7}
+  & \makecell[c]{Absent\\(N = 92)} & \makecell[c]{Present\\(N = 42)} & \makecell[c]{Absent\\(N = 16)} & \makecell[c]{Present\\(N = 41)} & \makecell[c]{Absent\\(N = 7)} & \makecell[c]{Present\\(N = 7)} & \makecell[c]{All\\(N = 205)}\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textbf{Sex}}\\
+\hspace{1em}Male & 24 (26.1\%) & 19 (45.2\%) & 8 (50\%) & 21 (51.2\%) & 4 (57.1\%) & 3 (42.9\%) & 79 (38.5\%)\\
+\hspace{1em}Female & 68 (73.9\%) & 23 (54.8\%) & 8 (50\%) & 20 (48.8\%) & 3 (42.9\%) & 4 (57.1\%) & 126 (61.5\%)\\
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textbf{Age at Time of Operation (year)}}\\
+\hspace{1em}Mean (SD) & 49.3 (15.4) & 51.6 (17.1) & 54.9 (19.9) & 55.1 (17.4) & 58.4 (8.66) & 72.1 (8.53) & 52.5 (16.7)\\
+\hspace{1em}Median (range) & 50 (4, 83) & 54.5 (12, 84) & 59 (16, 83) & 56 (14, 95) & 56 (49, 71) & 72 (60, 86) & 54 (4, 95)\\
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textbf{Tumor Thickness (mm)}}\\
+\hspace{1em}Mean (SD) & 1.63 (1.93) & 3.58 (2.58) & 2.7 (3.35) & 4.94 (3.5) & 2.1 (1.93) & 5.34 (4.33) & 2.92 (2.96)\\
+\hspace{1em}Median (range) & 1.13 (0.1, 12.9) & 3.06 (0.32, 12.2) & 1.94 (0.32, 14.7) & 4.04 (0.97, 17.4) & 1.45 (0.65, 6.12) & 4.84 (0.16, 12.6) & 1.94 (0.1, 17.4)\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\ldots{} or where it makes sense, use multiple levels of nesting.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status, ulcer, sex)}
+\NormalTok{x }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{) }\CommentTok{# %>% landscape ?}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{llllllllllllll}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{4}{c}{Alive} & \multicolumn{4}{c}{Melanoma} & \multicolumn{4}{c}{Unrelated} & \multicolumn{1}{c}{ } \\
+\cmidrule(l{3pt}r{3pt}){2-5} \cmidrule(l{3pt}r{3pt}){6-9} \cmidrule(l{3pt}r{3pt}){10-13}
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{1}{c}{ } \\
+\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7} \cmidrule(l{3pt}r{3pt}){8-9} \cmidrule(l{3pt}r{3pt}){10-11} \cmidrule(l{3pt}r{3pt}){12-13}
+  & \makecell[c]{Male\\(N = 24)} & \makecell[c]{Female\\(N = 68)} & \makecell[c]{Male\\(N = 19)} & \makecell[c]{Female\\(N = 23)} & \makecell[c]{Male\\(N = 8)} & \makecell[c]{Female\\(N = 8)} & \makecell[c]{Male\\(N = 21)} & \makecell[c]{Female\\(N = 20)} & \makecell[c]{Male\\(N = 4)} & \makecell[c]{Female\\(N = 3)} & \makecell[c]{Male\\(N = 3)} & \makecell[c]{Female\\(N = 4)} & \makecell[c]{All\\(N = 205)}\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{14}{l}{\textbf{Age at Time of Operation (year)}}\\
+\hspace{1em}Mean (SD) & 50.4 (17) & 48.9 (14.9) & 55.3 (16.9) & 48.7 (17) & 55.2 (22.2) & 54.6 (18.8) & 53.3 (19.2) & 57 (15.5) & 54.5 (7.14) & 63.7 (8.74) & 73 (2.65) & 71.5 (11.8) & 52.5 (16.7)\\
+\hspace{1em}Median (range) & 54 (15, 83) & 49 (4, 77) & 56 (12, 84) & 48 (19, 75) & 56 (27, 83) & 59 (16, 77) & 52 (19, 95) & 58 (14, 89) & 52.5 (49, 64) & 66 (54, 71) & 72 (71, 76) & 70 (60, 86) & 54 (4, 95)\\
+\addlinespace[0.3em]
+\multicolumn{14}{l}{\textbf{Tumor Thickness (mm)}}\\
+\hspace{1em}Mean (SD) & 1.47 (1.72) & 1.69 (2) & 4.32 (2.42) & 2.97 (2.59) & 3.27 (4.68) & 2.14 (1.18) & 5.14 (2.86) & 4.72 (4.13) & 2.42 (2.5) & 1.67 (1.14) & 8.05 (4.02) & 3.3 (3.71) & 2.92 (2.96)\\
+\hspace{1em}Median (range) & 0.97 (0.16, 7.09) & 1.29 (0.1, 12.9) & 3.87 (0.81, 8.38) & 1.94 (0.32, 12.2) & 1.78 (0.81, 14.7) & 2.02 (0.32, 3.56) & 4.83 (1.62, 12.9) & 3.54 (0.97, 17.4) & 1.46 (0.65, 6.12) & 1.45 (0.65, 2.9) & 6.76 (4.84, 12.6) & 2.26 (0.16, 8.54) & 1.94 (0.1, 17.4)\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\hypertarget{aesthetics}{%
+\section{Aesthetics}\label{aesthetics}}
+
+\texttt{tablet} tries to give rather exhaustive control over formatting.
+Much can be achieved by replacing elements of `fun', `fac', `num', and
+`lab' (see \texttt{?tablet.data.frame}). For finer control, you can
+replace these entirely. In this example, we will \ldots{}
+
+\begin{itemize}
+\item
+  ignore categoricals (other than groups) by replacing `fac' with
+  something of length zero,
+\item
+  drop the `N =' header material by substituting in `lab', and
+\item
+  switch to `(min - max)' instead of `(min, max)'.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status)}
+\NormalTok{x }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{tablet}\NormalTok{(}
+    \DataTypeTok{fac =} \OtherTok{NULL}\NormalTok{,}
+\NormalTok{    lab }\OperatorTok{~}\StringTok{ }\NormalTok{name,}
+    \StringTok{`}\DataTypeTok{Median (range)}\StringTok{`} \OperatorTok{~}\StringTok{ }\NormalTok{med }\OperatorTok{+}\StringTok{ ' ('} \OperatorTok{+}\StringTok{ }\NormalTok{min }\OperatorTok{+}\StringTok{ ' - '} \OperatorTok{+}\StringTok{ }\NormalTok{max }\OperatorTok{+}\StringTok{ ')'}
+\NormalTok{  ) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\NormalTok{as_kable}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}[t]{lllll}
+\toprule
+  & Alive & Melanoma & Unrelated & All\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Age at Time of Operation (year)}}\\
+\hspace{1em}Mean (SD) & 50 (15.9) & 55.1 (17.9) & 65.3 (10.9) & 52.5 (16.7)\\
+\hspace{1em}Median (range) & 52 (4 - 84) & 56 (14 - 95) & 65 (49 - 86) & 54 (4 - 95)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Tumor Thickness (mm)}}\\
+\hspace{1em}Mean (SD) & 2.24 (2.33) & 4.31 (3.57) & 3.72 (3.63) & 2.92 (2.96)\\
+\hspace{1em}Median (range) & 1.36 (0.1 - 12.9) & 3.54 (0.32 - 17.4) & 2.26 (0.16 - 12.6) & 1.94 (0.1 - 17.4)\\
+\bottomrule
+\end{tabular}
+
+\hypertarget{note}{%
+\section{Note}\label{note}}
+
+The default presentation includes ``N ='' under the header, but also has
+percent characters in the table. Considerable gymnastics are required to
+make this work! If you change the defaults you may want to consider the
+arguments to \texttt{?as\_kable.tablet}.
+
+\begin{itemize}
+\tightlist
+\item
+  `linebreaker' anticipates that `lab' has inserted newlines before ``N
+  =''.
+\item
+  `linebreak' invokes the eponymous kableExtra function internally.
+\item
+  `escape' is turned off to protect resulting latex markup.
+\item
+  `groom' is supplied to restore the usual escaping of percent
+  characters.
+\end{itemize}
+
+\hypertarget{conclusion}{%
+\section{Conclusion}\label{conclusion}}
+
+\texttt{tablet} gives a flexible way of summarizing tables of
+observations. It reacts to numeric columns, factors, and grouping
+variables. Display order derives from the order of columns and factor
+levels in the data. Result columns can be grouped arbitrarily deep by
+supplying extra groups. Rendering is largely the responsibility of
+\texttt{kableExtra} and can be extended. Further customization is
+possible by manipulating data after calling tablet() but before calling
+as\_kable(). Powerful results are possible with very little code.
+
+
+\end{document}
