@@ -982,7 +982,7 @@ Present
 </div>
 <div id="grouped-columns" class="section level1">
 <h1>Grouped Columns</h1>
-<p>In tablet(), most columns are the consequences of a grouping variable. Not surprisingly, grouped columns are just a consequence of nested grouping variables. To illustrate, we follow the <a href="https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html">table1 vignette</a> by adding a grouping variable that groups the two kinds of death.</p>
+<p>In tablet(), most columns are the consequences of a grouping variable. Not surprisingly, grouped columns are just a consequence of nested grouping variables. To illustrate, we follow the <a href="https://CRAN.R-project.org/package=table1">table1 vignette</a> by adding a grouping variable that groups the two kinds of death.</p>
 <pre class="r"><code>x %&lt;&gt;% mutate(class = status)                          # copy the current group
 x %&lt;&gt;% modify(class, label = &#39;class&#39;)                  # change its label
 levels(x$status) &lt;- c(&#39;Alive&#39;,&#39;Melanoma&#39;,&#39;Unrelated&#39;)  # tweak current group

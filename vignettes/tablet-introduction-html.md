@@ -282,7 +282,7 @@ you can just remove the group(s):
 In tablet(), most columns are the consequences of a grouping
 variable.  Not surprisingly, grouped columns are just 
 a consequence of nested grouping variables.  To illustrate,
-we follow the [table1 vignette](https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html) by adding a grouping variable that
+we follow the [table1 vignette](https://CRAN.R-project.org/package=table1) by adding a grouping variable that
 groups the two kinds of death.
 
 

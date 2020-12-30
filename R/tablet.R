@@ -1,5 +1,3 @@
-# https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html
-
 globalVariables(c(
    '_tablet_level', 'n','N', '.data','_tablet_value',
    '_tablet_N','_tablet_n', '_tablet_x',
@@ -1069,9 +1067,3 @@ tablet.data.frame <- function(
    y <- tablet(y, ..., all = all, lab = lab ) # tablet.groupwise
    y
 }
-
-# https://stat.ethz.ch/R-manual/R-devel/library/methods/html/Methods_for_Nongenerics.html
-
-
-
-
