@@ -821,20 +821,21 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #'
 #' Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
 #' special features like grouped columns.
-#' Column names will be replaced with label attributes,
+#' Column names will be replaced with label or title attributes,
 #' where present.
 #'
 #' @param x \code{\link{tablet}}
 #' @param ... passed to \code{\link[kableExtra]{kbl}}
 #' @param booktabs passed to \code{\link[kableExtra]{kbl}}
 #' @param escape passed to \code{\link[kableExtra]{kbl}}; defaults FALSE to allow header linebreaks
-#' @param groom a function to pre-process column content (e.g., manual escaping, latex only)
+#' @param escape_latex a function to pre-process column content if 'escape' is FALSE (e.g., manual escaping, latex only)
+#' @param escape_html a function to pre-process column content if 'escape' is FALSE (e.g., manual escaping, html only)
 #' @param variable a column name for the variables
 #' @param col.names passed to \code{\link[kableExtra]{kbl}} after any linebreaking
 #' @param linebreak whether to invoke \code{\link[kableExtra]{linebreak}} for column names
 #' @param align passed to \code{\link[kableExtra]{linebreak}} for column names
 #' @param double_escape passed to \code{\link[kableExtra]{linebreak}} for column names
-#' @param linebreaker to \code{\link[kableExtra]{linebreak}} for column names
+#' @param linebreaker passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, newline is replaced with <br>
 #' @importFrom kableExtra kbl pack_rows add_header_above linebreak
 #' @importFrom dplyr rename
 #' @export
@@ -855,8 +856,9 @@ as_kable.tablet <- function(
    x,
    ...,
    booktabs = TRUE,
-   escape = NA,
-   groom = function(x, ...)gsub('%','\\\\%',x),
+   escape = FALSE,
+   escape_latex = function(x, ...)gsub('%','\\\\%',x),
+   escape_html = function(x, ...)x,
    variable = ' ',
    col.names = NA,
    linebreak = TRUE,
@@ -865,13 +867,14 @@ as_kable.tablet <- function(
    linebreaker = '\n'
 ){
 
-   if(is.na(escape)){
-      if (knitr::is_latex_output()){
-        escape <- FALSE
-      } else {
-         escape <- FALSE # for <br>
-      }
-   }
+   # if(is.na(escape)){
+   #    if (knitr::is_latex_output()){
+   #      escape <- FALSE
+   #    } else {
+   #       escape <- FALSE # for <br>
+   #    }
+   # }
+   stopifnot(is.logical(escape), length(escape) == 1)
    x$`_tablet_sort` <- NULL
    index <- index(x)
    x$`_tablet_name` <- NULL
@@ -895,7 +898,14 @@ as_kable.tablet <- function(
    #x <- rename(x, !!variable := `_tablet_level`)
    stopifnot(is.character(variable), length(variable) == 1)
    names(x)[names(x) == '_tablet_level'] <- variable
-   if (knitr::is_latex_output()) x[] <- lapply(x, groom, ...)
+   if(!escape){
+      if (knitr::is_latex_output()) {
+         x[] <- lapply(x, escape_latex, ...)
+      } else {
+         x[] <- lapply(x, escape_html, ...)
+      }
+   }
+
 
    if(is.na(col.names))col.names <- names(x)
    if (linebreak){

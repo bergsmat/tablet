@@ -126,7 +126,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2020-12-30}
+    \date{2021-01-04}
 
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -156,14 +156,15 @@
 
 Occasionally it is useful to generate a table of summary statistics for
 rows of a dataset, where such rows represent sampling units and and
-columns may be categorical or continuous.
+columns may be categorical or continuous. The excellent R package
 \href{https://CRAN.R-project.org/package=table1}{table1} does exactly
 this, and was the inspiration for \texttt{tablet}. \texttt{table1}
 however is optimized for html; \texttt{tablet} tries to provide a
 format-neutral implementation and relies on
 \href{https://CRAN.R-project.org/package=kableExtra}{kableExtra} to
-handle the rendering. Support for pdf is of particular interest, and is
-illustrated here.
+handle the rendering. Support for pdf (latex) is of particular interest,
+and is illustrated here. See the companion vignette for a
+proof-of-concept html implementation.
 
 \hypertarget{software}{%
 \section{Software}\label{software}}
@@ -578,7 +579,7 @@ arguments to \texttt{?as\_kable.tablet}.
 \item
   `escape' is turned off to protect resulting latex markup.
 \item
-  `groom' is supplied to restore the usual escaping of percent
+  `escape\_latex' is supplied to restore the usual escaping of percent
   characters.
 \end{itemize}
 
@@ -589,10 +590,11 @@ arguments to \texttt{?as\_kable.tablet}.
 observations. It reacts to numeric columns, factors, and grouping
 variables. Display order derives from the order of columns and factor
 levels in the data. Result columns can be grouped arbitrarily deep by
-supplying extra groups. Rendering is largely the responsibility of
-\texttt{kableExtra} and can be extended. Further customization is
-possible by manipulating data after calling tablet() but before calling
-as\_kable(). Powerful results are possible with very little code.
+supplying extra groups. Column labels and titles are respected.
+Rendering is largely the responsibility of \texttt{kableExtra} and can
+be extended. Further customization is possible by manipulating data
+after calling tablet() but before calling as\_kable(). Powerful results
+are possible with very little code.
 
 
 \end{document}

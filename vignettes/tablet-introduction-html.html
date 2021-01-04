@@ -12,7 +12,7 @@
 
 <meta name="author" content="Tim Bergsma" />
 
-<meta name="date" content="2020-12-30" />
+<meta name="date" content="2021-01-04" />
 
 <title>An Introduction to Tablet for HTML</title>
 
@@ -589,7 +589,7 @@ summary {
 
 <h1 class="title toc-ignore">An Introduction to Tablet for HTML</h1>
 <h4 class="author">Tim Bergsma</h4>
-<h4 class="date">2020-12-30</h4>
+<h4 class="date">2021-01-04</h4>
 
 </div>
 
@@ -609,11 +609,11 @@ summary {
 
 <div id="motivation" class="section level1">
 <h1>Motivation</h1>
-<p>Occasionally it is useful to generate a table of summary statistics for rows of a dataset, where such rows represent sampling units and and columns may be categorical or continuous. <a href="https://CRAN.R-project.org/package=table1">table1</a> does exactly this, and was the inspiration for <code>tablet</code>. <code>table1</code> however is optimized for html; <code>tablet</code> tries to provide a format-neutral implementation and relies on <a href="https://CRAN.R-project.org/package=kableExtra">kableExtra</a> to handle the rendering. Support for pdf is of particular interest, and is illustrated in the companion vignette. Here we adapt that presentation for html.</p>
+<p>Occasionally it is useful to generate a table of summary statistics for rows of a dataset, where such rows represent sampling units and and columns may be categorical or continuous. The excellent R package <a href="https://CRAN.R-project.org/package=table1">table1</a> does exactly this, and was the inspiration for <code>tablet</code>. <code>table1</code> however is optimized for html; <code>tablet</code> tries to provide a format-neutral implementation and relies on <a href="https://CRAN.R-project.org/package=kableExtra">kableExtra</a> to handle the rendering. Support for pdf (latex) is of particular interest, and is illustrated in the companion vignette. Here we convert that presentation to html for completeness. If you only need html output, you may prefer the interface, flexibility, and styling options of <code>table1</code>.</p>
 </div>
 <div id="software" class="section level1">
 <h1>Software</h1>
-<p>To support our examples, we load some other packages and in particular locate the melanoma dataset from <a href="https://CRAN.R-project.org/package=boot">boot</a>. By the way, in the yaml header for the Rmd source file, we’ve added the header-includes as described on p. 4 of the <code>kableExtra</code> <a href="https://haozhu233.github.io/kableExtra/awesome_table_in_pdf.pdf">documentation</a>.</p>
+<p>To support our examples, we load some other packages and in particular locate the melanoma dataset from <a href="https://CRAN.R-project.org/package=boot">boot</a>.</p>
 <pre class="r"><code>library(tidyr)
 library(dplyr)
 library(magrittr)
@@ -1186,9 +1186,8 @@ Present
 x %&lt;&gt;% select(-class)
 x %&gt;% 
   tablet %&gt;% 
-  as_kable %&gt;% 
-  kable_styling(latex_options = &#39;scale_down&#39;)</code></pre>
-<table class="table" style="margin-left: auto; margin-right: auto;">
+  as_kable</code></pre>
+<table>
 <thead>
 <tr>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
@@ -1415,9 +1414,8 @@ Present
 <pre class="r"><code>x %&lt;&gt;% group_by(status, ulcer)
 x %&gt;% 
   tablet %&gt;% 
-  as_kable %&gt;% 
-  kable_styling(latex_options = &#39;scale_down&#39;)</code></pre>
-<table class="table" style="margin-left: auto; margin-right: auto;">
+  as_kable</code></pre>
+<table>
 <thead>
 <tr>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
@@ -1644,9 +1642,8 @@ Median (range)
 <pre class="r"><code>x %&lt;&gt;% group_by(status, ulcer, sex)
 x %&gt;% 
   tablet %&gt;% 
-  as_kable %&gt;% 
-  kable_styling(latex_options = &#39;scale_down&#39;) # %&gt;% landscape ?</code></pre>
-<table class="table" style="margin-left: auto; margin-right: auto;">
+  as_kable</code></pre>
+<table>
 <thead>
 <tr>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
@@ -2058,17 +2055,11 @@ Median (range)
 </div>
 <div id="note" class="section level1">
 <h1>Note</h1>
-<p>The default presentation includes “N =” under the header, but also has percent characters in the table. Considerable gymnastics are required to make this work! If you change the defaults you may want to consider the arguments to <code>?as_kable.tablet</code>.</p>
-<ul>
-<li>‘linebreaker’ anticipates that ‘lab’ has inserted newlines before “N =”.</li>
-<li>‘linebreak’ invokes the eponymous kableExtra function internally.</li>
-<li>‘escape’ is turned off to protect resulting latex markup.</li>
-<li>‘groom’ is supplied to restore the usual escaping of percent characters.</li>
-</ul>
+<p>The default presentation includes “N =” under the header, but also has percent characters in the table. Considerable gymnastics are required to make this work in latex. For html, we simply replace the newline character (supplied by ‘lab’) with a ‘br’ tag internally.</p>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p><code>tablet</code> gives a flexible way of summarizing tables of observations. It reacts to numeric columns, factors, and grouping variables. Display order derives from the order of columns and factor levels in the data. Result columns can be grouped arbitrarily deep by supplying extra groups. Rendering is largely the responsibility of <code>kableExtra</code> and can be extended. Further customization is possible by manipulating data after calling tablet() but before calling as_kable(). Powerful results are possible with very little code.</p>
+<p><code>tablet</code> gives a flexible way of summarizing tables of observations. It reacts to numeric columns, factors, and grouping variables. Display order derives from the order of columns and factor levels in the data. Result columns can be grouped arbitrarily deep by supplying extra groups. Column labels and titles are respected. Rendering is largely the responsibility of <code>kableExtra</code> and can be extended. Further customization is possible by manipulating data after calling tablet() but before calling as_kable(). Powerful results are possible with very little code.</p>
 </div>
 
 

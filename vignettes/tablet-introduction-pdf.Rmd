@@ -43,14 +43,16 @@ knitr::opts_chunk$set(
 Occasionally it is useful to generate a table of 
 summary statistics for rows of a dataset, where
 such rows represent sampling units and and columns
-may be categorical or continuous.  [table1](https://CRAN.R-project.org/package=table1)
+may be categorical or continuous.
+The excellent R package [table1](https://CRAN.R-project.org/package=table1)
 does exactly this, and was the inspiration for 
 ```tablet```.  ```table1``` however is optimized
 for html; ```tablet``` tries to provide
 a format-neutral implementation and relies
 on [kableExtra](https://CRAN.R-project.org/package=kableExtra) to handle the rendering.
-Support for pdf is of particular interest,
-and is illustrated here.
+Support for pdf (latex) is of particular interest,
+and is illustrated here.  See the companion
+vignette for a proof-of-concept html implementation.
 
 # Software
 To support our examples, we load some other packages
@@ -267,7 +269,7 @@ the defaults you may want to consider the arguments to
 * 'linebreaker' anticipates that 'lab' has inserted newlines before "N =". 
 * 'linebreak' invokes the eponymous kableExtra function internally.
 * 'escape' is turned off to protect resulting latex markup.
-* 'groom' is supplied to restore the usual escaping of percent characters.
+* 'escape_latex' is supplied to restore the usual escaping of percent characters.
 
 # Conclusion
 
@@ -276,7 +278,9 @@ of observations.  It reacts to numeric columns, factors, and
 grouping variables.  Display order derives from 
 the order of columns and factor levels in the data.
 Result columns can be grouped arbitrarily deep by
-supplying extra groups. Rendering is largely the 
+supplying extra groups. 
+Column labels and titles are respected.
+Rendering is largely the 
 responsibility of ```kableExtra``` and can be extended.
 Further customization is possible by manipulating
 data after calling tablet() but before calling as_kable().

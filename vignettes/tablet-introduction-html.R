@@ -78,24 +78,21 @@ x %<>% group_by(status, sex)
 x %<>% select(-class)
 x %>% 
   tablet %>% 
-  as_kable %>% 
-  kable_styling(latex_options = 'scale_down')
+  as_kable
 
 
 ## ---- transposed2-------------------------------------------------------------
 x %<>% group_by(status, ulcer)
 x %>% 
   tablet %>% 
-  as_kable %>% 
-  kable_styling(latex_options = 'scale_down')
+  as_kable
 
 
 ## ---- transposed3-------------------------------------------------------------
 x %<>% group_by(status, ulcer, sex)
 x %>% 
   tablet %>% 
-  as_kable %>% 
-  kable_styling(latex_options = 'scale_down') # %>% landscape ?
+  as_kable
 
 
 ## ---- aesthetics--------------------------------------------------------------

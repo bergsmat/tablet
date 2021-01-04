@@ -1,7 +1,7 @@
 ---
 title: "An Introduction to Tablet for HTML"
 author: "Tim Bergsma"
-date: "2020-12-30"
+date: "2021-01-04"
 urlcolor: blue
 output: 
   rmarkdown::html_document:
@@ -20,24 +20,23 @@ vignette: >
 Occasionally it is useful to generate a table of 
 summary statistics for rows of a dataset, where
 such rows represent sampling units and and columns
-may be categorical or continuous.  [table1](https://CRAN.R-project.org/package=table1)
+may be categorical or continuous.  The excellent R package [table1](https://CRAN.R-project.org/package=table1)
 does exactly this, and was the inspiration for 
 ```tablet```.  ```table1``` however is optimized
 for html; ```tablet``` tries to provide
 a format-neutral implementation and relies
 on [kableExtra](https://CRAN.R-project.org/package=kableExtra) to handle the rendering.
-Support for pdf is of particular interest,
+Support for pdf (latex) is of particular interest,
 and is illustrated in the companion vignette. 
-Here we adapt that presentation for html.
+Here we convert that presentation to html for completeness.
+If you only need html output, you may prefer the interface,
+flexibility, and styling options of ```table1```.
+
 
 # Software
 To support our examples, we load some other packages
 and in particular locate the melanoma dataset from
 [boot](https://CRAN.R-project.org/package=boot).
-By the way, in the yaml header for the Rmd source
-file, we've added the header-includes as
-described on p. 4 of the
-```kableExtra``` [documentation](https://haozhu233.github.io/kableExtra/awesome_table_in_pdf.pdf).
 
 
 
@@ -387,11 +386,10 @@ x %<>% group_by(status, sex)
 x %<>% select(-class)
 x %>% 
   tablet %>% 
-  as_kable %>% 
-  kable_styling(latex_options = 'scale_down')
+  as_kable
 ```
 
-<table class="table" style="margin-left: auto; margin-right: auto;">
+<table>
  <thead>
 <tr>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
@@ -485,11 +483,10 @@ x %>%
 x %<>% group_by(status, ulcer)
 x %>% 
   tablet %>% 
-  as_kable %>% 
-  kable_styling(latex_options = 'scale_down')
+  as_kable
 ```
 
-<table class="table" style="margin-left: auto; margin-right: auto;">
+<table>
  <thead>
 <tr>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
@@ -583,11 +580,10 @@ x %>%
 x %<>% group_by(status, ulcer, sex)
 x %>% 
   tablet %>% 
-  as_kable %>% 
-  kable_styling(latex_options = 'scale_down') # %>% landscape ?
+  as_kable
 ```
 
-<table class="table" style="margin-left: auto; margin-right: auto;">
+<table>
  <thead>
 <tr>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
@@ -768,14 +764,9 @@ x %>%
 
 The default presentation includes  "N = " under the header,
 but also has percent characters in the table.  Considerable
-gymnastics are required to make this work!  If you change
-the defaults you may want to consider the arguments to
-```?as_kable.tablet```.  
-
-* 'linebreaker' anticipates that 'lab' has inserted newlines before "N =". 
-* 'linebreak' invokes the eponymous kableExtra function internally.
-* 'escape' is turned off to protect resulting latex markup.
-* 'groom' is supplied to restore the usual escaping of percent characters.
+gymnastics are required to make this work in latex.  For 
+html, we simply replace the newline character (supplied by 'lab')
+with a 'br' tag internally.
 
 # Conclusion
 
@@ -784,7 +775,9 @@ of observations.  It reacts to numeric columns, factors, and
 grouping variables.  Display order derives from 
 the order of columns and factor levels in the data.
 Result columns can be grouped arbitrarily deep by
-supplying extra groups. Rendering is largely the 
+supplying extra groups. 
+Column labels and titles are respected.
+Rendering is largely the 
 responsibility of ```kableExtra``` and can be extended.
 Further customization is possible by manipulating
 data after calling tablet() but before calling as_kable().

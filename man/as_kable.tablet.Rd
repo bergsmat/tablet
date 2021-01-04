@@ -8,8 +8,9 @@
   x,
   ...,
   booktabs = TRUE,
-  escape = NA,
-  groom = function(x, ...) gsub("\%", "\\\\\\\\\%", x),
+  escape = FALSE,
+  escape_latex = function(x, ...) gsub("\%", "\\\\\\\\\%", x),
+  escape_html = function(x, ...) x,
   variable = " ",
   col.names = NA,
   linebreak = TRUE,
@@ -27,7 +28,9 @@
 
 \item{escape}{passed to \code{\link[kableExtra]{kbl}}; defaults FALSE to allow header linebreaks}
 
-\item{groom}{a function to pre-process column content (e.g., manual escaping, latex only)}
+\item{escape_latex}{a function to pre-process column content if 'escape' is FALSE (e.g., manual escaping, latex only)}
+
+\item{escape_html}{a function to pre-process column content if 'escape' is FALSE (e.g., manual escaping, html only)}
 
 \item{variable}{a column name for the variables}
 
@@ -39,7 +42,7 @@
 
 \item{double_escape}{passed to \code{\link[kableExtra]{linebreak}} for column names}
 
-\item{linebreaker}{to \code{\link[kableExtra]{linebreak}} for column names}
+\item{linebreaker}{passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, newline is replaced with <br>}
 }
 \value{
 like \code{\link[kableExtra]{kbl}}
@@ -47,7 +50,7 @@ like \code{\link[kableExtra]{kbl}}
 \description{
 Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
 special features like grouped columns.
-Column names will be replaced with label attributes,
+Column names will be replaced with label or title attributes,
 where present.
 }
 \examples{
