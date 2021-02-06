@@ -28,7 +28,7 @@ Generates a group-wise tablet. Calculates statistics
 for all factors and numerics, with and without grouping
 variables.  Column names represent finest level of
 grouping, distinguished by attribute 'nest' (the values of
-higher other groups). Column names include 'all' column
+higher groups). Column names include 'all' column
 for same statistics without groups. Result columns
 have corresponding attribute 'n'. 'lab' supplies a label attribute
 for each column where the RHS succeeds: by default appending 'n' to result column names.

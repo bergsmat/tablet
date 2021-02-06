@@ -364,6 +364,7 @@ widgets <- function(x, ...)UseMethod('widgets')
 #' \item{_tablet_N}{number of records}
 #' \item{_tablet_n}{number of records in group}
 #' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+#' \item{_tablet_widget}{the RHS of formulas in 'fac' and 'num' (evaluated)}
 
 widgets.devalued <- function(
    x,
@@ -475,7 +476,7 @@ groupfull <- function(x, ...)UseMethod('groupfull')
 #' @param ... passed to observations(), devalued(), widgets()
 #' @export
 #' @keywords internal
-#' @return class 'groupless', with output like \code{\link{widgets.devalued}}
+#' @return class 'groupfull', with output like \code{\link{widgets.devalued}}
 groupfull.data.frame <- function(x,...){
    # execute data.frame -> observations -> devalued -> widgets
    x <- observations(x, ...)
@@ -931,12 +932,12 @@ as_kable.tablet <- function(
    x$`_tablet_stat` <- NULL
    # names(x)[names(x) == 'level'] <- ''
    headerlist <- headerlist(x)
-   # for(i in seq_len(ncol(x))){
-   #    lab <- attr(x[[i]], 'label')
-   #    if(length(lab)){
-   #       names(x)[[i]] <- lab
-   #    }
-   # }
+   for(i in seq_len(ncol(x))){
+      lab <- attr(x[[i]], 'label')
+      if(length(lab)){
+         names(x)[[i]] <- lab
+      }
+   }
    #x <- rename(x, !!variable := `_tablet_level`)
    stopifnot(is.character(variable), length(variable) == 1)
    names(x)[names(x) == '_tablet_level'] <- variable
@@ -1010,7 +1011,12 @@ as_kable.tablet <- function(
 #' attributes are available to elements of 'lab', including
 #' the special attribute \code{name} (the current column name).
 #' For 'lab' only, if the RHS succeeds, it becomes the label
-#' attribute of the corresponding column.
+#' attribute of the corresponding output column. 'lab' is used
+#' here principally to support annotation of *output*
+#' columns; if *input* columns have attributes 'label' or 'title'
+#' (highest priority) those will have been already substituted
+#' for default column names at the appropriate positions in the
+#' output.
 #'
 #' Missingness of observations (and to a lesser extent, levels of
 #' grouping variables) merits special consideration.

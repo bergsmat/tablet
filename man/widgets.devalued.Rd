@@ -28,6 +28,7 @@ class 'widgets', arranged by groups:
 \item{_tablet_N}{number of records}
 \item{_tablet_n}{number of records in group}
 \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+\item{_tablet_widget}{the RHS of formulas in 'fac' and 'num' (evaluated)}
 }
 \description{
 Calculates widgets for class 'devalued'.

@@ -95,7 +95,12 @@ which create visualizations thereof. Column-specific
 attributes are available to elements of 'lab', including
 the special attribute \code{name} (the current column name).
 For 'lab' only, if the RHS succeeds, it becomes the label
-attribute of the corresponding column.
+attribute of the corresponding output column. 'lab' is used
+here principally to support annotation of *output*
+columns; if *input* columns have attributes 'label' or 'title'
+(highest priority) those will have been already substituted
+for default column names at the appropriate positions in the
+output.
 
 Missingness of observations (and to a lesser extent, levels of
 grouping variables) merits special consideration.
