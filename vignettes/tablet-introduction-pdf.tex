@@ -1,38 +1,52 @@
-\documentclass[]{article}
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[
+]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-\else % if luatex or xelatex
-  \ifxetex
-    \usepackage{mathspec}
-  \else
-    \usepackage{fontspec}
-  \fi
-  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
-% use upquote if available, for straight quotes in verbatim environments
+% Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{%
-\usepackage{microtype}
-\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={An Introduction to Tablet for PDF},
+  pdfauthor={Tim Bergsma},
+  colorlinks=true,
+  linkcolor=Maroon,
+  filecolor=Maroon,
+  citecolor=Blue,
+  urlcolor=blue,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
-\usepackage{hyperref}
-\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
-\hypersetup{unicode=true,
-            pdftitle={An Introduction to Tablet for PDF},
-            pdfauthor={Tim Bergsma},
-            colorlinks=true,
-            linkcolor=Maroon,
-            citecolor=Blue,
-            urlcolor=blue,
-            breaklinks=true}
-\urlstyle{same}  % don't use monospace font for urls
 \usepackage{color}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
@@ -82,52 +96,14 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\IfFileExists{parskip.sty}{%
-\usepackage{parskip}
-}{% else
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{0}
-% Redefines (sub)paragraphs to behave more like sections
-\ifx\paragraph\undefined\else
-\let\oldparagraph\paragraph
-\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
-\fi
-\ifx\subparagraph\undefined\else
-\let\oldsubparagraph\subparagraph
-\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
-\fi
-
-%%% Use protect on footnotes to avoid problems with footnotes in titles
-\let\rmarkdownfootnote\footnote%
-\def\footnote{\protect\rmarkdownfootnote}
-
-%%% Change title format to be more compact
-\usepackage{titling}
-
-% Create subtitle command for use in maketitle
-\providecommand{\subtitle}[1]{
-  \posttitle{
-    \begin{center}\large#1\end{center}
-    }
-}
-
-\setlength{\droptitle}{-2em}
-
-  \title{An Introduction to Tablet for PDF}
-    \pretitle{\vspace{\droptitle}\centering\huge}
-  \posttitle{\par}
-    \author{Tim Bergsma}
-    \preauthor{\centering\large\emph}
-  \postauthor{\par}
-      \predate{\centering\large\emph}
-  \postdate{\par}
-    \date{2021-01-06}
-
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -143,11 +119,15 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 
+\title{An Introduction to Tablet for PDF}
+\author{Tim Bergsma}
+\date{2021-02-06}
+
 \begin{document}
 \maketitle
 
 {
-\hypersetup{linkcolor=black}
+\hypersetup{linkcolor=}
 \setcounter{tocdepth}{2}
 \tableofcontents
 }
@@ -217,7 +197,7 @@ some magic).
 
 \begin{tabular}[t]{ll}
 \toprule
-  & All\\
+  & \makecell[c]{All\\(N = 205)}\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textbf{status}}\\
@@ -286,7 +266,7 @@ move status `Alive' to first position.
   resolve() disambiguates labels, units, and factor levels (actually
   creating factors where appropriate, such as for sex and ulcer).
 \item
-  alias() substitutes labels for column names.
+  modify() supplies titles for certain column names.
 \end{itemize}
 
 Now we pass x to tablet() and as\_kable() for a more informative result.
@@ -294,12 +274,14 @@ Now we pass x to tablet() and as\_kable() for a more informative result.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{x }\OperatorTok{%>%}\StringTok{ }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }\NormalTok{as_kable}
+\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
+\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{tabular}[t]{lllll}
 \toprule
-  & Alive & Melanoma Death & Unrelated Death & All\\
+  & \makecell[c]{Alive\\(N = 134)} & \makecell[c]{Melanoma Death\\(N = 57)} & \makecell[c]{Unrelated Death\\(N = 14)} & \makecell[c]{All\\(N = 205)}\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{5}{l}{\textbf{Sex}}\\
@@ -372,6 +354,10 @@ adding a grouping variable that groups the two kinds of death.
 \KeywordTok{levels}\NormalTok{(x}\OperatorTok{$}\NormalTok{class)  <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{' '}\NormalTok{,    }\StringTok{'Death'}\NormalTok{,   }\StringTok{'Death'}\NormalTok{)      }\CommentTok{# cluster groups}
 \NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(class, status)                         }\CommentTok{# nest groups}
 \NormalTok{x }\OperatorTok{%>%}\StringTok{ }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }\NormalTok{as_kable                              }\CommentTok{# render}
+\CommentTok{#> Warning in c.classified(structure(c(2L, 2L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, :}
+\CommentTok{#> conflicting codelist specifications}
+\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
+\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -379,7 +365,7 @@ adding a grouping variable that groups the two kinds of death.
 \toprule
 \multicolumn{2}{c}{ } & \multicolumn{2}{c}{Death} & \multicolumn{1}{c}{ } \\
 \cmidrule(l{3pt}r{3pt}){3-4}
-  & Alive & Melanoma & Unrelated & All\\
+  & \makecell[c]{Alive\\(N = 134)} & \makecell[c]{Melanoma\\(N = 57)} & \makecell[c]{Unrelated\\(N = 14)} & \makecell[c]{All\\(N = 205)}\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{5}{l}{\textbf{Sex}}\\
@@ -415,6 +401,10 @@ group above and instead nest sex within status \ldots{}
 \StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{)}
+\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
+\CommentTok{#> conflicting codelist specifications}
+\CommentTok{#> Warning in c.classified(structure(c(1L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 1L, :}
+\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -425,7 +415,7 @@ group above and instead nest sex within status \ldots{}
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{2}{c}{Alive} & \multicolumn{2}{c}{Melanoma} & \multicolumn{2}{c}{Unrelated} & \multicolumn{1}{c}{ } \\
 \cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7}
-  & Male & Female & Male & Female & Male & Female & All\\
+  & \makecell[c]{Male\\(N = 43)} & \makecell[c]{Female\\(N = 91)} & \makecell[c]{Male\\(N = 29)} & \makecell[c]{Female\\(N = 28)} & \makecell[c]{Male\\(N = 7)} & \makecell[c]{Female\\(N = 7)} & \makecell[c]{All\\(N = 205)}\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{8}{l}{\textbf{Age at Time of Operation (year)}}\\
@@ -452,6 +442,10 @@ group above and instead nest sex within status \ldots{}
 \StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{)}
+\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
+\CommentTok{#> conflicting codelist specifications}
+\CommentTok{#> Warning in c.classified(structure(c(2L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, :}
+\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -462,7 +456,7 @@ group above and instead nest sex within status \ldots{}
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{2}{c}{Alive} & \multicolumn{2}{c}{Melanoma} & \multicolumn{2}{c}{Unrelated} & \multicolumn{1}{c}{ } \\
 \cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7}
-  & Absent & Present & Absent & Present & Absent & Present & All\\
+  & \makecell[c]{Absent\\(N = 92)} & \makecell[c]{Present\\(N = 42)} & \makecell[c]{Absent\\(N = 16)} & \makecell[c]{Present\\(N = 41)} & \makecell[c]{Absent\\(N = 7)} & \makecell[c]{Present\\(N = 7)} & \makecell[c]{All\\(N = 205)}\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{8}{l}{\textbf{Sex}}\\
@@ -489,6 +483,12 @@ group above and instead nest sex within status \ldots{}
 \StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{) }\CommentTok{# %>% landscape ?}
+\CommentTok{#> Warning in c.classified(structure(integer(0), .Label = c("Alive", "Melanoma", :}
+\CommentTok{#> conflicting codelist specifications}
+\CommentTok{#> Warning in c.classified(structure(integer(0), .Label = c("Absent", "Present":}
+\CommentTok{#> conflicting codelist specifications}
+\CommentTok{#> Warning in c.classified(structure(integer(0), .Label = c("Male", "Female":}
+\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -501,7 +501,7 @@ group above and instead nest sex within status \ldots{}
 \cmidrule(l{3pt}r{3pt}){2-5} \cmidrule(l{3pt}r{3pt}){6-9} \cmidrule(l{3pt}r{3pt}){10-13}
 \multicolumn{1}{c}{ } & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{1}{c}{ } \\
 \cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7} \cmidrule(l{3pt}r{3pt}){8-9} \cmidrule(l{3pt}r{3pt}){10-11} \cmidrule(l{3pt}r{3pt}){12-13}
-  & Male & Female & Male & Female & Male & Female & Male & Female & Male & Female & Male & Female & All\\
+  & \makecell[c]{Male\\(N = 24)} & \makecell[c]{Female\\(N = 68)} & \makecell[c]{Male\\(N = 19)} & \makecell[c]{Female\\(N = 23)} & \makecell[c]{Male\\(N = 8)} & \makecell[c]{Female\\(N = 8)} & \makecell[c]{Male\\(N = 21)} & \makecell[c]{Female\\(N = 20)} & \makecell[c]{Male\\(N = 4)} & \makecell[c]{Female\\(N = 3)} & \makecell[c]{Male\\(N = 3)} & \makecell[c]{Female\\(N = 4)} & \makecell[c]{All\\(N = 205)}\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{14}{l}{\textbf{Age at Time of Operation (year)}}\\
@@ -543,6 +543,8 @@ replace these entirely. In this example, we will \ldots{}
     \StringTok{`}\DataTypeTok{Median (range)}\StringTok{`} \OperatorTok{~}\StringTok{ }\NormalTok{med }\OperatorTok{+}\StringTok{ ' ('} \OperatorTok{+}\StringTok{ }\NormalTok{min }\OperatorTok{+}\StringTok{ ' - '} \OperatorTok{+}\StringTok{ }\NormalTok{max }\OperatorTok{+}\StringTok{ ')'}
 \NormalTok{  ) }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\NormalTok{as_kable}
+\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
+\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -595,6 +597,5 @@ Rendering is largely the responsibility of \texttt{kableExtra} and can
 be extended. Further customization is possible by manipulating data
 after calling tablet() but before calling as\_kable(). Powerful results
 are possible with very little code.
-
 
 \end{document}
