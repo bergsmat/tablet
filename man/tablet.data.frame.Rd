@@ -10,13 +10,13 @@
  na.rm = FALSE,
  all = 'All',
  fun = list(
-  sum ~ signif(digits = 3,     sum(x,  na.rm = T)),
-  pct ~ signif(digits = 3,     sum / n * 100     ),
-  ave ~ signif(digits = 3,    mean(x,  na.rm = T)),
-  std ~ signif(digits = 3,      sd(x,  na.rm = T)),
-  med ~ signif(digits = 3,  median(x,  na.rm = T)),
-  min ~ signif(digits = 3,     min(x,  na.rm = T)),
-  max ~ signif(digits = 3,     max(x,  na.rm = T))
+  sum ~ signif(digits = 3,     sum(x,  na.rm = TRUE)),
+  pct ~ signif(digits = 3,     sum / n * 100        ),
+  ave ~ signif(digits = 3,    mean(x,  na.rm = TRUE)),
+  std ~ signif(digits = 3,      sd(x,  na.rm = TRUE)),
+  med ~ signif(digits = 3,  median(x,  na.rm = TRUE)),
+  min ~ signif(digits = 3,     min(x,  na.rm = TRUE)),
+  max ~ signif(digits = 3,     max(x,  na.rm = TRUE))
  ),
  fac = list(
   ` ` ~ sum + ' (' + pct + '\%' + ')'
@@ -60,7 +60,12 @@
 \item{exclude_name}{whether to drop NA values of column name (for completeness); passed to \code{\link[tidyr]{gather}}}
 }
 \value{
-tablet, having columns 'name', 'level', 'stat', 'sort' (prefixed with '_tablet'); group columns (if any), and 'all' column; sorted by 'name' and 'sort'.
+'tablet', with columns for each combination of groups, and:
+\item{_tablet_name}{observation identifier}
+\item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+\item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+\item{All (or value of 'all' argument)}{ungrouped results}
+\item{_tablet_sort}{sorting column}
 }
 \description{
 Generates a 'tablet': a summary table of
@@ -72,9 +77,7 @@ grouping, distinguished by attribute 'nest' (the values of
 higher other groups, if any) along with the 'all' column
 for ungrouped statistics. Column attribute 'n' indicates
 relevant corresponding observation count.
-Column attributes 'label' and 'title' (dominant) are
-substituted for column name, if present.
-Input should not have column names (or labels, titles) beginning with '_tablet'.
+Input should not have column names beginning with '_tablet'.
 }
 \details{
 Arguments 'fun', 'fac', 'num', and 'lab' are lists

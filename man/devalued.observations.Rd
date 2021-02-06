@@ -13,10 +13,11 @@ grouped count is available as 'n' and ungouped count is available as 'N'.}
 \method{devalued}{observations}(
   x,
   ...,
-  fun = list(sum ~ signif(digits = 3, sum(x, na.rm = T)), pct ~ signif(digits = 3,
-    sum/n * 100), ave ~ signif(digits = 3, mean(x, na.rm = T)), std ~ signif(digits = 3,
-    sd(x, na.rm = T)), med ~ signif(digits = 3, median(x, na.rm = T)), min ~
-    signif(digits = 3, min(x, na.rm = T)), max ~ signif(digits = 3, max(x, na.rm = T))),
+  fun = list(sum ~ signif(digits = 3, sum(x, na.rm = TRUE)), pct ~ signif(digits = 3,
+    sum/n * 100), ave ~ signif(digits = 3, mean(x, na.rm = TRUE)), std ~ signif(digits =
+    3, sd(x, na.rm = TRUE)), med ~ signif(digits = 3, median(x, na.rm = TRUE)), min ~
+    signif(digits = 3, min(x, na.rm = TRUE)), max ~ signif(digits = 3, max(x, na.rm =
+    TRUE))),
   silent = TRUE
 )
 }
@@ -30,7 +31,12 @@ grouped count is available as 'n' and ungouped count is available as 'N'.}
 \item{silent}{whether to suppress warnings from evaluations of 'fun'}
 }
 \value{
-class 'devalued'
+class 'devalued', presumably one record per group:
+\item{_tablet_N}{number of records}
+\item{_tablet_n}{number of records in group}
+\item{_tablet_name}{observation identifier}
+\item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+\item{(other)}{additional column for each statistic in 'fun'}
 }
 \description{
 Aggregate Values for Observations

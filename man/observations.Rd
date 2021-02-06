@@ -11,8 +11,11 @@ observations(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Identifies observations.  Generic, with data.frame method.
+Identifies observations.  Generic, with method \code{\link{observations.data.frame}}.
 }
 \examples{
 example(classifiers)

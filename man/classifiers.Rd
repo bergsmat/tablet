@@ -11,8 +11,11 @@ classifiers(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Identifies classifiers.  Generic, with data.frame method.
+Identifies classifiers.  Generic, with method \code{\link{classifiers.data.frame}}.
 }
 \examples{
 library(dplyr)

@@ -11,8 +11,11 @@ groupless(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Calculates without groups.  Generic, with method for data.frame.
+Calculates without groups.  Generic, with method \code{\link{groupless.data.frame}}.
 It is meaningless to use this toolchain function on classes
 'observations', 'devalued', or 'widgets'.
 }

@@ -11,8 +11,11 @@ headerlist(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Creates header list.  Generic, with method for tablet.
+Creates header list.  Generic, with method \code{\link{headerlist.tablet}}.
 }
 \examples{
 example(classifiers)

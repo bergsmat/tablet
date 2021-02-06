@@ -126,7 +126,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2021-01-04}
+    \date{2021-01-06}
 
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -217,7 +217,7 @@ some magic).
 
 \begin{tabular}[t]{ll}
 \toprule
-  & \makecell[c]{All\\(N = 205)}\\
+  & All\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textbf{status}}\\
@@ -299,7 +299,7 @@ Now we pass x to tablet() and as\_kable() for a more informative result.
 
 \begin{tabular}[t]{lllll}
 \toprule
-  & \makecell[c]{Alive\\(N = 134)} & \makecell[c]{Melanoma Death\\(N = 57)} & \makecell[c]{Unrelated Death\\(N = 14)} & \makecell[c]{All\\(N = 205)}\\
+  & Alive & Melanoma Death & Unrelated Death & All\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{5}{l}{\textbf{Sex}}\\
@@ -333,7 +333,7 @@ Notice that:
   the order of groups across the top is exactly the levels (if any) of
   the grouping variable(s), and
 \item
-  labels and titles (highest priority) are substituted for column names.
+  labels and titles (highest priority) are substituted for item names.
 \end{itemize}
 
 If you don't particularly care for some aspect of the presentation, you
@@ -379,7 +379,7 @@ adding a grouping variable that groups the two kinds of death.
 \toprule
 \multicolumn{2}{c}{ } & \multicolumn{2}{c}{Death} & \multicolumn{1}{c}{ } \\
 \cmidrule(l{3pt}r{3pt}){3-4}
-  & \makecell[c]{Alive\\(N = 134)} & \makecell[c]{Melanoma\\(N = 57)} & \makecell[c]{Unrelated\\(N = 14)} & \makecell[c]{All\\(N = 205)}\\
+  & Alive & Melanoma & Unrelated & All\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{5}{l}{\textbf{Sex}}\\
@@ -425,7 +425,7 @@ group above and instead nest sex within status \ldots{}
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{2}{c}{Alive} & \multicolumn{2}{c}{Melanoma} & \multicolumn{2}{c}{Unrelated} & \multicolumn{1}{c}{ } \\
 \cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7}
-  & \makecell[c]{Male\\(N = 43)} & \makecell[c]{Female\\(N = 91)} & \makecell[c]{Male\\(N = 29)} & \makecell[c]{Female\\(N = 28)} & \makecell[c]{Male\\(N = 7)} & \makecell[c]{Female\\(N = 7)} & \makecell[c]{All\\(N = 205)}\\
+  & Male & Female & Male & Female & Male & Female & All\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{8}{l}{\textbf{Age at Time of Operation (year)}}\\
@@ -462,7 +462,7 @@ group above and instead nest sex within status \ldots{}
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{2}{c}{Alive} & \multicolumn{2}{c}{Melanoma} & \multicolumn{2}{c}{Unrelated} & \multicolumn{1}{c}{ } \\
 \cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7}
-  & \makecell[c]{Absent\\(N = 92)} & \makecell[c]{Present\\(N = 42)} & \makecell[c]{Absent\\(N = 16)} & \makecell[c]{Present\\(N = 41)} & \makecell[c]{Absent\\(N = 7)} & \makecell[c]{Present\\(N = 7)} & \makecell[c]{All\\(N = 205)}\\
+  & Absent & Present & Absent & Present & Absent & Present & All\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{8}{l}{\textbf{Sex}}\\
@@ -501,7 +501,7 @@ group above and instead nest sex within status \ldots{}
 \cmidrule(l{3pt}r{3pt}){2-5} \cmidrule(l{3pt}r{3pt}){6-9} \cmidrule(l{3pt}r{3pt}){10-13}
 \multicolumn{1}{c}{ } & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{2}{c}{Absent} & \multicolumn{2}{c}{Present} & \multicolumn{1}{c}{ } \\
 \cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7} \cmidrule(l{3pt}r{3pt}){8-9} \cmidrule(l{3pt}r{3pt}){10-11} \cmidrule(l{3pt}r{3pt}){12-13}
-  & \makecell[c]{Male\\(N = 24)} & \makecell[c]{Female\\(N = 68)} & \makecell[c]{Male\\(N = 19)} & \makecell[c]{Female\\(N = 23)} & \makecell[c]{Male\\(N = 8)} & \makecell[c]{Female\\(N = 8)} & \makecell[c]{Male\\(N = 21)} & \makecell[c]{Female\\(N = 20)} & \makecell[c]{Male\\(N = 4)} & \makecell[c]{Female\\(N = 3)} & \makecell[c]{Male\\(N = 3)} & \makecell[c]{Female\\(N = 4)} & \makecell[c]{All\\(N = 205)}\\
+  & Male & Female & Male & Female & Male & Female & Male & Female & Male & Female & Male & Female & All\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{14}{l}{\textbf{Age at Time of Operation (year)}}\\

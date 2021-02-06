@@ -11,8 +11,11 @@ index(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Creates index.  Generic, with method for tablet.
+Creates index.  Generic, with method \code{\link{index.tablet}}.
 }
 \examples{
 example(classifiers)

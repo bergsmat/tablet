@@ -11,8 +11,11 @@ groupfull(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Calculates with groups.  Generic, with method for data.frame.
+Calculates with groups.  Generic, with method \code{\link{groupfull.data.frame}}.
 It is meaningless to use this toolchain function on classes
 'observations', 'devalued', or 'widgets'.
 }

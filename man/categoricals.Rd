@@ -11,8 +11,11 @@ categoricals(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Identifies categories.  Generic, with data.frame method.
+Identifies categories.  Generic, with method \code{\link{categoricals.data.frame}}.
 }
 \examples{
 example(classifiers)

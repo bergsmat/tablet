@@ -11,8 +11,11 @@ devalued(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Aggregated values.  Generic, with method for 'observations'.
+Aggregated values.  Generic, with method \code{\link{devalued.observations}}.
 }
 \examples{
 example(classifiers)

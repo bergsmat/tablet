@@ -16,7 +16,12 @@
 \item{lab}{a list of formulas to generate column labels; \\n is translated as <br> in html context}
 }
 \value{
-tablet, having columns 'name', 'level', 'stat', 'sort' (prefixed with '_tablet'); group columns (if any), and 'all' column; sorted by 'name' and 'sort'.
+'tablet', with columns for each combination of groups, and:
+\item{_tablet_name}{observation identifier}
+\item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+\item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+\item{All (or value of 'all' argument)}{ungrouped results}
+\item{_tablet_sort}{sorting column}
 }
 \description{
 Generates a group-wise tablet. Calculates statistics
@@ -27,6 +32,6 @@ higher other groups). Column names include 'all' column
 for same statistics without groups. Result columns
 have corresponding attribute 'n'. 'lab' supplies a label attribute
 for each column where the RHS succeeds: by default appending 'n' to result column names.
-Column attributes 'label' and 'title' (dominant) are substituted for column name, if present.
+Column attributes 'label' and 'title' (highest priority) are substituted for column name, if present.
 }
 \keyword{internal}

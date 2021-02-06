@@ -11,8 +11,11 @@ widgets(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Calculates widgets.  Generic, with method for devalued.
+Calculates widgets.  Generic, with method \code{\link{widgets.devalued}}.
 }
 \examples{
 example(classifiers)

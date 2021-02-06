@@ -11,8 +11,11 @@ groupwise(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Calculates with and without groups.  Generic, with method for data.frame.
+Calculates with and without groups.  Generic, with method \code{\link{groupwise.data.frame}}.
 It is meaningless to use this toolchain function on classes
 'observations', 'devalued', 'widgets', 'groupless', or 'groupfull'.
 }

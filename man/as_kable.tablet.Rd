@@ -16,7 +16,8 @@
   linebreak = TRUE,
   align = "c",
   double_escape = FALSE,
-  linebreaker = "\\n"
+  linebreaker = "\\n",
+  pack_rows = list()
 )
 }
 \arguments{
@@ -43,6 +44,8 @@
 \item{double_escape}{passed to \code{\link[kableExtra]{linebreak}} for column names}
 
 \item{linebreaker}{passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, newline is replaced with <br>}
+
+\item{pack_rows}{named list passed to \code{\link[kableExtra]{pack_rows}} for finer control of variable names}
 }
 \value{
 like \code{\link[kableExtra]{kbl}}
@@ -50,8 +53,6 @@ like \code{\link[kableExtra]{kbl}}
 \description{
 Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
 special features like grouped columns.
-Column names will be replaced with label or title attributes,
-where present.
 }
 \examples{
 library(boot)

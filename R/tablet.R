@@ -9,10 +9,11 @@ globalVariables(c(
 
 #' Identify Categories
 #'
-#' Identifies categories.  Generic, with data.frame method.
+#' Identifies categories.  Generic, with method \code{\link{categoricals.data.frame}}.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -22,10 +23,11 @@ categoricals <- function(x, ...)UseMethod('categoricals')
 
 #' Identify Numerics
 #'
-#' Identifies numerics.  Generic, with data.frame method.
+#' Identifies numerics.  Generic, with method \code{\link{numerics.data.frame}}.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -34,10 +36,11 @@ numerics <- function(x, ...)UseMethod('numerics')
 
 #' Identify Observations
 #'
-#' Identifies observations.  Generic, with data.frame method.
+#' Identifies observations.  Generic, with method \code{\link{observations.data.frame}}.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -46,10 +49,11 @@ observations <- function(x, ...)UseMethod('observations')
 
 #' Identify Classifiers
 #'
-#' Identifies classifiers.  Generic, with data.frame method.
+#' Identifies classifiers.  Generic, with method \code{\link{classifiers.data.frame}}.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' library(dplyr)
@@ -172,7 +176,12 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE){
 #' @importFrom tidyr gather
 #' @export
 #' @keywords internal
-#' @return class 'observations' arranged by groups (presented first) and including: names, levels, N, n, value (prefixed)
+#' @return class 'observations' arranged by groups (presented first):
+#' \item{_tablet_N}{number of records}
+#' \item{_tablet_n}{number of records in group}
+#' \item{_tablet_name}{observation identifier}
+#' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+#' \item{_tablet_value}{numeric value (or special value 1 for factors)}
 
 observations.data.frame <- function(x, ..., exclude_name = NULL){
    x <- select(x, !!!groups(x), everything()) # groups first for consistency
@@ -201,10 +210,11 @@ observations.data.frame <- function(x, ..., exclude_name = NULL){
 
 #' Aggregate Values
 #'
-#' Aggregated values.  Generic, with method for 'observations'.
+#' Aggregated values.  Generic, with method \code{\link{devalued.observations}}.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -228,18 +238,23 @@ devalued <- function(x, ...)UseMethod('devalued')
 #' @importFrom dplyr mutate distinct rename
 #' @export
 #' @keywords internal
-#' @return class 'devalued'
+#' @return class 'devalued', presumably one record per group:
+#' \item{_tablet_N}{number of records}
+#' \item{_tablet_n}{number of records in group}
+#' \item{_tablet_name}{observation identifier}
+#' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+#' \item{(other)}{additional column for each statistic in 'fun'}
 devalued.observations <- function(
    x,
    ...,
    fun = list(
-      sum ~ signif(digits = 3,    sum(x, na.rm = T)),
-      pct ~ signif(digits = 3,    sum / n * 100    ),
-      ave ~ signif(digits = 3,   mean(x, na.rm = T)),
-      std ~ signif(digits = 3,     sd(x, na.rm = T)),
-      med ~ signif(digits = 3, median(x, na.rm = T)),
-      min ~ signif(digits = 3,    min(x, na.rm = T)),
-      max ~ signif(digits = 3,    max(x, na.rm = T))
+      sum ~ signif(digits = 3,    sum(x, na.rm = TRUE)),
+      pct ~ signif(digits = 3,    sum / n * 100       ),
+      ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),
+      std ~ signif(digits = 3,     sd(x, na.rm = TRUE)),
+      med ~ signif(digits = 3, median(x, na.rm = TRUE)),
+      min ~ signif(digits = 3,    min(x, na.rm = TRUE)),
+      max ~ signif(digits = 3,    max(x, na.rm = TRUE))
    ),
    silent = TRUE
 ){
@@ -309,10 +324,11 @@ devalued.observations <- function(
 
 #' Calculate Widgets
 #'
-#' Calculates widgets.  Generic, with method for devalued.
+#' Calculates widgets.  Generic, with method \code{\link{widgets.devalued}}.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -342,7 +358,13 @@ widgets <- function(x, ...)UseMethod('widgets')
 #' @importFrom dplyr filter
 #' @export
 #' @keywords internal
-#' @return class 'widgets', with new columns 'stat' and 'widget' (prefixed), arranged by groups
+#' @return class 'widgets', arranged by groups:
+#' \item{_tablet_name}{observation identifier}
+#' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+#' \item{_tablet_N}{number of records}
+#' \item{_tablet_n}{number of records in group}
+#' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+
 widgets.devalued <- function(
    x,
    fac = list(
@@ -387,7 +409,7 @@ widgets.devalued <- function(
    }
    x <- gather(x, key = '_tablet_stat', value = '_tablet_widget', !!!keep)
    x <- filter(x, !is.na(`_tablet_widget`))
-   x <- arrange(x, .by_group = T)
+   x <- arrange(x, .by_group = TRUE)
    x <- select(x,!!!groups(x), `_tablet_N`:`_tablet_level`, `_tablet_stat`, `_tablet_widget`)
    x <- mutate(x, `_tablet_widget` = as.character(`_tablet_widget`)) # in case logi
    class(x) <- union('widgets', class(x))
@@ -396,12 +418,13 @@ widgets.devalued <- function(
 
 #' Calculate Without Groups
 #'
-#' Calculates without groups.  Generic, with method for data.frame.
+#' Calculates without groups.  Generic, with method \code{\link{groupless.data.frame}}.
 #' It is meaningless to use this toolchain function on classes
 #' 'observations', 'devalued', or 'widgets'.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 groupless <- function(x, ...)UseMethod('groupless')
 
@@ -415,7 +438,7 @@ groupless <- function(x, ...)UseMethod('groupless')
 #' @importFrom dplyr groups ungroup select
 #' @export
 #' @keywords internal
-#' @return class 'groupless'
+#' @return class 'groupless', with output like \code{\link{widgets.devalued}}
 groupless.data.frame <- function(x,...){
    # remove grouping variables and remove groups
    # then execute
@@ -433,12 +456,13 @@ groupless.data.frame <- function(x,...){
 
 #' Calculate With Groups
 #'
-#' Calculates with groups.  Generic, with method for data.frame.
+#' Calculates with groups.  Generic, with method \code{\link{groupfull.data.frame}}.
 #' It is meaningless to use this toolchain function on classes
 #' 'observations', 'devalued', or 'widgets'.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 groupfull <- function(x, ...)UseMethod('groupfull')
 
@@ -451,7 +475,7 @@ groupfull <- function(x, ...)UseMethod('groupfull')
 #' @param ... passed to observations(), devalued(), widgets()
 #' @export
 #' @keywords internal
-#' @return class 'groupless'
+#' @return class 'groupless', with output like \code{\link{widgets.devalued}}
 groupfull.data.frame <- function(x,...){
    # execute data.frame -> observations -> devalued -> widgets
    x <- observations(x, ...)
@@ -463,13 +487,14 @@ groupfull.data.frame <- function(x,...){
 
 #' Calculate With and Without Groups
 #'
-#' Calculates with and without groups.  Generic, with method for data.frame.
+#' Calculates with and without groups.  Generic, with method \code{\link{groupwise.data.frame}}.
 #' It is meaningless to use this toolchain function on classes
 #' 'observations', 'devalued', 'widgets', 'groupless', or 'groupfull'.
 #' @param x object
 #' @param ... passed
 #' @importFrom dplyr left_join
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -480,7 +505,7 @@ groupwise <- function(x, ...)UseMethod('groupwise')
 #'
 #' Calculates widgets with and without groups.
 #' Supplies 'groupfull' and 'groupless' (prefixed) columns instead of 'widgets'.
-#' Column attributes 'label' and 'title' (dominant) are substituted for column name, if present.
+#' Column attributes 'label' and 'title' (highest priority) are substituted for column name, if present.
 #' @param x data.frame
 #' @param fun passed to groupfull() and groupless()
 #' @param fac passed to groupfull() and groupless()
@@ -488,17 +513,25 @@ groupwise <- function(x, ...)UseMethod('groupwise')
 #' @param ... passed to groupfull() and groupless()
 #' @export
 #' @keywords internal
-#' @return class 'groupwise'
+#' @return class 'groupwise', arranged by groups:
+#' \item{_tablet_name}{observation identifier}
+#' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+#' \item{_tablet_N}{number of records}
+#' \item{_tablet_n}{number of records in group}
+#' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+#' \item{_tablet_groupfull}{the LHS of formulas in 'fac' and 'num'}
+#' \item{_tablet_groupless}{the LHS of formulas in 'fac' and 'num'}
+
 groupwise.data.frame <- function(
    x,
    fun = list(
-      sum ~ signif(digits = 3,    sum(x, na.rm = T)),
+      sum ~ signif(digits = 3,    sum(x, na.rm = TRUE)),
       pct ~ signif(digits = 3,    sum / n * 100    ),
-      ave ~ signif(digits = 3,   mean(x, na.rm = T)),
-      std ~ signif(digits = 3,     sd(x, na.rm = T)),
-      med ~ signif(digits = 3, median(x, na.rm = T)),
-      min ~ signif(digits = 3,    min(x, na.rm = T)),
-      max ~ signif(digits = 3,    max(x, na.rm = T))
+      ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),
+      std ~ signif(digits = 3,     sd(x, na.rm = TRUE)),
+      med ~ signif(digits = 3, median(x, na.rm = TRUE)),
+      min ~ signif(digits = 3,    min(x, na.rm = TRUE)),
+      max ~ signif(digits = 3,    max(x, na.rm = TRUE))
    ),
    fac = list(
       ` ` ~ sum + ' (' + pct + '%' + ')'
@@ -538,6 +571,7 @@ groupwise.data.frame <- function(
 #' @param x object
 #' @param ... passed arguments
 #' @export
+#' @return see methods
 #' @keywords internal
 tablet <- function(x, ...)UseMethod('tablet')
 
@@ -547,11 +581,11 @@ tablet <- function(x, ...)UseMethod('tablet')
 #' for all factors and numerics, with and without grouping
 #' variables.  Column names represent finest level of
 #' grouping, distinguished by attribute 'nest' (the values of
-#' higher other groups). Column names include 'all' column
+#' higher groups). Column names include 'all' column
 #' for same statistics without groups. Result columns
 #' have corresponding attribute 'n'. 'lab' supplies a label attribute
 #' for each column where the RHS succeeds: by default appending 'n' to result column names.
-#' Column attributes 'label' and 'title' (dominant) are substituted for column name, if present.
+#' Column attributes 'label' and 'title' (highest priority) are substituted for column name, if present.
 #' @param x groupwise
 #' @param ... ignored
 #' @param all a column name for ungrouped statistics
@@ -561,7 +595,12 @@ tablet <- function(x, ...)UseMethod('tablet')
 #' @importFrom rlang as_string
 #' @export
 #' @keywords internal
-#' @return tablet, having columns 'name', 'level', 'stat', 'sort' (prefixed with '_tablet'); group columns (if any), and 'all' column; sorted by 'name' and 'sort'.
+#' @return 'tablet', with columns for each combination of groups, and:
+#' \item{_tablet_name}{observation identifier}
+#' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+#' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+#' \item{All (or value of 'all' argument)}{ungrouped results}
+#' \item{_tablet_sort}{sorting column}
 tablet.groupwise <- function(
    x,
    ...,
@@ -707,10 +746,11 @@ tablet.groupwise <- function(
 
 #' Create Header List.
 #'
-#' Creates header list.  Generic, with method for tablet.
+#' Creates header list.  Generic, with method \code{\link{headerlist.tablet}}.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -724,7 +764,7 @@ headerlist <- function(x,...)UseMethod('headerlist')
 #' @param ... ignored
 #' @export
 #' @keywords internal
-#' @return list of named integer
+#' @return list of named integer where each element describes an additional header row with names as indicated, repeated integer times
 headerlist.tablet <- function(x, ...){
    numheaders <- 0
    out <- list()
@@ -761,10 +801,11 @@ headerlist.tablet <- function(x, ...){
 
 #' Create Index
 #'
-#' Creates index.  Generic, with method for tablet.
+#' Creates index.  Generic, with method \code{\link{index.tablet}}.
 #' @param x object
 #' @param ... passed
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -778,7 +819,7 @@ index <- function(x,...)UseMethod('index')
 #' @param ... ignored
 #' @export
 #' @keywords internal
-#' @return named integer
+#' @return named integer giving row groupings with names as indicated, repeated integer times
 
 index.tablet <- function(x, ...) {
    out <- numeric(0)
@@ -808,6 +849,7 @@ index.tablet <- function(x, ...) {
 #' @param x object
 #' @param ... passed arguments
 #' @export
+#' @return see methods
 #' @keywords internal
 #' @examples
 #' example(classifiers)
@@ -821,8 +863,6 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #'
 #' Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
 #' special features like grouped columns.
-#' Column names will be replaced with label or title attributes,
-#' where present.
 #'
 #' @param x \code{\link{tablet}}
 #' @param ... passed to \code{\link[kableExtra]{kbl}}
@@ -836,6 +876,7 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' @param align passed to \code{\link[kableExtra]{linebreak}} for column names
 #' @param double_escape passed to \code{\link[kableExtra]{linebreak}} for column names
 #' @param linebreaker passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, newline is replaced with <br>
+#' @param pack_rows named list passed to \code{\link[kableExtra]{pack_rows}} for finer control of variable names
 #' @importFrom kableExtra kbl pack_rows add_header_above linebreak
 #' @importFrom dplyr rename
 #' @export
@@ -864,7 +905,8 @@ as_kable.tablet <- function(
    linebreak = TRUE,
    align = 'c',
    double_escape = FALSE,
-   linebreaker = '\n'
+   linebreaker = '\n',
+   pack_rows = list()
 ){
 
    # if(is.na(escape)){
@@ -889,12 +931,12 @@ as_kable.tablet <- function(
    x$`_tablet_stat` <- NULL
    # names(x)[names(x) == 'level'] <- ''
    headerlist <- headerlist(x)
-   for(i in seq_len(ncol(x))){
-      lab <- attr(x[[i]], 'label')
-      if(length(lab)){
-         names(x)[[i]] <- lab
-      }
-   }
+   # for(i in seq_len(ncol(x))){
+   #    lab <- attr(x[[i]], 'label')
+   #    if(length(lab)){
+   #       names(x)[[i]] <- lab
+   #    }
+   # }
    #x <- rename(x, !!variable := `_tablet_level`)
    stopifnot(is.character(variable), length(variable) == 1)
    names(x)[names(x) == '_tablet_level'] <- variable
@@ -930,7 +972,13 @@ as_kable.tablet <- function(
    for(i in seq_along(headerlist)){
       y <- add_header_above(y, headerlist[[i]])
    }
-   y <- pack_rows(y, index = index)
+   y <- do.call(
+      kableExtra::pack_rows,
+      c(
+         list(y, index = index),
+         pack_rows
+      )
+   )
    y
 }
 
@@ -945,9 +993,7 @@ as_kable.tablet <- function(
 #' higher other groups, if any) along with the 'all' column
 #' for ungrouped statistics. Column attribute 'n' indicates
 #' relevant corresponding observation count.
-#' Column attributes 'label' and 'title' (dominant) are
-#' substituted for column name, if present.
-#' Input should not have column names (or labels, titles) beginning with '_tablet'.
+#' Input should not have column names beginning with '_tablet'.
 #'
 #' Arguments 'fun', 'fac', 'num', and 'lab' are lists
 #' of two-sided formulas that are evaluated in
@@ -983,13 +1029,13 @@ as_kable.tablet <- function(
 #'  na.rm = FALSE,
 #'  all = 'All',
 #'  fun = list(
-#'   sum ~ signif(digits = 3,     sum(x,  na.rm = T)),
-#'   pct ~ signif(digits = 3,     sum / n * 100     ),
-#'   ave ~ signif(digits = 3,    mean(x,  na.rm = T)),
-#'   std ~ signif(digits = 3,      sd(x,  na.rm = T)),
-#'   med ~ signif(digits = 3,  median(x,  na.rm = T)),
-#'   min ~ signif(digits = 3,     min(x,  na.rm = T)),
-#'   max ~ signif(digits = 3,     max(x,  na.rm = T))
+#'   sum ~ signif(digits = 3,     sum(x,  na.rm = TRUE)),
+#'   pct ~ signif(digits = 3,     sum / n * 100        ),
+#'   ave ~ signif(digits = 3,    mean(x,  na.rm = TRUE)),
+#'   std ~ signif(digits = 3,      sd(x,  na.rm = TRUE)),
+#'   med ~ signif(digits = 3,  median(x,  na.rm = TRUE)),
+#'   min ~ signif(digits = 3,     min(x,  na.rm = TRUE)),
+#'   max ~ signif(digits = 3,     max(x,  na.rm = TRUE))
 #'  ),
 #'  fac = list(
 #'   ` ` ~ sum + ' (' + pct + '\%' + ')'
@@ -1019,7 +1065,12 @@ as_kable.tablet <- function(
 #' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
 #' @param exclude_name whether to drop NA values of column name (for completeness); passed to \code{\link[tidyr]{gather}}
 #' @export
-#' @return tablet, having columns 'name', 'level', 'stat', 'sort' (prefixed with '_tablet'); group columns (if any), and 'all' column; sorted by 'name' and 'sort'.
+#' @return 'tablet', with columns for each combination of groups, and:
+#' \item{_tablet_name}{observation identifier}
+#' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+#' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+#' \item{All (or value of 'all' argument)}{ungrouped results}
+#' \item{_tablet_sort}{sorting column}
 #' @seealso as_kable.tablet
 #' @examples
 #' library(boot)
@@ -1037,13 +1088,13 @@ tablet.data.frame <- function(
    na.rm = FALSE,
    all = 'All',
    fun = list(
-      sum ~ signif(digits = 3,    sum(x, na.rm = T)),
+      sum ~ signif(digits = 3,    sum(x, na.rm = TRUE)),
       pct ~ signif(digits = 3,    sum / n * 100    ),
-      ave ~ signif(digits = 3,   mean(x, na.rm = T)),
-      std ~ signif(digits = 3,     sd(x, na.rm = T)),
-      med ~ signif(digits = 3, median(x, na.rm = T)),
-      min ~ signif(digits = 3,    min(x, na.rm = T)),
-      max ~ signif(digits = 3,    max(x, na.rm = T))
+      ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),
+      std ~ signif(digits = 3,     sd(x, na.rm = TRUE)),
+      med ~ signif(digits = 3, median(x, na.rm = TRUE)),
+      min ~ signif(digits = 3,    min(x, na.rm = TRUE)),
+      max ~ signif(digits = 3,    max(x, na.rm = TRUE))
    ),
    fac = list(
       ` ` ~ sum + ' (' + pct + '%' + ')'

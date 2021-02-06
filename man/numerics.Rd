@@ -11,8 +11,11 @@ numerics(x, ...)
 
 \item{...}{passed}
 }
+\value{
+see methods
+}
 \description{
-Identifies numerics.  Generic, with data.frame method.
+Identifies numerics.  Generic, with method \code{\link{numerics.data.frame}}.
 }
 \examples{
 example(classifiers)

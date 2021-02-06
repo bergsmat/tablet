@@ -147,7 +147,7 @@ in columns by group.
 labels, units, and factor levels (actually creating 
 factors where appropriate, such as for sex and ulcer).
 
-* alias() substitutes labels for column names.
+* modify() supplies titles for certain column names.
 
 Now we pass x to tablet() and as_kable() for a more
 informative result.
@@ -161,7 +161,7 @@ Notice that:
 * the order of variables down the left side is exactly their order in the dataset;
 * the order of factor levels is exactly that in x;
 * the order of groups across the top is exactly the levels (if any) of the grouping variable(s), and
-* labels and titles (highest priority) are substituted for column names.
+* labels and titles (highest priority) are substituted for item names.
 
 If you don't particularly care for some aspect of the
 presentation, you can jump in between tablet() and as_kable()

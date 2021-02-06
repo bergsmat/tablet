@@ -11,6 +11,9 @@ tablet(x, ...)
 
 \item{...}{passed arguments}
 }
+\value{
+see methods
+}
 \description{
 Generates a tablet.  Generic. See \code{\link{tablet.data.frame}} and \code{\link{as_kable.tablet}}.
 }

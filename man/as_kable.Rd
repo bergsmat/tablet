@@ -11,6 +11,9 @@ as_kable(x, ...)
 
 \item{...}{passed arguments}
 }
+\value{
+see methods
+}
 \description{
 Coerces to kable output class.  Generic,
 with method \code{\link{as_kable.tablet}}.

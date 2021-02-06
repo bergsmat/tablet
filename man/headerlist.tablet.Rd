@@ -12,7 +12,7 @@
 \item{...}{ignored}
 }
 \value{
-list of named integer
+list of named integer where each element describes an additional header row with names as indicated, repeated integer times
 }
 \description{
 Creates header list for tablet.

@@ -12,7 +12,7 @@
 \item{...}{passed to observations(), devalued(), widgets()}
 }
 \value{
-class 'groupless'
+class 'groupless', with output like \code{\link{widgets.devalued}}
 }
 \description{
 Calculates widgets with groups.

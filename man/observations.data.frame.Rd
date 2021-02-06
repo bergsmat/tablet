@@ -14,7 +14,12 @@
 \item{exclude_name}{whether to drop NA levels of name; passed to \code{\link[tidyr]{gather}}}
 }
 \value{
-class 'observations' arranged by groups (presented first) and including: names, levels, N, n, value (prefixed)
+class 'observations' arranged by groups (presented first):
+\item{_tablet_N}{number of records}
+\item{_tablet_n}{number of records in group}
+\item{_tablet_name}{observation identifier}
+\item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+\item{_tablet_value}{numeric value (or special value 1 for factors)}
 }
 \description{
 Identifies observations. Stacks values by level, supplying defaults as necessary.

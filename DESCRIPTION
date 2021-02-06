@@ -1,13 +1,13 @@
 Package: tablet
 Type: Package
 Title: Tabulate Descriptive Statistics in Multiple Formats
-Version: 0.1.6
+Version: 0.2.0
 Author: Tim Bergsma
-Maintainer: Tim Bergsma <bergsmat@sgmail.com>
+Maintainer: Tim Bergsma <bergsmat@gmail.com>
 Description: Creates a table of descriptive statistics
  for factor and numeric columns in a data frame. Displays
  these by groups, if any. Highly customizable, with support
- for html and pdf provided by 'kableExtra'. Respects
+ for 'html' and 'pdf' provided by 'kableExtra'. Respects
  original column order, column labels, and factor level order.
  See ?tablet.data.frame and vignettes.
 License: GPL-3

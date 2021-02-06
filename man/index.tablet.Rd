@@ -12,7 +12,7 @@
 \item{...}{ignored}
 }
 \value{
-named integer
+named integer giving row groupings with names as indicated, repeated integer times
 }
 \description{
 Creates index for tablet.

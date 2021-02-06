@@ -1,7 +1,7 @@
 ---
 title: "An Introduction to Tablet for HTML"
 author: "Tim Bergsma"
-date: "2021-01-04"
+date: "2021-01-06"
 urlcolor: blue
 output: 
   rmarkdown::html_document:
@@ -80,7 +80,7 @@ x %>%
  <thead>
   <tr>
    <th style="text-align:left;">   </th>
-   <th style="text-align:left;"> All<br>(N = 205) </th>
+   <th style="text-align:left;"> All </th>
   </tr>
  </thead>
 <tbody>
@@ -187,10 +187,10 @@ x %>% tablet %>% as_kable
  <thead>
   <tr>
    <th style="text-align:left;">   </th>
-   <th style="text-align:left;"> Alive<br>(N = 134) </th>
-   <th style="text-align:left;"> Melanoma Death<br>(N = 57) </th>
-   <th style="text-align:left;"> Unrelated Death<br>(N = 14) </th>
-   <th style="text-align:left;"> All<br>(N = 205) </th>
+   <th style="text-align:left;"> Alive </th>
+   <th style="text-align:left;"> Melanoma Death </th>
+   <th style="text-align:left;"> Unrelated Death </th>
+   <th style="text-align:left;"> All </th>
   </tr>
  </thead>
 <tbody>
@@ -262,7 +262,7 @@ Notice that:
 * the order of variables down the left side is exactly their order in the dataset;
 * the order of factor levels is exactly that in x;
 * the order of groups across the top is exactly the levels (if any) of the grouping variable(s), and
-* labels and titles (highest priority) are substituted for column names.
+* labels and titles (highest priority) are substituted for item names.
 
 If you don't particularly care for some aspect of the
 presentation, you can jump in between tablet() and as_kable()
@@ -303,10 +303,10 @@ x %>% tablet %>% as_kable                              # render
 </tr>
   <tr>
    <th style="text-align:left;">   </th>
-   <th style="text-align:left;"> Alive<br>(N = 134) </th>
-   <th style="text-align:left;"> Melanoma<br>(N = 57) </th>
-   <th style="text-align:left;"> Unrelated<br>(N = 14) </th>
-   <th style="text-align:left;"> All<br>(N = 205) </th>
+   <th style="text-align:left;"> Alive </th>
+   <th style="text-align:left;"> Melanoma </th>
+   <th style="text-align:left;"> Unrelated </th>
+   <th style="text-align:left;"> All </th>
   </tr>
  </thead>
 <tbody>
@@ -400,13 +400,13 @@ x %>%
 </tr>
   <tr>
    <th style="text-align:left;">   </th>
-   <th style="text-align:left;"> Male<br>(N = 43) </th>
-   <th style="text-align:left;"> Female<br>(N = 91) </th>
-   <th style="text-align:left;"> Male<br>(N = 29) </th>
-   <th style="text-align:left;"> Female<br>(N = 28) </th>
-   <th style="text-align:left;"> Male<br>(N = 7) </th>
-   <th style="text-align:left;"> Female<br>(N = 7) </th>
-   <th style="text-align:left;"> All<br>(N = 205) </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> All </th>
   </tr>
  </thead>
 <tbody>
@@ -497,13 +497,13 @@ x %>%
 </tr>
   <tr>
    <th style="text-align:left;">   </th>
-   <th style="text-align:left;"> Absent<br>(N = 92) </th>
-   <th style="text-align:left;"> Present<br>(N = 42) </th>
-   <th style="text-align:left;"> Absent<br>(N = 16) </th>
-   <th style="text-align:left;"> Present<br>(N = 41) </th>
-   <th style="text-align:left;"> Absent<br>(N = 7) </th>
-   <th style="text-align:left;"> Present<br>(N = 7) </th>
-   <th style="text-align:left;"> All<br>(N = 205) </th>
+   <th style="text-align:left;"> Absent </th>
+   <th style="text-align:left;"> Present </th>
+   <th style="text-align:left;"> Absent </th>
+   <th style="text-align:left;"> Present </th>
+   <th style="text-align:left;"> Absent </th>
+   <th style="text-align:left;"> Present </th>
+   <th style="text-align:left;"> All </th>
   </tr>
  </thead>
 <tbody>
@@ -604,19 +604,19 @@ x %>%
 </tr>
   <tr>
    <th style="text-align:left;">   </th>
-   <th style="text-align:left;"> Male<br>(N = 24) </th>
-   <th style="text-align:left;"> Female<br>(N = 68) </th>
-   <th style="text-align:left;"> Male<br>(N = 19) </th>
-   <th style="text-align:left;"> Female<br>(N = 23) </th>
-   <th style="text-align:left;"> Male<br>(N = 8) </th>
-   <th style="text-align:left;"> Female<br>(N = 8) </th>
-   <th style="text-align:left;"> Male<br>(N = 21) </th>
-   <th style="text-align:left;"> Female<br>(N = 20) </th>
-   <th style="text-align:left;"> Male<br>(N = 4) </th>
-   <th style="text-align:left;"> Female<br>(N = 3) </th>
-   <th style="text-align:left;"> Male<br>(N = 3) </th>
-   <th style="text-align:left;"> Female<br>(N = 4) </th>
-   <th style="text-align:left;"> All<br>(N = 205) </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> Male </th>
+   <th style="text-align:left;"> Female </th>
+   <th style="text-align:left;"> All </th>
   </tr>
  </thead>
 <tbody>
