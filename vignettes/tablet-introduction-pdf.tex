@@ -121,7 +121,7 @@
 
 \title{An Introduction to Tablet for PDF}
 \author{Tim Bergsma}
-\date{2021-02-06}
+\date{2021-02-15}
 
 \begin{document}
 \maketitle
@@ -274,8 +274,6 @@ Now we pass x to tablet() and as\_kable() for a more informative result.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{x }\OperatorTok{%>%}\StringTok{ }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }\NormalTok{as_kable}
-\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
-\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -337,6 +335,9 @@ the group(s):
   \texttt{x\ \%\textgreater{}\%\ ungroup\ \%\textgreater{}\%\ select(-1)\ \%\textgreater{}\%\ tablet\ \%\textgreater{}\%\ as\_kable}.
 \end{itemize}
 
+By the way, you can also pass \texttt{all\ =\ NULL} to suppress the
+`All' column.
+
 \hypertarget{grouped-columns}{%
 \section{Grouped Columns}\label{grouped-columns}}
 
@@ -354,10 +355,6 @@ adding a grouping variable that groups the two kinds of death.
 \KeywordTok{levels}\NormalTok{(x}\OperatorTok{$}\NormalTok{class)  <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{' '}\NormalTok{,    }\StringTok{'Death'}\NormalTok{,   }\StringTok{'Death'}\NormalTok{)      }\CommentTok{# cluster groups}
 \NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(class, status)                         }\CommentTok{# nest groups}
 \NormalTok{x }\OperatorTok{%>%}\StringTok{ }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }\NormalTok{as_kable                              }\CommentTok{# render}
-\CommentTok{#> Warning in c.classified(structure(c(2L, 2L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, :}
-\CommentTok{#> conflicting codelist specifications}
-\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
-\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -401,10 +398,6 @@ group above and instead nest sex within status \ldots{}
 \StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{)}
-\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
-\CommentTok{#> conflicting codelist specifications}
-\CommentTok{#> Warning in c.classified(structure(c(1L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 1L, :}
-\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -442,10 +435,6 @@ group above and instead nest sex within status \ldots{}
 \StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{)}
-\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
-\CommentTok{#> conflicting codelist specifications}
-\CommentTok{#> Warning in c.classified(structure(c(2L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, :}
-\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -483,12 +472,6 @@ group above and instead nest sex within status \ldots{}
 \StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{) }\CommentTok{# %>% landscape ?}
-\CommentTok{#> Warning in c.classified(structure(integer(0), .Label = c("Alive", "Melanoma", :}
-\CommentTok{#> conflicting codelist specifications}
-\CommentTok{#> Warning in c.classified(structure(integer(0), .Label = c("Absent", "Present":}
-\CommentTok{#> conflicting codelist specifications}
-\CommentTok{#> Warning in c.classified(structure(integer(0), .Label = c("Male", "Female":}
-\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 
@@ -543,8 +526,6 @@ replace these entirely. In this example, we will \ldots{}
     \StringTok{`}\DataTypeTok{Median (range)}\StringTok{`} \OperatorTok{~}\StringTok{ }\NormalTok{med }\OperatorTok{+}\StringTok{ ' ('} \OperatorTok{+}\StringTok{ }\NormalTok{min }\OperatorTok{+}\StringTok{ ' - '} \OperatorTok{+}\StringTok{ }\NormalTok{max }\OperatorTok{+}\StringTok{ ')'}
 \NormalTok{  ) }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\NormalTok{as_kable}
-\CommentTok{#> Warning in c.classified(structure(c(3L, 3L, 1L, 3L, 2L, 2L, 2L, 3L, 2L, :}
-\CommentTok{#> conflicting codelist specifications}
 \end{Highlighting}
 \end{Shaded}
 

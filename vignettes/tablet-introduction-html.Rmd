@@ -156,6 +156,8 @@ you can just remove the group(s):
 
 * ```x %>% ungroup %>% select(-1) %>% tablet %>% as_kable```.
 
+By the way, you can also pass ```all = NULL``` to suppress the 'All' column.
+
 # Grouped Columns
 
 In tablet(), most columns are the consequences of a grouping

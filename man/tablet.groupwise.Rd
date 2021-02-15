@@ -11,7 +11,7 @@
 
 \item{...}{ignored}
 
-\item{all}{a column name for ungrouped statistics}
+\item{all}{a column name for ungrouped statistics; can have length zero to suppress ungrouped column}
 
 \item{lab}{a list of formulas to generate column labels; \\n is translated as <br> in html context}
 }
@@ -19,9 +19,9 @@
 'tablet', with columns for each combination of groups, and:
 \item{_tablet_name}{observation identifier}
 \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+\item{_tablet_sort}{sorting column}
 \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 \item{All (or value of 'all' argument)}{ungrouped results}
-\item{_tablet_sort}{sorting column}
 }
 \description{
 Generates a group-wise tablet. Calculates statistics

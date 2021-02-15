@@ -101,3 +101,21 @@ test_that('tablet package result is stable',{
   )
 
 })
+
+test_that('tablet lists stats in the order specified by num and fac',{
+  library(boot)
+  library(dplyr)
+  library(magrittr)
+  lev <- melanoma %>%
+   select(-time, -year) %>%
+   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
+   group_by(status) %>%
+   tablet(
+     num = list(
+       `Median (range)` ~ med + ' (' + min + ', ' + max + ')',
+       `Mean (SD)` ~ ave + ' (' + std + ')'
+     )
+   ) %$% `_tablet_stat` %>% levels
+  expect_identical(lev, c(" ","Median (range)", "Mean (SD)"))
+})
+
