@@ -1189,7 +1189,7 @@ splice <- function(x, ...)UseMethod('splice')
 #'   mutate(status2 = ifelse(status == 2, 2, 4)) %>%
 #'   group_by(status, status2) %>%
 #'   splice
-splice.data.frame <- function(x, all = 'all', ...){
+splice.data.frame <- function(x, all = 'All', ...){
    grp <- groups(x)
    if(!length(grp))return(tablet(x, ...))
    x <- ungroup(x)
@@ -1217,5 +1217,6 @@ splice.data.frame <- function(x, all = 'all', ...){
       }
    }
    out <- out[,!dupcol, drop = FALSE]
+   class(out) <- class(part[[1]])
    out
 }

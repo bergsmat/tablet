@@ -119,3 +119,45 @@ test_that('tablet lists stats in the order specified by num and fac',{
   expect_identical(lev, c(" ","Median (range)", "Mean (SD)"))
 })
 
+test_that('tablet works for decorated or undecorated solitary numerics or categoricals',{
+  library(magrittr)
+  library(tidyr)
+  library(dplyr)
+  library(yamlet)
+  library(boot)
+  x <- as_decorated(melanoma)
+  x %<>% mutate(sex = factor(sex))
+  file <- system.file(package = 'yamlet', 'extdata','quinidine.csv')
+  y <- decorate(file) %>% resolve
+
+  expect_silent(x %>% as.data.frame %>% select(sex) %>% tablet)
+  expect_silent(x %>% select(sex) %>% tablet)
+
+  expect_silent(x %>% as.data.frame %>% select(age) %>% tablet)
+  expect_silent(x %>% select(age) %>% tablet)
+
+  expect_silent(y %>% as.data.frame %>% select(Age) %>% tablet)
+  expect_silent(y %>% select(Age) %>% tablet)
+
+  (y %>% as.data.frame %>% select(Race) %>% tablet)
+  (y %>% select(Race) %>% tablet)
+
+  (y %>% as.data.frame %>% select(Race) %>% numerics)
+  (y %>% select(Race) %>% numerics)
+
+
+})
+
+test_that('splice returns tablet',{
+  library(boot)
+  library(dplyr)
+  library(magrittr)
+  x <- melanoma %>%
+   select(-time, -year) %>%
+   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
+   mutate(status2 = ifelse(status == 2, 2, 4)) %>%
+   group_by(status, status2) %>%
+   splice
+  expect_true(inherits(x,'tablet'))
+
+})

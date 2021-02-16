@@ -4,7 +4,7 @@
 \alias{splice.data.frame}
 \title{Splice A Data Frame}
 \usage{
-\method{splice}{data.frame}(x, all = "all", ...)
+\method{splice}{data.frame}(x, all = "All", ...)
 }
 \arguments{
 \item{x}{data.frame}
