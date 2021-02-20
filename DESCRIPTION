@@ -1,7 +1,7 @@
 Package: tablet
 Type: Package
 Title: Tabulate Descriptive Statistics in Multiple Formats
-Version: 0.2.5
+Version: 0.2.6
 Author: Tim Bergsma
 Maintainer: Tim Bergsma <bergsmat@gmail.com>
 Description: Creates a table of descriptive statistics

@@ -445,7 +445,8 @@ groupless.data.frame <- function(x,...){
    # then execute
    grp <- groups(x)
    x <- ungroup(x)
-   x <- select(x, setdiff(names(x), grp))
+   #x <- select(x, setdiff(names(x), grp))
+   x <- select(x, setdiff(names(x), sapply(grp, rlang::as_string))) # very important when grp name contains spaces!
    x <- observations(x, ...)
    x <- devalued(x, ...)
    x <- widgets(x, ...)
