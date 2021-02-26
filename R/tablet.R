@@ -1198,7 +1198,7 @@ splice.data.frame <- function(x, all = 'All', ...){
    for(g in seq_along(grp)){
       group <- grp[[g]]
       this <- group_by(x, !!group)
-      for(i in setdiff(grp, list(group))) this[[i]] <- NULL
+      for(i in setdiff(grp, list(group))) this[i] <- NULL
       tot <- all
       if(g < length(grp)) tot <- character(0) # 'all' only for last table
       that <- tablet(this, all = tot, ...)
