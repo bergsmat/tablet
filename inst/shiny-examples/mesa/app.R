@@ -16,7 +16,7 @@ library(csv)
 
 ui <- shinyUI(
   navbarPage(
-  tags$strong('Mesa'),
+  'Mesa',
    tabPanel(
      'Input',
      sidebarLayout(
@@ -439,7 +439,7 @@ server <- shinyServer(function(input, output, session) {
     opts_knit$set(out.format = 'latex')
     x <- summarized()
     x %<>% as_kable(format = 'latex', caption = conf$title)
-    x %<>% footnote(general = conf$footnotes)
+    x %<>% footnote(general = conf$footnotes,fixed_small_size = TRUE,general_title = " ",threeparttable = TRUE)
     x %<>% as.character
     x %<>% as.document(
       thispagestyle = '',
@@ -448,6 +448,7 @@ server <- shinyServer(function(input, output, session) {
         '\\documentclass{article}',
         '\\usepackage[utf8]{inputenc}',
         '\\usepackage[T1]{fontenc}',
+        '\\usepackage[showseconds=false]{datetime2}',
         '\\usepackage[landscape]{geometry}',
         '\\usepackage{fancyhdr}',
         '\\fancyhf{}',
@@ -457,9 +458,15 @@ server <- shinyServer(function(input, output, session) {
         '%\\chead{Table 0.0.0.xxx}',
         paste0('\\rhead{', conf$rhead1,' \\\\ ',conf$rhead2, '}'),
         paste0('\\lfoot{\\textit{',file_path_sans_ext(conf$filepath),'}}'),
-        paste0('\\cfoot{\\textit{',conf$confpath,'}}'),
-
-        '\\rfoot{\\today}',
+        paste0(
+          '\\cfoot{\\textit{~',
+          #conf$confpath,
+          sub(getwd(),'',conf$confpath, fixed = TRUE),
+          '}}'
+          
+        ),
+        
+        '\\rfoot{\\today{~at~\\DTMcurrenttime}}',
         '\\usepackage{booktabs}',
         '\\usepackage{longtable}',
         '\\usepackage{array}',
