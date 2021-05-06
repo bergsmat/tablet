@@ -1,7 +1,8 @@
 #' Drag-and-drop Descriptive Statistics
 #'
 #' Generate a table of descriptive statistics
-#' by selecting columns from a file.  Currently
+#' by selecting columns from a file,
+#' Currently supported formats include *.xpt, *.sas7bdat, and *.csv.
 #' XPT formats and CSV formats are supported.
 #' Launch the application using \code{mesa()} and use the interface
 #' to select a data file. Then classify the
@@ -21,6 +22,9 @@
 #' to the internal version of the data. This file will not be over-written,
 #' but it WILL be constructed if missing.  You can hand-edit it to supply
 #' metadata.  See \code{?yamlet}.
+#'
+#' The \code{\link[datasets]{mtcars}} datasets in the 'examples' volume is from \pkg{datasets}.
+#'
 #'
 #' @export
 #' @return used for side effects: launches shiny application

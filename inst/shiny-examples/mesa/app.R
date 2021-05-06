@@ -101,7 +101,12 @@ ui <- shinyUI(
 ) # end ui
 
 server <- shinyServer(function(input, output, session) {
-  volumes <- c(Home = fs::path_home(), 'R Installation' = R.home(), getVolumes()())
+  volumes <- c(
+    getVolumes()(),
+    examples = system.file('shiny-examples/mesa/data', package = 'tablet'),
+    Home = fs::path_home(),
+    'R Installation' = R.home()
+  )
 
   # set up the file choosers
 
@@ -162,7 +167,7 @@ server <- shinyServer(function(input, output, session) {
     title      = 'Title',
     outputid   = 'T-00-00',
     lhead1     = 'Company',
-    lhead2     = 'Protocol',
+    lhead2     = 'Project',
     rhead1     = 'Confidential',
     rhead2     = 'Draft',
     footnotes  = '(footnotes here)',
