@@ -1,9 +1,10 @@
 Package: tablet
 Type: Package
 Title: Tabulate Descriptive Statistics in Multiple Formats
-Version: 0.2.7
+Version: 0.2.8
 Author: Tim Bergsma
 Maintainer: Tim Bergsma <bergsmat@gmail.com>
+BugReports: https://github.com/bergsmat/tablet/issues
 Description: Creates a table of descriptive statistics
  for factor and numeric columns in a data frame. Displays
  these by groups, if any. Highly customizable, with support
@@ -16,4 +17,6 @@ LazyData: true
 Imports: dplyr (>= 1.0.2), rlang, tidyr, kableExtra (>= 0.9.0)
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
-Suggests: knitr, magrittr, rmarkdown, yamlet (>= 0.6.9), boot, testthat
+Suggests: knitr, magrittr, rmarkdown, yamlet (>= 0.6.9), boot, 
+ testthat, shiny, shinyFiles, fs, haven, yaml, sortable, 
+ latexpdf, tools, csv
