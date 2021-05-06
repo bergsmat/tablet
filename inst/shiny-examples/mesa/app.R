@@ -612,7 +612,7 @@ server <- shinyServer(function(input, output, session) {
   output$keep <- renderUI({
     if(length(input$filter_by) == 0)return()
     myFilter <- function(var, dat){
-      nms <- as.character(unique(dat[[var]]))
+      nms <- as.character(sort(unique(dat[[var]])))
       checkboxGroupInput(
         inline = TRUE,
         var,
