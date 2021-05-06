@@ -54,7 +54,56 @@ ui <- shinyUI(
      ) # end sidebar layout
    ),
   tabPanel(
-    'General',
+    'Data',
+    sidebarLayout(
+      sidebarPanel(
+        width = 0
+      ),
+      mainPanel(width = 12,
+                DT::dataTableOutput("data"),
+      )
+    )
+  ),
+  tabPanel(
+    'Labels',
+    sidebarLayout(
+      sidebarPanel(
+        width = 0
+      ),
+      mainPanel(width = 12,
+                DT::dataTableOutput("labels"),
+      )
+    )
+  ),
+  tabPanel(
+    'Preview',
+    sidebarLayout(
+      sidebarPanel(
+        width = 2,
+        actionButton(
+          'csv',
+          'Save as CSV'
+        )
+      ),
+      mainPanel(width = 10,
+                htmlOutput('preview')
+      )
+    )
+  ),
+   tabPanel(
+     'PDF',
+     sidebarLayout(
+       sidebarPanel(
+         width = 0
+       ),
+       mainPanel(
+         width = 12,
+         uiOutput('pdfview')
+       )
+     )
+   ),
+  tabPanel(
+    'Annotations',
     sidebarLayout(
       sidebarPanel(
         width = 12,
@@ -69,34 +118,7 @@ ui <- shinyUI(
       ),
       mainPanel(width = 0) #end main panel
     )
-  ),
-   tabPanel(
-     'Preview',
-     sidebarLayout(
-       sidebarPanel(
-         width = 2,
-         actionButton(
-           'csv',
-           'Save as CSV'
-         )
-       ),
-       mainPanel(width = 10,
-         htmlOutput('preview')
-       )
-     )
-   ),
-   tabPanel(
-     'PDF',
-     sidebarLayout(
-       sidebarPanel(
-         width = 0
-       ),
-       mainPanel(
-         width = 12,
-         uiOutput('pdfview')
-       )
-     )
-   )
+  )
   ) # end page
 ) # end ui
 
@@ -327,25 +349,32 @@ server <- shinyServer(function(input, output, session) {
     has_meta <- file.exists(metafile)
 
     d <- data.frame()
-    # m <- decorations(d)
 
     if(has_data){
       if(grepl('sas7bdat$', datafile)) d <- data.frame(read_sas(datafile))
       if(grepl('xpt$', datafile)) d <- data.frame(read.xport(datafile))
       if(grepl('csv$', datafile)) d <- data.frame(as.csv(datafile))
     }
+
+    # at this point, best data has been defined. Define default metadata.
+
+    m <- decorations(d)
+
+    # Either read the metadata or write it.
     if(has_meta){
-      m <- decorations(d)
+      # try for better meta.
       tryCatch(
         m <- read_yamlet(metafile),
         error = function(e) showNotification(duration = NULL, type = 'error', as.character(e))
       )
     } else {
-      m <- decorations(d)
       write_yamlet(m, metafile)
-      m <- read_yamlet(metafile)
-      has_meta <- TRUE # !
     }
+
+    # now we have best available metadata
+    has_meta <- TRUE
+
+    # make data look like metadata (which may be superset)
 
     have <- names(d)
     need <- names(m)
@@ -357,10 +386,14 @@ server <- shinyServer(function(input, output, session) {
 
     # drop unspecified
     d %<>% select(!!!names(m))
+
+    # apply meta
     d <- redecorate(d, m)
-    # Promote NA to a level of the factor
+
+    # # Promote NA to a level of the factor
     d %<>% resolve(exclude = NULL)
 
+    # store on the session
     conf$x <- d
 
   })
@@ -438,6 +471,10 @@ server <- shinyServer(function(input, output, session) {
     old <- opts_knit$get('out.format')
     opts_knit$set(out.format = 'latex')
     x <- summarized()
+    if(!nrow(x)){
+      showNotification(duration = NULL, type = 'error', 'no rows selected')
+      return(character(0))
+    }
     x %<>% as_kable(format = 'latex', caption = conf$title)
     x %<>% footnote(general = conf$footnotes,fixed_small_size = TRUE,general_title = " ",threeparttable = TRUE)
     x %<>% as.character
@@ -463,9 +500,9 @@ server <- shinyServer(function(input, output, session) {
           #conf$confpath,
           sub(getwd(),'',conf$confpath, fixed = TRUE),
           '}}'
-          
+
         ),
-        
+
         '\\rfoot{\\today{~at~\\DTMcurrenttime}}',
         '\\usepackage{booktabs}',
         '\\usepackage{longtable}',
@@ -593,6 +630,15 @@ server <- shinyServer(function(input, output, session) {
     lapply(input$filter_by, myFilter, dat = conf$x)
   })
 
+  output$data <- DT::renderDataTable({conf$x})
+  output$labels <- DT::renderDataTable({
+    out <- conf$x
+    #out %<>% resolve # already done
+    out %<>% modify(name = label)
+    out %<>% modify(name = paste0(label, ' (', .data$units, ')'))
+    out
+  })
+
   output$preview <- renderText({
     if(!length(input$selected))return('Output goes here.')
     # ensure html
@@ -603,6 +649,7 @@ server <- shinyServer(function(input, output, session) {
 
   pdf_location <- reactive({
     x <- tex()
+    if(!length(x))return('1x1.png')
     stem <- isolate(conf$outputid) # basename(tempfile())
     #browser()
     path <- as.pdf(
