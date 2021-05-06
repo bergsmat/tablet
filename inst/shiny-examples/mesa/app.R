@@ -1,0 +1,620 @@
+library(shiny)
+library(shinyFiles)
+library(fs)
+library(haven)
+library(tablet)
+library(dplyr)
+library(magrittr)
+library(yamlet)
+library(yaml)
+library(sortable)
+library(kableExtra)
+library(knitr)
+library(latexpdf)
+library(tools)
+library(csv)
+
+ui <- shinyUI(
+  navbarPage(
+  tags$strong('Mesa'),
+   tabPanel(
+     'Input',
+     sidebarLayout(
+       sidebarPanel(
+         width = 12,
+         shinyFilesButton(
+           id = 'source',
+           label = 'choose a dataset or metadata file',
+           title = 'choose a dataset or metadata file:',
+           multiple = FALSE
+         ),
+         textOutput('filepath'),
+         shinyFilesButton(
+           id = 'config',
+           label = 'choose a table configuration file',
+           title = 'choose a table configuration file:',
+           multiple = FALSE
+         ),
+         uiOutput('saveconfig'),
+         # shinySaveButton(
+         #   id = 'save',
+         #   label = 'save configuration as ...',
+         #   title = 'save configuration as:',
+         #   filetype = list(conf = 'conf'),
+         #   filename = 'default.conf'
+         # ),
+         textOutput('confpath'),
+         uiOutput('splice'),
+         uiOutput('keep'),
+         uiOutput('buckets')
+       ),
+       mainPanel(
+         width = 0
+       ) # end main panel
+     ) # end sidebar layout
+   ),
+  tabPanel(
+    'General',
+    sidebarLayout(
+      sidebarPanel(
+        width = 12,
+        actionButton('submit', 'submit'),
+        uiOutput('outputid'),
+        uiOutput('caption'),
+        uiOutput('footnotes'),
+        uiOutput('lhead1'),
+        uiOutput('lhead2'),
+        uiOutput('rhead1'),
+        uiOutput('rhead2')
+      ),
+      mainPanel(width = 0) #end main panel
+    )
+  ),
+   tabPanel(
+     'Preview',
+     sidebarLayout(
+       sidebarPanel(
+         width = 2,
+         actionButton(
+           'csv',
+           'Save as CSV'
+         )
+       ),
+       mainPanel(width = 10,
+         htmlOutput('preview')
+       )
+     )
+   ),
+   tabPanel(
+     'PDF',
+     sidebarLayout(
+       sidebarPanel(
+         width = 0
+       ),
+       mainPanel(
+         width = 12,
+         uiOutput('pdfview')
+       )
+     )
+   )
+  ) # end page
+) # end ui
+
+server <- shinyServer(function(input, output, session) {
+  volumes <- c(Home = fs::path_home(), 'R Installation' = R.home(), getVolumes()())
+
+  # set up the file choosers
+
+  shinyFileChoose(
+    input,
+    'source',
+    roots = volumes,
+    session = session,
+    filetypes = c('sas7bdat', 'csv', 'xpt', 'yaml')
+  )
+
+  shinyFileChoose(
+    input,
+    'config',
+    roots = volumes,
+    session = session,
+    filetypes = c('conf')
+  )
+  # shinyFileSave(
+  #   input,
+  #   'save',
+  #   roots = volumes,
+  #   session = session,
+  #   filetypes = c('conf')
+  # )
+  # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
+
+  observe({
+    shinyFileSave(input, "save", roots=volumes, session=session)
+    fileinfo <- parseSavePath(volumes, input$save)
+    if (nrow(fileinfo) > 0) {
+      path <- as.character(fileinfo$datapath)
+      vals <- isolate(
+        reactiveValuesToList(conf)[
+          !names(conf) %in% c(
+            'x',
+           # 'available',
+            'confpath'
+          )
+        ]
+      )
+      write_yaml(vals, path) # only reads on save
+      conf$confpath <- path
+    }
+  })
+
+  # declare the objects that control the application
+  oldconf <- reactiveVal()
+  conf <- reactiveValues(
+    filepath   = character(0),
+    confpath   = character(0),
+    selected   = character(0),
+    filter_by  = character(0),
+    keep       = list(), # a named list of filter_by levels to keep
+    group_by   = character(0),
+   # available  = character(0),
+    sequential = FALSE,
+    title      = 'Title',
+    outputid   = 'T-00-00',
+    lhead1     = 'Company',
+    lhead2     = 'Protocol',
+    rhead1     = 'Confidential',
+    rhead2     = 'Draft',
+    footnotes  = '(footnotes here)',
+    x          = data.frame()
+  )
+  # The interface can update the conf
+  # observeEvent(input$available,{
+  #   conf$available <- input$available
+  # })
+
+  observeEvent(input$selected,{
+    conf$selected <- input$selected
+  })
+
+  observeEvent(input$filter_by,{
+    conf$filter_by <- input$filter_by
+  })
+
+  observeEvent(input$group_by,{
+    conf$group_by <- input$group_by
+  })
+
+  observeEvent(input$splice,{
+    conf$sequential <- ifelse(input$splice == 'sequential', TRUE, FALSE)
+  })
+
+  observeEvent(input$submit,{
+    conf$title <- input$caption
+  })
+
+  observeEvent(input$csv,{
+    as.csv(summarized(), paste0(conf$outputid,'.csv'))
+  })
+
+  observeEvent(input$submit,{
+    conf$outputid <- input$outputid
+  })
+
+  observeEvent(input$submit,{
+    conf$lhead1 <- input$lhead1
+  })
+
+  observeEvent(input$submit,{
+    conf$lhead2 <- input$lhead2
+  })
+
+  observeEvent(input$submit,{
+    conf$rhead1 <- input$rhead1
+  })
+
+  observeEvent(input$submit,{
+    conf$rhead2 <- input$rhead2
+  })
+
+  observeEvent(input$submit,{
+    conf$footnotes <- input$footnotes
+  })
+
+  observeEvent(input$source, {
+    if(is.integer(input$source)) return()
+    conf$filepath <- as.character(
+        as.data.frame(
+          parseFilePaths(
+            volumes, input$source
+          )
+        )[1,'datapath']
+      )
+  })
+
+  observeEvent(input$config, {
+    #browser()
+    conf$confpath <- as.character(
+      as.data.frame(
+        parseFilePaths(
+          volumes, input$config
+        )
+      )[1,'datapath']
+    )
+  })
+
+  observeEvent(conf$confpath,{
+    # browser()
+    if(!length(conf$confpath))return()
+    if(!file.exists(conf$confpath))return()
+   # browser()
+    #if(is.null(oldconf()))return()
+
+    saved <- read_yaml(conf$confpath)
+    #browser()
+    # items not saved should be re-initialized
+    if(!('filepath' %in% names(saved))) {
+      stop('configuration does not specify file path')
+    }
+    if(!file.exists(saved$filepath))stop('configured file path not found')
+    conf$filepath <- saved$filepath
+    conf$selected <- saved$selected
+    conf$filter_by <- saved$filter_by
+    conf$keep      <- saved$keep
+    conf$group_by   <- saved$group_by
+    # conf$available  <- conf$available
+    conf$sequential<- saved$sequential
+    conf$title      <- saved$title
+    conf$lhead1     <- saved$lhead1
+    conf$lhead2    <- saved$lhead2
+    conf$rhead1     <- saved$rhead1
+    conf$rhead2    <- saved$rhead2
+    conf$footnotes <- saved$footnotes
+    conf$outputid <- saved$outputid
+    #conf$x          = data.frame()
+    # if filepath has changed, data will be re-read
+
+  })
+
+  # no more input checks below
+
+ #  # when user changes data, all the buckets should reset
+ # observeEvent(input$source,{ # not conf$x
+ #   browser()
+ #    conf$available <- as.list(sort(names(conf$x)))
+ #    conf$selected <- character(0)
+ #    conf$group_by <- character(0)
+ #    conf$filter_by <- list()
+ #  })
+
+  output$filepath <- renderPrint({
+    if (!length(conf$filepath)) {
+      cat('No input data selected.')
+    } else {
+      writeLines(conf$filepath)
+    }
+  })
+
+  output$confpath <- renderPrint({
+    if (!length(conf$confpath)) {
+      cat('No configuration selected.')
+    } else {
+      writeLines(conf$confpath)
+    }
+  })
+
+  observeEvent(conf$filepath, {
+    if(!length(conf$filepath))return()
+    theFile <- conf$filepath
+    is_data <- grepl('\\.sas7bdat|xpt|csv$', theFile)
+    is_meta <- grepl('\\.yaml$', theFile)
+
+    datafile <- theFile
+    if(is_meta) {
+      datafile <- sub('yaml$','sas7bdat',theFile)
+      if(!file.exists(datafile)) datafile <- sub('yaml$','xpt',theFile)
+      if(!file.exists(datafile)) datafile <- sub('yaml$','csv',theFile)
+    } # try everything
+
+    metafile <- theFile
+    if(is_data) metafile <- sub('sas7bdat|xpt|csv$', 'yaml', theFile)
+    has_data <- file.exists(datafile)
+    has_meta <- file.exists(metafile)
+
+    d <- data.frame()
+    # m <- decorations(d)
+
+    if(has_data){
+      if(grepl('sas7bdat$', datafile)) d <- data.frame(read_sas(datafile))
+      if(grepl('xpt$', datafile)) d <- data.frame(read.xport(datafile))
+      if(grepl('csv$', datafile)) d <- data.frame(as.csv(datafile))
+    }
+    if(has_meta){
+      m <- decorations(d)
+      tryCatch(
+        m <- read_yamlet(metafile),
+        error = function(e) showNotification(duration = NULL, type = 'error', as.character(e))
+      )
+    } else {
+      m <- decorations(d)
+      write_yamlet(m, metafile)
+      m <- read_yamlet(metafile)
+      has_meta <- TRUE # !
+    }
+
+    have <- names(d)
+    need <- names(m)
+    make <- setdiff(need, have)
+    for(col in make) d[[col]] <- rep(NA_real_, nrow(d))
+
+    # ensure positive nrow
+    if(nrow(d) == 0) d <- d['',,drop = FALSE]
+
+    # drop unspecified
+    d %<>% select(!!!names(m))
+    d <- redecorate(d, m)
+    # Promote NA to a level of the factor
+    d %<>% resolve(exclude = NULL)
+
+    conf$x <- d
+
+  })
+
+  filtered <- reactive({
+    x <- conf$x
+    cols <- conf$filter_by
+    for(filter in cols){
+      scope <- input[[filter]]
+      if(length(scope)){ # only filter if at least one choice was made!
+        # save these for drawing the UI
+        conf$keep[[filter]] <- scope
+        index <- x[[filter]] %in% scope
+      x <- x[index,,drop = FALSE]
+      }
+    }
+    x
+  })
+
+  factorized <- reactive({
+    x <- filtered()
+    x %<>% mutate_if(is.character, classified)
+    x
+  })
+
+  selected <- reactive({
+    x <- factorized()
+    if(length(conf$group_by)) x %<>% group_by(!!!syms(conf$group_by))
+    x %<>% select(!!!syms(conf$selected))
+    x
+  })
+
+  args <- reactive({
+    x <- list(x = selected())
+    extra <- list(
+      # all = 'All',
+      fun = list(
+        sum ~ signif(digits = 3,     sum(x,  na.rm = TRUE)),
+        pct ~ signif(digits = 3,     sum / n * 100        ),
+        ave ~ signif(digits = 3,    mean(x,  na.rm = TRUE)),
+        std ~ signif(digits = 3,      sd(x,  na.rm = TRUE)),
+        med ~ signif(digits = 3,  median(x,  na.rm = TRUE)),
+        min ~ signif(digits = 3,     min(x,  na.rm = TRUE)),
+        max ~ signif(digits = 3,     max(x,  na.rm = TRUE)),
+        smn ~ sum(!is.na(x))
+      ),
+      num = list(
+        n ~ smn,
+        `Mean (SD)` ~ ave + ' (' + std + ')',
+        Median ~ med,
+        `Min, Max` ~ min + ', ' + max
+      )
+    )
+    bundle <- c(x, extra)
+    bundle
+  })
+
+  summarized <- reactive({
+    fun <- tablet
+    if(conf$sequential) fun <- splice
+    fun
+    args <- args()
+    do.call(fun,args)
+  })
+
+  html <- reactive({
+    x <- summarized()
+    x %<>% as_kable(caption = conf$title)
+    x %<>% kable_classic(full_width = F, html_font = "Cambria")
+    x %<>% kable_styling(fixed_thead = T)
+    x
+  })
+
+  tex <- reactive({
+    old <- opts_knit$get('out.format')
+    opts_knit$set(out.format = 'latex')
+    x <- summarized()
+    x %<>% as_kable(format = 'latex', caption = conf$title)
+    x %<>% footnote(general = conf$footnotes)
+    x %<>% as.character
+    x %<>% as.document(
+      thispagestyle = '',
+      pagestyle = '',
+      preamble = c(
+        '\\documentclass{article}',
+        '\\usepackage[utf8]{inputenc}',
+        '\\usepackage[T1]{fontenc}',
+        '\\usepackage[landscape]{geometry}',
+        '\\usepackage{fancyhdr}',
+        '\\fancyhf{}',
+        '\\renewcommand{\\headrulewidth}{0pt}',
+        '\\pagestyle{fancy}',
+        paste0('\\lhead{', conf$lhead1,' \\\\ ',conf$lhead2, '}'),
+        '%\\chead{Table 0.0.0.xxx}',
+        paste0('\\rhead{', conf$rhead1,' \\\\ ',conf$rhead2, '}'),
+        paste0('\\lfoot{\\textit{',file_path_sans_ext(conf$filepath),'}}'),
+        paste0('\\cfoot{\\textit{',conf$confpath,'}}'),
+
+        '\\rfoot{\\today}',
+        '\\usepackage{booktabs}',
+        '\\usepackage{longtable}',
+        '\\usepackage{array}',
+        '\\usepackage{multirow}',
+        '\\usepackage{wrapfig}',
+        '\\usepackage{float}',
+        '\\usepackage{colortbl}',
+        '\\usepackage{pdflscape}',
+        '\\usepackage{tabu}',
+        '\\usepackage{threeparttable}',
+        '\\usepackage{threeparttablex}',
+        '\\usepackage[normalem]{ulem}',
+        '\\usepackage{xcolor}',
+        '\\usepackage[labelformat=empty]{caption}',
+        '\\usepackage{makecell}'
+      )
+    )
+    opts_knit$set(out.format = old)
+    x
+  })
+
+  output$saveconfig <- renderUI({
+    shinySaveButton(
+      id = 'save',
+      label = 'save configuration as ...',
+      title = 'save configuration as:',
+      filetype = list(conf = 'conf'),
+      filename = paste0(conf$outputid, '.conf')
+    )
+
+  })
+
+  output$buckets <- renderUI({
+    if(!length(conf$x))return()
+    nms <- names(conf$x)
+    selected <- intersect(conf$selected, nms)
+    group_by <- intersect(conf$group_by, nms)
+    filter_by <-intersect(conf$filter_by, nms)
+
+    used <- union(selected, group_by)
+    used <- union(used, filter_by)
+    available <- sort(setdiff(nms, used)) # definitive set
+    suggested <- union(input$available, available) # user's sort order
+    available <- intersect(suggested, available) # defer to user where possible
+
+    bucket_list(
+      header = 'Data Item Roles',
+      group_name = 'bucket_list_group',
+      orientation = 'horizontal',
+      add_rank_list(
+        text = 'Available',
+        labels = available,
+        input_id = 'available'
+      ),
+      add_rank_list(
+        text = 'Summarize',
+        labels = selected,
+        input_id = 'selected'
+      ),
+      add_rank_list(
+        text = 'Group By',
+        labels = group_by,
+        input_id = 'group_by'
+      ),
+      add_rank_list(
+        text = 'Filter By',
+        labels = filter_by,
+        input_id = 'filter_by'
+      )
+    )
+  })
+
+  output$splice <- renderUI({
+    radioButtons(
+      'splice',
+      'Grouping Style',
+      inline = TRUE,
+      choices = c('nested','sequential'),
+      selected = ifelse(conf$sequential,'sequential','nested')
+    )
+
+  })
+
+  output$caption <- renderUI({
+    textAreaInput('caption','Title', value = conf$title, resize = 'both')
+  })
+
+  output$outputid <- renderUI({
+    textInput('outputid','Output Identifier', value = conf$outputid)
+  })
+
+  output$lhead1 <- renderUI({
+    textInput('lhead1','Left Header 1', value = conf$lhead1)
+  })
+
+  output$lhead2 <- renderUI({
+    textInput('lhead2','Left Header 2', value = conf$lhead2)
+  })
+
+  output$rhead1 <- renderUI({
+    textInput('rhead1','Right Header 1', value = conf$rhead1)
+  })
+
+  output$rhead2 <- renderUI({
+    textInput('rhead2','Right Header 2', value = conf$rhead2)
+  })
+
+  output$footnotes <- renderUI({
+    textAreaInput('footnotes','Footnotes', value = conf$footnotes, resize = 'both')
+  })
+
+  output$keep <- renderUI({
+    if(length(input$filter_by) == 0)return()
+    myFilter <- function(var, dat){
+      nms <- as.character(unique(dat[[var]]))
+      checkboxGroupInput(
+        inline = TRUE,
+        var,
+        var,
+        choices = nms,
+        selected = conf$keep[[var]]
+      )
+    }
+    lapply(input$filter_by, myFilter, dat = conf$x)
+  })
+
+  output$preview <- renderText({
+    if(!length(input$selected))return('Output goes here.')
+    # ensure html
+    opts_knit$set(out.format = 'html')
+    x <- html()
+    x
+  })
+
+  pdf_location <- reactive({
+    x <- tex()
+    stem <- isolate(conf$outputid) # basename(tempfile())
+    #browser()
+    path <- as.pdf(
+      x,
+      dir = 'www',
+      stem = stem
+    )
+    basename(path)
+  })
+
+  # https://stackoverflow.com/questions/19469978/displaying-a-pdf-from-a-local-drive-in-shiny
+
+  output$pdfview <- renderUI({
+    #browser()
+    if(!nrow(conf$x))return('PDF displays here.')
+    tags$iframe(
+      style="height:600px; width:100%; scrolling:yes",
+      src = paste0('/',pdf_location())
+    )
+  })
+
+})
+
+# Create Shiny app ----
+shinyApp(ui, server)
+
+# copyright 2021 Tim Bergsma bergsmat@gmail.com
