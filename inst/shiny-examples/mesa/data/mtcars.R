@@ -12,7 +12,7 @@ x %<>% select(car, everything())
 x %<>% decorate('
 car:  [ Automobile ]
 mpg:  [ Mileage, mi/gal ]
-cyl:  [ Number of Cylinders ]
+cyl:  [ Number of Cylinders, [ four: 4, six: 6, eight: 8 ]]
 disp: [ Displacement, in^3 ]
 hp:   [ Gross Horsepower, hp ]
 drat: [ Rear Axle Ratio ]
@@ -20,8 +20,8 @@ wt:   [ Weight, klb ]
 qsec: [ Quarter-mile Time, sec ]
 vs:   [ Engine, [ V-shaped: 0, Straight: 1 ]]
 am:   [ Transmission, [ Automatic: 0, Manual: 1 ]]
-gear: [ Number of Forward Gears ]
-carb: [ Number of Carburetors ]
+gear: [ Number of Forward Gears, [ 3-speed: 3, 4-speed: 4, 5-speed: 5 ]]
+carb: [ Number of Carburetors, [ 1, 2, 3, 4, 6, 8 ]]
 ')
 
 x %>% io_csv('mtcars.csv')

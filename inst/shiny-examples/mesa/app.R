@@ -494,14 +494,8 @@ server <- shinyServer(function(input, output, session) {
         paste0('\\lhead{', conf$lhead1,' \\\\ ',conf$lhead2, '}'),
         '%\\chead{Table 0.0.0.xxx}',
         paste0('\\rhead{', conf$rhead1,' \\\\ ',conf$rhead2, '}'),
-        paste0('\\lfoot{\\textit{',file_path_sans_ext(conf$filepath),'}}'),
-        paste0(
-          '\\cfoot{\\textit{~',
-          #conf$confpath,
-          sub(getwd(),'',conf$confpath, fixed = TRUE),
-          '}}'
-
-        ),
+        #paste0('\\lfoot{\\textit{',file_path_sans_ext(conf$filepath),'}}'),
+        paste0('\\lfoot{\\textit{~', sub(getwd(),'',conf$confpath, fixed = TRUE),'}}'),
 
         '\\rfoot{\\today{~at~\\DTMcurrenttime}}',
         '\\usepackage{booktabs}',
