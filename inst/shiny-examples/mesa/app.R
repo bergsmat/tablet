@@ -16,109 +16,92 @@ library(csv)
 
 ui <- shinyUI(
   navbarPage(
-  'Mesa',
-   tabPanel(
-     'Input',
-     sidebarLayout(
-       sidebarPanel(
-         width = 12,
-         shinyFilesButton(
-           id = 'source',
-           label = 'choose a dataset or metadata file',
-           title = 'choose a dataset or metadata file:',
-           multiple = FALSE
-         ),
-         textOutput('filepath'),
-         shinyFilesButton(
-           id = 'config',
-           label = 'choose a table configuration file',
-           title = 'choose a table configuration file:',
-           multiple = FALSE
-         ),
-         uiOutput('saveconfig'),
-         # shinySaveButton(
-         #   id = 'save',
-         #   label = 'save configuration as ...',
-         #   title = 'save configuration as:',
-         #   filetype = list(conf = 'conf'),
-         #   filename = 'default.conf'
-         # ),
-         textOutput('confpath'),
-         uiOutput('splice'),
-         uiOutput('keep'),
-         uiOutput('buckets')
-       ),
-       mainPanel(
-         width = 0
-       ) # end main panel
-     ) # end sidebar layout
-   ),
-  tabPanel(
-    'Data',
-    sidebarLayout(
-      sidebarPanel(
-        width = 0
-      ),
-      mainPanel(width = 12,
-                DT::dataTableOutput("data"),
-      )
-    )
-  ),
-  tabPanel(
-    'Labels',
-    sidebarLayout(
-      sidebarPanel(
-        width = 0
-      ),
-      mainPanel(width = 12,
-                DT::dataTableOutput("labels"),
-      )
-    )
-  ),
-  tabPanel(
-    'Preview',
-    sidebarLayout(
-      sidebarPanel(
-        width = 2,
-        actionButton(
-          'csv',
-          'Save as CSV'
+    'Mesa',
+    tabPanel(
+      'Input',
+      sidebarLayout(
+        sidebarPanel(
+          width = 12,
+          shinyFilesButton(
+            id = 'source',
+            label = 'choose a dataset or metadata file',
+            title = 'choose a dataset or metadata file:',
+            multiple = FALSE
+          ),
+          textOutput('filepath'),
+          shinyFilesButton(
+            id = 'config',
+            label = 'choose a table configuration file',
+            title = 'choose a table configuration file:',
+            multiple = FALSE
+          ),
+          uiOutput('saveconfig'),
+          textOutput('confpath'),
+          uiOutput('splice'),
+          uiOutput('keep'),
+          uiOutput('buckets')
+        ),
+        mainPanel(
+          width = 0
+        ) # end main panel
+      ) # end sidebar layout
+    ),
+    tabPanel(
+      'Data',
+      sidebarLayout(
+        sidebarPanel(
+          width = 0
+        ),
+        mainPanel(
+          width = 12,
+          DT::dataTableOutput("data"),
         )
-      ),
-      mainPanel(width = 10,
-                htmlOutput('preview')
+      )
+    ),
+    tabPanel(
+      'Preview',
+      sidebarLayout(
+        sidebarPanel(
+          width = 2,
+          actionButton(
+            'csv',
+            'Save as CSV'
+          )
+        ),
+        mainPanel(width = 10,
+                  htmlOutput('preview')
+        )
+      )
+    ),
+    tabPanel(
+      'PDF',
+      sidebarLayout(
+        sidebarPanel(
+          width = 0
+        ),
+        mainPanel(
+          width = 12,
+          uiOutput('pdfview')
+        )
+      )
+    ),
+    tabPanel(
+      'Annotations',
+      sidebarLayout(
+        sidebarPanel(
+          width = 12,
+          actionButton('submit', 'submit'),
+          uiOutput('outputid'),
+          uiOutput('caption'),
+          uiOutput('footnotes'),
+          uiOutput('lhead1'),
+          uiOutput('lhead2'),
+          uiOutput('rhead1'),
+          uiOutput('rhead2')
+        ),
+        mainPanel(width = 0) #end main panel
       )
     )
-  ),
-   tabPanel(
-     'PDF',
-     sidebarLayout(
-       sidebarPanel(
-         width = 0
-       ),
-       mainPanel(
-         width = 12,
-         uiOutput('pdfview')
-       )
-     )
-   ),
-  tabPanel(
-    'Annotations',
-    sidebarLayout(
-      sidebarPanel(
-        width = 12,
-        actionButton('submit', 'submit'),
-        uiOutput('outputid'),
-        uiOutput('caption'),
-        uiOutput('footnotes'),
-        uiOutput('lhead1'),
-        uiOutput('lhead2'),
-        uiOutput('rhead1'),
-        uiOutput('rhead2')
-      ),
-      mainPanel(width = 0) #end main panel
-    )
-  )
   ) # end page
 ) # end ui
 
@@ -147,13 +130,7 @@ server <- shinyServer(function(input, output, session) {
     session = session,
     filetypes = c('conf')
   )
-  # shinyFileSave(
-  #   input,
-  #   'save',
-  #   roots = volumes,
-  #   session = session,
-  #   filetypes = c('conf')
-  # )
+
   # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
 
   observe({
@@ -165,7 +142,6 @@ server <- shinyServer(function(input, output, session) {
         reactiveValuesToList(conf)[
           !names(conf) %in% c(
             'x',
-           # 'available',
             'confpath'
           )
         ]
@@ -176,7 +152,6 @@ server <- shinyServer(function(input, output, session) {
   })
 
   # declare the objects that control the application
-  oldconf <- reactiveVal()
   conf <- reactiveValues(
     filepath   = character(0),
     confpath   = character(0),
@@ -184,7 +159,6 @@ server <- shinyServer(function(input, output, session) {
     filter_by  = character(0),
     keep       = list(), # a named list of filter_by levels to keep
     group_by   = character(0),
-   # available  = character(0),
     sequential = FALSE,
     title      = 'Title',
     outputid   = 'T-00-00',
@@ -195,10 +169,29 @@ server <- shinyServer(function(input, output, session) {
     footnotes  = '(footnotes here)',
     x          = data.frame()
   )
-  # The interface can update the conf
-  # observeEvent(input$available,{
-  #   conf$available <- input$available
-  # })
+
+  reset_conf <- function(){
+    conf$filepath   <- character(0)
+    conf$confpath   <- character(0)
+    conf$selected   <- character(0)
+    conf$filter_by  <- character(0)
+    conf$keep       <- list() # a named list of filter_by levels to keep
+    conf$group_by   <- character(0)
+    conf$sequential <- FALSE
+    conf$title      <- 'Title'
+    conf$outputid   <- 'T-00-00'
+    conf$lhead1     <- 'Company'
+    conf$lhead2     <- 'Project'
+    conf$rhead1     <- 'Confidential'
+    conf$rhead2     <- 'Draft'
+    conf$footnotes  <- '(footnotes here)'
+    conf$x          <- data.frame()
+  }
+
+
+  #https://stackoverflow.com/questions/40547786/shiny-can-dynamically-generated-buttons-act-as-trigger-for-an-event
+
+  observers <- list()
 
   observeEvent(input$selected,{
     conf$selected <- input$selected
@@ -251,12 +244,12 @@ server <- shinyServer(function(input, output, session) {
   observeEvent(input$source, {
     if(is.integer(input$source)) return()
     conf$filepath <- as.character(
-        as.data.frame(
-          parseFilePaths(
-            volumes, input$source
-          )
-        )[1,'datapath']
-      )
+      as.data.frame(
+        parseFilePaths(
+          volumes, input$source
+        )
+      )[1,'datapath']
+    )
   })
 
   observeEvent(input$config, {
@@ -271,25 +264,55 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(conf$confpath,{
-    # browser()
-    if(!length(conf$confpath))return()
-    if(!file.exists(conf$confpath))return()
-   # browser()
-    #if(is.null(oldconf()))return()
 
-    saved <- read_yaml(conf$confpath)
-    #browser()
+    if(!length(conf$confpath)){
+      showNotification(duration = NULL, type = 'message', 'configuration path is null')
+      reset_conf()
+      return()
+    }
+
+    if(!file.exists(conf$confpath)){
+      showNotification(duration = NULL, type = 'error', paste('cannot find', conf$confpath))
+      reset_conf()
+      return()
+    }
+
+    saved <- list()
+    tryCatch(
+      saved <- read_yaml(conf$confpath),
+      error = function(e) showNotification(duration = NULL, type = 'error', as.character(e))
+    )
+
+    if(!length(saved)){
+      showNotification(duration = NULL, type = 'message', 'resetting configuration')
+      reset_conf()
+      return()
+    }
+
     # items not saved should be re-initialized
     if(!('filepath' %in% names(saved))) {
-      stop('configuration does not specify file path')
+      showNotification(duration = NULL, type = 'error', 'configuration does not specify file path')
+      reset_conf()
+      return()
     }
-    if(!file.exists(saved$filepath))stop('configured file path not found')
+    if(!file.exists(saved$filepath)){
+      showNotification(duration = NULL, type = 'error', 'configured file path not found')
+      reset_conf()
+      return()
+    }
+
+    # at this point:
+    #   * confpath has changed
+    #   * confpath is readable/parseable
+    #   * configuration has a filepath
+    #   * filepath exists
+
+    # update internal configuration from saved configuration
     conf$filepath <- saved$filepath
     conf$selected <- saved$selected
     conf$filter_by <- saved$filter_by
     conf$keep      <- saved$keep
     conf$group_by   <- saved$group_by
-    # conf$available  <- conf$available
     conf$sequential<- saved$sequential
     conf$title      <- saved$title
     conf$lhead1     <- saved$lhead1
@@ -302,17 +325,6 @@ server <- shinyServer(function(input, output, session) {
     # if filepath has changed, data will be re-read
 
   })
-
-  # no more input checks below
-
- #  # when user changes data, all the buckets should reset
- # observeEvent(input$source,{ # not conf$x
- #   browser()
- #    conf$available <- as.list(sort(names(conf$x)))
- #    conf$selected <- character(0)
- #    conf$group_by <- character(0)
- #    conf$filter_by <- list()
- #  })
 
   output$filepath <- renderPrint({
     if (!length(conf$filepath)) {
@@ -331,6 +343,12 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(conf$filepath, {
+    # invalidate the keep/filter observers if data changes
+    observers <<- list()
+
+    # invalidate configuration if an attempt is made to supplant data
+    conf$confpath <- character(0)
+
     if(!length(conf$filepath))return()
     theFile <- conf$filepath
     is_data <- grepl('\\.sas7bdat|xpt|csv$', theFile)
@@ -407,7 +425,7 @@ server <- shinyServer(function(input, output, session) {
         # save these for drawing the UI
         conf$keep[[filter]] <- scope
         index <- x[[filter]] %in% scope
-      x <- x[index,,drop = FALSE]
+        x <- x[index,,drop = FALSE]
       }
     }
     x
@@ -610,26 +628,38 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$keep <- renderUI({
-    if(length(input$filter_by) == 0)return()
+    if(!length(input$filter_by))return()
+
     myFilter <- function(var, dat){
       nms <- as.character(sort(unique(dat[[var]])))
+      lbl <- attr(dat[[var]], 'label')
+
       checkboxGroupInput(
         inline = TRUE,
-        var,
-        var,
+        inputId = paste0('mesa_filter_',var),
+        label = lbl,
         choices = nms,
         selected = conf$keep[[var]]
       )
     }
+
+    myObserver <- function(var){
+      observers[[var]] <<- observeEvent(input[[paste0('mesa_filter_',var)]], {
+        conf$keep[[var]] <- input[[paste0('mesa_filter_',var)]]
+      })
+    }
+
+    # pre-assign an observer if not already
+    lapply(input$filter_by, myObserver)
+
     lapply(input$filter_by, myFilter, dat = conf$x)
   })
 
-  output$data <- DT::renderDataTable({conf$x})
-  output$labels <- DT::renderDataTable({
+  output$data <- DT::renderDataTable({
     out <- conf$x
     #out %<>% resolve # already done
-    out %<>% modify(name = label)
-    out %<>% modify(name = paste0(label, ' (', .data$units, ')'))
+    out %<>% modify(name = paste(name, label, sep = ': '))
+    out %<>% modify(name = paste0(name, label, ': (', .data$units, ')'))
     out
   })
 
