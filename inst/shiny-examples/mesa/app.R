@@ -266,14 +266,14 @@ server <- shinyServer(function(input, output, session) {
   observeEvent(conf$confpath,{
 
     if(!length(conf$confpath)){
-      showNotification(duration = NULL, type = 'message', 'configuration path is null')
-      reset_conf()
+      # showNotification(duration = NULL, type = 'message', 'configuration path is null')
+      # reset_conf()
       return()
     }
 
     if(!file.exists(conf$confpath)){
-      showNotification(duration = NULL, type = 'error', paste('cannot find', conf$confpath))
-      reset_conf()
+      # showNotification(duration = NULL, type = 'error', paste('cannot find', conf$confpath))
+      # reset_conf()
       return()
     }
 
