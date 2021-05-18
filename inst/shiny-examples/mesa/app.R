@@ -13,7 +13,7 @@ library(knitr)
 library(latexpdf)
 library(tools)
 library(csv)
-
+options(knitr.kable.NA = '')
 ui <- shinyUI(
   navbarPage(
     'Mesa',
@@ -417,10 +417,11 @@ server <- shinyServer(function(input, output, session) {
   })
 
   filtered <- reactive({
+    #browser()
     x <- conf$x
     cols <- conf$filter_by
     for(filter in cols){
-      scope <- input[[filter]]
+      scope <- input[[paste0('mesa_filter_', filter)]]
       if(length(scope)){ # only filter if at least one choice was made!
         # save these for drawing the UI
         conf$keep[[filter]] <- scope
@@ -493,7 +494,7 @@ server <- shinyServer(function(input, output, session) {
       showNotification(duration = NULL, type = 'error', 'no rows selected')
       return(character(0))
     }
-    x %<>% as_kable(format = 'latex', caption = conf$title)
+    x %<>% as_kable(format = 'latex', caption = conf$title, longtable = TRUE)
     x %<>% footnote(general = conf$footnotes,fixed_small_size = TRUE,general_title = " ",threeparttable = TRUE)
     x %<>% as.character
     x %<>% as.document(
