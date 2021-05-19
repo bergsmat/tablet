@@ -25,11 +25,13 @@
 #'
 #' The \code{\link[datasets]{mtcars}} datasets in the 'examples' volume is from \pkg{datasets}.
 #'
-#'
+#' @param launch.browser passed to \code{\link[shiny]{runApp}}
+#' @param display.mode passed to \code{\link[shiny]{runApp}}
+#' @param ... passed to \code{\link[shiny]{runApp}}
 #' @export
 #' @return used for side effects: launches shiny application
 
-mesa <- function() {
+mesa <- function(launch.browser = TRUE, display.mode = 'normal', ...) {
   dependencies <- c(
     'shiny',
     'shinyFiles',
@@ -59,6 +61,11 @@ mesa <- function() {
     stop("Could not find example directory. Try re-installing `tablet`.", call. = FALSE)
   }
 
-  shiny::runApp(appDir, display.mode = "normal")
+  shiny::runApp(
+    appDir,
+    launch.browser = launch.browser,
+    display.mode = "normal",
+    ...
+  )
 }
 # https://deanattali.com/2015/04/21/r-package-shiny-app/

@@ -244,7 +244,7 @@ server <- shinyServer(function(input, output, session) {
     conf$footnotes <- input$footnotes
   })
 
-    observeEvent(input$submit,{
+  observeEvent(input$submit,{
     conf$na_string <- input$na_string
   })
 
@@ -639,7 +639,6 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$na_string <- renderUI({
-    browser()
     textInput('na_string','text substitute for NA', value = conf$na_string)
   })
 
