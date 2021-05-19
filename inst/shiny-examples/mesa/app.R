@@ -13,7 +13,7 @@ library(knitr)
 library(latexpdf)
 library(tools)
 library(csv)
-options(knitr.kable.NA = '')
+
 ui <- shinyUI(
   navbarPage(
     'Mesa',
@@ -97,7 +97,8 @@ ui <- shinyUI(
           uiOutput('lhead1'),
           uiOutput('lhead2'),
           uiOutput('rhead1'),
-          uiOutput('rhead2')
+          uiOutput('rhead2'),
+          uiOutput('na_string')
         ),
         mainPanel(width = 0) #end main panel
       )
@@ -167,6 +168,7 @@ server <- shinyServer(function(input, output, session) {
     rhead1     = 'Confidential',
     rhead2     = 'Draft',
     footnotes  = '(footnotes here)',
+    na_string  = 'NA',
     x          = data.frame()
   )
 
@@ -185,6 +187,7 @@ server <- shinyServer(function(input, output, session) {
     conf$rhead1     <- 'Confidential'
     conf$rhead2     <- 'Draft'
     conf$footnotes  <- '(footnotes here)'
+    conf$na_string  <- 'NA'
     conf$x          <- data.frame()
   }
 
@@ -239,6 +242,10 @@ server <- shinyServer(function(input, output, session) {
 
   observeEvent(input$submit,{
     conf$footnotes <- input$footnotes
+  })
+
+    observeEvent(input$submit,{
+    conf$na_string <- input$na_string
   })
 
   observeEvent(input$source, {
@@ -320,6 +327,7 @@ server <- shinyServer(function(input, output, session) {
     conf$rhead1     <- saved$rhead1
     conf$rhead2    <- saved$rhead2
     conf$footnotes <- saved$footnotes
+    conf$na_string <- saved$na_string
     conf$outputid <- saved$outputid
     #conf$x          = data.frame()
     # if filepath has changed, data will be re-read
@@ -479,6 +487,7 @@ server <- shinyServer(function(input, output, session) {
   })
 
   html <- reactive({
+    options(knitr.kable.NA = conf$na_string)
     x <- summarized()
     x %<>% as_kable(caption = conf$title)
     x %<>% kable_classic(full_width = F, html_font = "Cambria")
@@ -489,6 +498,7 @@ server <- shinyServer(function(input, output, session) {
   tex <- reactive({
     old <- opts_knit$get('out.format')
     opts_knit$set(out.format = 'latex')
+    options(knitr.kable.NA = conf$na_string)
     x <- summarized()
     if(!nrow(x)){
       showNotification(duration = NULL, type = 'error', 'no rows selected')
@@ -626,6 +636,11 @@ server <- shinyServer(function(input, output, session) {
 
   output$footnotes <- renderUI({
     textAreaInput('footnotes','Footnotes', value = conf$footnotes, resize = 'both')
+  })
+
+  output$na_string <- renderUI({
+    browser()
+    textInput('na_string','text substitute for NA', value = conf$na_string)
   })
 
   output$keep <- renderUI({
