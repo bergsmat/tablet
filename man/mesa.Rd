@@ -4,18 +4,26 @@
 \alias{mesa}
 \title{Drag-and-drop Descriptive Statistics}
 \usage{
-mesa()
+mesa(launch.browser = TRUE, display.mode = "normal", ...)
+}
+\arguments{
+\item{launch.browser}{passed to \code{\link[shiny]{runApp}}}
+
+\item{display.mode}{passed to \code{\link[shiny]{runApp}}}
+
+\item{...}{passed to \code{\link[shiny]{runApp}}}
 }
 \value{
 used for side effects: launches shiny application
 }
 \description{
 Generate a table of descriptive statistics
-by selecting columns from a file,
+by selecting columns from a file.
 Currently supported formats include *.xpt, *.sas7bdat, and *.csv.
-XPT formats and CSV formats are supported.
 Launch the application using \code{mesa()} and use the interface
-to select a data file. Then classify the
+to select a data file, such as 'mtcars.xpt' under 'examples/')
+(or select configuration file 'mtcars.conf' under 'examples/').
+Then classify the
 columns of interest to generate the corresponding
 displays.
 }

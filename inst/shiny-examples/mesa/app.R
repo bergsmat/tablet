@@ -107,50 +107,6 @@ ui <- shinyUI(
 ) # end ui
 
 server <- shinyServer(function(input, output, session) {
-  volumes <- c(
-    getVolumes()(),
-    examples = system.file('shiny-examples/mesa/data', package = 'tablet'),
-    Home = fs::path_home(),
-    'R Installation' = R.home()
-  )
-
-  # set up the file choosers
-
-  shinyFileChoose(
-    input,
-    'source',
-    roots = volumes,
-    session = session,
-    filetypes = c('sas7bdat', 'csv', 'xpt', 'yaml')
-  )
-
-  shinyFileChoose(
-    input,
-    'config',
-    roots = volumes,
-    session = session,
-    filetypes = c('conf')
-  )
-
-  # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
-
-  observe({
-    shinyFileSave(input, "save", roots=volumes, session=session)
-    fileinfo <- parseSavePath(volumes, input$save)
-    if (nrow(fileinfo) > 0) {
-      path <- as.character(fileinfo$datapath)
-      vals <- isolate(
-        reactiveValuesToList(conf)[
-          !names(conf) %in% c(
-            'x',
-            'confpath'
-          )
-        ]
-      )
-      write_yaml(vals, path) # only reads on save
-      conf$confpath <- path
-    }
-  })
 
   # declare the objects that control the application
   conf <- reactiveValues(
@@ -191,6 +147,82 @@ server <- shinyServer(function(input, output, session) {
     conf$x          <- data.frame()
   }
 
+  file_ok <- function(x){
+    if(!length(x))return(FALSE)
+    if(!file.exists(x))return(FALSE)
+    return(TRUE)
+  }
+  # https://github.com/thomasp85/shinyFiles/issues/85
+
+  volumes <- getVolumes()
+  moreVolumes <- function()c(
+    volumes(),
+    examples = system.file('shiny-examples/mesa/data', package = 'tablet'),
+    home = fs::path_home(),
+    R = R.home()
+  )
+  ui_volumes <- function() {
+    volumes <- moreVolumes()
+    if(length(conf$filepath) & !any(is.na(conf$filepath))){
+      sel_path <- dirname(conf$filepath)
+      if(!sel_path %in% volumes){
+        vnames <- c(basename(sel_path), names(volumes))
+        volumes <- setNames(c(sel_path, volumes), vnames)
+      }
+    }
+    if(length(conf$confpath) & !any(is.na(conf$confpath))){
+      sel_path <- dirname(conf$confpath)
+      if(!sel_path %in% volumes){
+        vnames <- c(basename(sel_path), names(volumes))
+        volumes <- setNames(c(sel_path, volumes), vnames)
+      }
+    }
+    volumes
+  }
+
+  safe_volumes <- function(){
+    browser()
+    ui_volumes()
+  }
+
+  # set up the file choosers
+
+  shinyFileChoose(
+    input,
+    'source',
+    roots = ui_volumes,
+    session = session,
+    filetypes = c('sas7bdat', 'csv', 'xpt', 'yaml')
+  )
+
+  shinyFileChoose(
+    input,
+    'config',
+    roots = ui_volumes,
+    session = session,
+    filetypes = c('conf')
+  )
+
+
+  # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
+
+  observe({
+    shinyFileSave(input, "save", roots = ui_volumes, session = session)
+    fileinfo <- parseSavePath(ui_volumes, input$save)
+    if (nrow(fileinfo) > 0) {
+      path <- as.character(fileinfo$datapath)
+      vals <- isolate(
+        reactiveValuesToList(conf)[
+          !names(conf) %in% c(
+            'x',
+            'confpath'
+          )
+        ]
+      )
+      write_yaml(vals, path) # only reads on save
+      conf$confpath <- path
+    }
+  })
 
   #https://stackoverflow.com/questions/40547786/shiny-can-dynamically-generated-buttons-act-as-trigger-for-an-event
 
@@ -253,7 +285,7 @@ server <- shinyServer(function(input, output, session) {
     conf$filepath <- as.character(
       as.data.frame(
         parseFilePaths(
-          volumes, input$source
+          ui_volumes, input$source
         )
       )[1,'datapath']
     )
@@ -264,7 +296,7 @@ server <- shinyServer(function(input, output, session) {
     conf$confpath <- as.character(
       as.data.frame(
         parseFilePaths(
-          volumes, input$config
+          ui_volumes, input$config
         )
       )[1,'datapath']
     )
@@ -338,7 +370,7 @@ server <- shinyServer(function(input, output, session) {
     if (!length(conf$filepath)) {
       cat('No input data selected.')
     } else {
-      writeLines(conf$filepath)
+      cat(conf$filepath)
     }
   })
 
@@ -346,7 +378,7 @@ server <- shinyServer(function(input, output, session) {
     if (!length(conf$confpath)) {
       cat('No configuration selected.')
     } else {
-      writeLines(conf$confpath)
+      cat(conf$confpath)
     }
   })
 

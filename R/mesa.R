@@ -1,11 +1,12 @@
 #' Drag-and-drop Descriptive Statistics
 #'
 #' Generate a table of descriptive statistics
-#' by selecting columns from a file,
+#' by selecting columns from a file.
 #' Currently supported formats include *.xpt, *.sas7bdat, and *.csv.
-#' XPT formats and CSV formats are supported.
 #' Launch the application using \code{mesa()} and use the interface
-#' to select a data file. Then classify the
+#' to select a data file, such as 'mtcars.xpt' under 'examples/')
+#' (or select configuration file 'mtcars.conf' under 'examples/').
+#' Then classify the
 #' columns of interest to generate the corresponding
 #' displays.
 #'
