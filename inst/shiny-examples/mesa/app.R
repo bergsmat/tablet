@@ -59,21 +59,10 @@ ui <- shinyUI(
       )
     ),
     tabPanel(
-    'Labels',
-    sidebarLayout(
-      sidebarPanel(
-        width = 0
-      ),
-      mainPanel(width = 12,
-                DT::dataTableOutput("labels"),
-      )
-    )
-  ),
-  tabPanel(
-    'Preview',
-    sidebarLayout(
-      sidebarPanel(
-        width = 2,
+      'Preview',
+      sidebarLayout(
+        sidebarPanel(
+          width = 2,
         actionButton(
           'csv',
           'Save as CSV'
@@ -141,13 +130,8 @@ server <- shinyServer(function(input, output, session) {
     session = session,
     filetypes = c('conf')
   )
-  # shinyFileSave(
-  #   input,
-  #   'save',
-  #   roots = volumes,
-  #   session = session,
-  #   filetypes = c('conf')
-  # )
+
+
   # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
 
   observe({
@@ -159,7 +143,6 @@ server <- shinyServer(function(input, output, session) {
         reactiveValuesToList(conf)[
           !names(conf) %in% c(
             'x',
-           # 'available',
             'confpath'
           )
         ]
@@ -283,7 +266,6 @@ server <- shinyServer(function(input, output, session) {
     conf$filter_by <- saved$filter_by
     conf$keep      <- saved$keep
     conf$group_by   <- saved$group_by
-    # conf$available  <- conf$available
     conf$sequential<- saved$sequential
     conf$title      <- saved$title
     conf$lhead1     <- saved$lhead1
@@ -296,17 +278,6 @@ server <- shinyServer(function(input, output, session) {
     # if filepath has changed, data will be re-read
 
   })
-
-  # no more input checks below
-
- #  # when user changes data, all the buckets should reset
- # observeEvent(input$source,{ # not conf$x
- #   browser()
- #    conf$available <- as.list(sort(names(conf$x)))
- #    conf$selected <- character(0)
- #    conf$group_by <- character(0)
- #    conf$filter_by <- list()
- #  })
 
   output$filepath <- renderPrint({
     if (!length(conf$filepath)) {
@@ -393,6 +364,7 @@ server <- shinyServer(function(input, output, session) {
   })
 
   filtered <- reactive({
+    #browser()
     x <- conf$x
     cols <- conf$filter_by
     for(filter in cols){
