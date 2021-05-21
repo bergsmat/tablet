@@ -200,9 +200,9 @@ server <- shinyServer(function(input, output, session) {
     conf$title <- input$caption
   })
 
-  observeEvent(input$csv,{
-    as.csv(summarized(), paste0(conf$outputid,'.csv'))
-  })
+  # observeEvent(input$csv,{
+  #   as.csv(summarized(), paste0(conf$outputid,'.csv'))
+  # })
 
   observeEvent(input$submit,{
     conf$outputid <- input$outputid
@@ -226,6 +226,10 @@ server <- shinyServer(function(input, output, session) {
 
   observeEvent(input$submit,{
     conf$footnotes <- input$footnotes
+  })
+
+  observeEvent(input$submit,{
+    conf$na_string <- input$na_string
   })
 
   observeEvent(input$source, {
@@ -276,6 +280,7 @@ server <- shinyServer(function(input, output, session) {
     conf$rhead1     <- saved$rhead1
     conf$rhead2    <- saved$rhead2
     conf$footnotes <- saved$footnotes
+    conf$na_string <- saved$na_string
     conf$outputid <- saved$outputid
     #conf$x          = data.frame()
     # if filepath has changed, data will be re-read
@@ -421,6 +426,7 @@ server <- shinyServer(function(input, output, session) {
   })
 
   html <- reactive({
+    options(knitr.kable.NA = conf$na_string)
     x <- summarized()
     x %<>% as_kable(caption = conf$title)
     x %<>% kable_classic(full_width = F, html_font = "Cambria")
@@ -431,12 +437,13 @@ server <- shinyServer(function(input, output, session) {
   tex <- reactive({
     old <- opts_knit$get('out.format')
     opts_knit$set(out.format = 'latex')
+    options(knitr.kable.NA = conf$na_string)
     x <- summarized()
     if(!nrow(x)){
       showNotification(duration = NULL, type = 'error', 'no rows selected')
       return(character(0))
     }
-    x %<>% as_kable(format = 'latex', caption = conf$title)
+    x %<>% as_kable(format = 'latex', caption = conf$title, longtable = TRUE)
     x %<>% footnote(general = conf$footnotes,fixed_small_size = TRUE,general_title = " ",threeparttable = TRUE)
     x %<>% as.character
     x %<>% as.document(
@@ -487,6 +494,17 @@ server <- shinyServer(function(input, output, session) {
       title = 'save configuration as:',
       filetype = list(conf = 'conf'),
       filename = paste0(conf$outputid, '.conf')
+    )
+
+  })
+
+  output$savecsv <- renderUI({
+    shinySaveButton(
+      id = 'savetable',
+      label = 'save table as ...',
+      title = 'save table as:',
+      filetype = list(conf = 'csv'),
+      filename = paste0(conf$outputid, '.csv')
     )
 
   })
@@ -589,12 +607,11 @@ server <- shinyServer(function(input, output, session) {
     lapply(input$filter_by, myFilter, dat = conf$x)
   })
 
-  output$data <- DT::renderDataTable({conf$x})
-  output$labels <- DT::renderDataTable({
+  output$data <- DT::renderDataTable({
     out <- conf$x
     #out %<>% resolve # already done
-    out %<>% modify(name = label)
-    out %<>% modify(name = paste0(label, ' (', .data$units, ')'))
+    out %<>% modify(name = paste(name, label, sep = ': '))
+    out %<>% modify(name = paste0(name, label, ': (', .data$units, ')'))
     out
   })
 
