@@ -63,10 +63,12 @@ ui <- shinyUI(
       sidebarLayout(
         sidebarPanel(
           width = 2,
-          actionButton(
-            'csv',
-            'Save as CSV'
-          )
+          uiOutput('savecsv')
+          # ,
+          # actionButton(
+          #   'csv',
+          #   'Save as CSV'
+          # )
         ),
         mainPanel(width = 10,
                   htmlOutput('preview')
@@ -161,7 +163,7 @@ server <- shinyServer(function(input, output, session) {
     home = fs::path_home(),
     R = R.home()
   )
-  ui_volumes <- function() {
+  ui_volumes <- reactive( {
     volumes <- moreVolumes()
     if(length(conf$filepath) & !any(is.na(conf$filepath))){
       sel_path <- dirname(conf$filepath)
@@ -178,12 +180,12 @@ server <- shinyServer(function(input, output, session) {
       }
     }
     volumes
-  }
+  })
 
-  safe_volumes <- function(){
-    browser()
-    ui_volumes()
-  }
+  # safe_volumes <- function(){
+  #   browser()
+  #   ui_volumes()
+  # }
 
   # set up the file choosers
 
@@ -223,6 +225,15 @@ server <- shinyServer(function(input, output, session) {
       conf$confpath <- path
     }
   })
+  observe({
+    shinyFileSave(input, "savetable", roots = ui_volumes, session = session)
+    fileinfo <- parseSavePath(ui_volumes, input$save)
+    if (nrow(fileinfo) > 0) {
+      path <- as.character(fileinfo$datapath)
+      data <- isolate(summarized())
+      as.csv(data, path)
+    }
+  })
 
   #https://stackoverflow.com/questions/40547786/shiny-can-dynamically-generated-buttons-act-as-trigger-for-an-event
 
@@ -248,9 +259,9 @@ server <- shinyServer(function(input, output, session) {
     conf$title <- input$caption
   })
 
-  observeEvent(input$csv,{
-    as.csv(summarized(), paste0(conf$outputid,'.csv'))
-  })
+  # observeEvent(input$csv,{
+  #   as.csv(summarized(), paste0(conf$outputid,'.csv'))
+  # })
 
   observeEvent(input$submit,{
     conf$outputid <- input$outputid
@@ -303,7 +314,7 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(conf$confpath,{
-
+    #browser()
     if(!length(conf$confpath)){
       # showNotification(duration = NULL, type = 'message', 'configuration path is null')
       # reset_conf()
@@ -371,14 +382,6 @@ server <- shinyServer(function(input, output, session) {
       cat('No input data selected.')
     } else {
       cat(conf$filepath)
-    }
-  })
-
-  output$confpath <- renderPrint({
-    if (!length(conf$confpath)) {
-      cat('No configuration selected.')
-    } else {
-      cat(conf$confpath)
     }
   })
 
@@ -591,6 +594,17 @@ server <- shinyServer(function(input, output, session) {
 
   })
 
+  output$savecsv <- renderUI({
+    shinySaveButton(
+      id = 'savetable',
+      label = 'save table as ...',
+      title = 'save table as:',
+      filetype = list(conf = 'csv'),
+      filename = paste0(conf$outputid, '.csv')
+    )
+
+  })
+
   output$buckets <- renderUI({
     if(!length(conf$x))return()
     nms <- names(conf$x)
@@ -741,6 +755,16 @@ server <- shinyServer(function(input, output, session) {
       src = paste0('/',pdf_location())
     )
   })
+
+  output$confpath <- renderPrint({
+    #browser()
+    if (!length(conf$confpath)) {
+      cat('No configuration selected.')
+    } else {
+      cat(conf$confpath)
+    }
+  })
+
 
 })
 
