@@ -63,45 +63,48 @@ ui <- shinyUI(
       sidebarLayout(
         sidebarPanel(
           width = 2,
-        actionButton(
-          'csv',
-          'Save as CSV'
+          uiOutput('savecsv')
+          # ,
+          # actionButton(
+          #   'csv',
+          #   'Save as CSV'
+          # )
+        ),
+        mainPanel(width = 10,
+                  htmlOutput('preview')
         )
-      ),
-      mainPanel(width = 10,
-                htmlOutput('preview')
+      )
+    ),
+    tabPanel(
+      'PDF',
+      sidebarLayout(
+        sidebarPanel(
+          width = 0
+        ),
+        mainPanel(
+          width = 12,
+          uiOutput('pdfview')
+        )
+      )
+    ),
+    tabPanel(
+      'Annotations',
+      sidebarLayout(
+        sidebarPanel(
+          width = 12,
+          actionButton('submit', 'submit'),
+          uiOutput('outputid'),
+          uiOutput('caption'),
+          uiOutput('footnotes'),
+          uiOutput('lhead1'),
+          uiOutput('lhead2'),
+          uiOutput('rhead1'),
+          uiOutput('rhead2'),
+          uiOutput('na_string')
+        ),
+        mainPanel(width = 0) #end main panel
       )
     )
-  ),
-   tabPanel(
-     'PDF',
-     sidebarLayout(
-       sidebarPanel(
-         width = 0
-       ),
-       mainPanel(
-         width = 12,
-         uiOutput('pdfview')
-       )
-     )
-   ),
-  tabPanel(
-    'Annotations',
-    sidebarLayout(
-      sidebarPanel(
-        width = 12,
-        actionButton('submit', 'submit'),
-        uiOutput('outputid'),
-        uiOutput('caption'),
-        uiOutput('footnotes'),
-        uiOutput('lhead1'),
-        uiOutput('lhead2'),
-        uiOutput('rhead1'),
-        uiOutput('rhead2')
-      ),
-      mainPanel(width = 0) #end main panel
-    )
-  )
   ) # end page
 ) # end ui
 
@@ -284,14 +287,6 @@ server <- shinyServer(function(input, output, session) {
       cat('No input data selected.')
     } else {
       writeLines(conf$filepath)
-    }
-  })
-
-  output$confpath <- renderPrint({
-    if (!length(conf$confpath)) {
-      cat('No configuration selected.')
-    } else {
-      writeLines(conf$confpath)
     }
   })
 
@@ -575,6 +570,10 @@ server <- shinyServer(function(input, output, session) {
     textAreaInput('footnotes','Footnotes', value = conf$footnotes, resize = 'both')
   })
 
+  output$na_string <- renderUI({
+    textInput('na_string','text substitute for NA', value = conf$na_string)
+  })
+
   output$keep <- renderUI({
     if(length(input$filter_by) == 0)return()
     myFilter <- function(var, dat){
@@ -630,6 +629,16 @@ server <- shinyServer(function(input, output, session) {
       src = paste0('/',pdf_location())
     )
   })
+
+  output$confpath <- renderPrint({
+    #browser()
+    if (!length(conf$confpath)) {
+      cat('No configuration selected.')
+    } else {
+      cat(conf$confpath)
+    }
+  })
+
 
 })
 
