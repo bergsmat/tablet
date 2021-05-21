@@ -16,55 +16,49 @@ library(csv)
 
 ui <- shinyUI(
   navbarPage(
-  'Mesa',
-   tabPanel(
-     'Input',
-     sidebarLayout(
-       sidebarPanel(
-         width = 12,
-         shinyFilesButton(
-           id = 'source',
-           label = 'choose a dataset or metadata file',
-           title = 'choose a dataset or metadata file:',
-           multiple = FALSE
-         ),
-         textOutput('filepath'),
-         shinyFilesButton(
-           id = 'config',
-           label = 'choose a table configuration file',
-           title = 'choose a table configuration file:',
-           multiple = FALSE
-         ),
-         uiOutput('saveconfig'),
-         # shinySaveButton(
-         #   id = 'save',
-         #   label = 'save configuration as ...',
-         #   title = 'save configuration as:',
-         #   filetype = list(conf = 'conf'),
-         #   filename = 'default.conf'
-         # ),
-         textOutput('confpath'),
-         uiOutput('splice'),
-         uiOutput('keep'),
-         uiOutput('buckets')
-       ),
-       mainPanel(
-         width = 0
-       ) # end main panel
-     ) # end sidebar layout
-   ),
-  tabPanel(
-    'Data',
-    sidebarLayout(
-      sidebarPanel(
-        width = 0
-      ),
-      mainPanel(width = 12,
-                DT::dataTableOutput("data"),
+    'Mesa',
+    tabPanel(
+      'Input',
+      sidebarLayout(
+        sidebarPanel(
+          width = 12,
+          shinyFilesButton(
+            id = 'source',
+            label = 'choose a dataset or metadata file',
+            title = 'choose a dataset or metadata file:',
+            multiple = FALSE
+          ),
+          textOutput('filepath'),
+          shinyFilesButton(
+            id = 'config',
+            label = 'choose a table configuration file',
+            title = 'choose a table configuration file:',
+            multiple = FALSE
+          ),
+          uiOutput('saveconfig'),
+          textOutput('confpath'),
+          uiOutput('splice'),
+          uiOutput('keep'),
+          uiOutput('buckets')
+        ),
+        mainPanel(
+          width = 0
+        ) # end main panel
+      ) # end sidebar layout
+    ),
+    tabPanel(
+      'Data',
+      sidebarLayout(
+        sidebarPanel(
+          width = 0
+        ),
+        mainPanel(
+          width = 12,
+          DT::dataTableOutput("data"),
+        )
       )
-    )
-  ),
-  tabPanel(
+    ),
+    tabPanel(
     'Labels',
     sidebarLayout(
       sidebarPanel(
