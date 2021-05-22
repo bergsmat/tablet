@@ -386,6 +386,10 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(conf$filepath, {
+    # invalidate the keep/filter observers if data changes
+    observers <<- list()
+
+
     if(!length(conf$filepath))return()
     theFile <- conf$filepath
     is_data <- grepl('\\.sas7bdat|xpt|csv$', theFile)
