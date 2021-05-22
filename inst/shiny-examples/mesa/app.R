@@ -156,12 +156,36 @@ server <- shinyServer(function(input, output, session) {
   }
   # https://github.com/thomasp85/shinyFiles/issues/85
 
-volumes <- c(
-    getVolumes()(),
+  volumes <- getVolumes()
+  moreVolumes <- function()c(
+    volumes(),
     examples = system.file('shiny-examples/mesa/data', package = 'tablet'),
-    Home = fs::path_home(),
-    'R Installation' = R.home()
+    home = fs::path_home(),
+    R = R.home()
   )
+  ui_volumes <- reactive( {
+    volumes <- moreVolumes()
+    if(length(conf$filepath) & !any(is.na(conf$filepath))){
+      sel_path <- dirname(conf$filepath)
+      if(!sel_path %in% volumes){
+        vnames <- c(basename(sel_path), names(volumes))
+        volumes <- setNames(c(sel_path, volumes), vnames)
+      }
+    }
+    if(length(conf$confpath) & !any(is.na(conf$confpath))){
+      sel_path <- dirname(conf$confpath)
+      if(!sel_path %in% volumes){
+        vnames <- c(basename(sel_path), names(volumes))
+        volumes <- setNames(c(sel_path, volumes), vnames)
+      }
+    }
+    volumes
+  })
+
+  # safe_volumes <- function(){
+  #   browser()
+  #   ui_volumes()
+  # }
 
   # set up the file choosers
 
@@ -185,7 +209,7 @@ volumes <- c(
   # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
 
   observe({
-    shinyFileSave(input, "save", roots=volumes, session=session)
+    shinyFileSave(input, "save", roots=volumes, session = session)
     fileinfo <- parseSavePath(volumes, input$save)
     if (nrow(fileinfo) > 0) {
       path <- as.character(fileinfo$datapath)
