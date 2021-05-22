@@ -180,6 +180,8 @@ server <- shinyServer(function(input, output, session) {
   #   conf$available <- input$available
   # })
 
+  observers <- list()
+
   observeEvent(input$selected,{
     conf$selected <- input$selected
   })
@@ -607,6 +609,16 @@ server <- shinyServer(function(input, output, session) {
         selected = conf$keep[[var]]
       )
     }
+
+    myObserver <- function(var){
+      observers[[var]] <<- observeEvent(input[[paste0('mesa_filter_',var)]], {
+        conf$keep[[var]] <- input[[paste0('mesa_filter_',var)]]
+      })
+    }
+
+    # pre-assign an observer if not already
+    lapply(input$filter_by, myObserver)
+
     lapply(input$filter_by, myFilter, dat = conf$x)
   })
 
