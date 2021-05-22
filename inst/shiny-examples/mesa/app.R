@@ -293,6 +293,13 @@ server <- shinyServer(function(input, output, session) {
 
   observeEvent(input$source, {
     if(is.integer(input$source)) return()
+
+    #####
+
+    reset_conf()
+
+    ####
+
     conf$filepath <- as.character(
       as.data.frame(
         parseFilePaths(
@@ -389,6 +396,9 @@ server <- shinyServer(function(input, output, session) {
     # invalidate the keep/filter observers if data changes
     observers <<- list()
 
+    # invalidate configuration if an attempt is made to supplant data
+    # conf$confpath <- character(0)
+    # this does not work!
 
     if(!length(conf$filepath))return()
     theFile <- conf$filepath
