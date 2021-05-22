@@ -109,6 +109,27 @@ ui <- shinyUI(
 ) # end ui
 
 server <- shinyServer(function(input, output, session) {
+
+  # declare the objects that control the application
+  conf <- reactiveValues(
+    filepath   = character(0),
+    confpath   = character(0),
+    selected   = character(0),
+    filter_by  = character(0),
+    keep       = list(), # a named list of filter_by levels to keep
+    group_by   = character(0),
+    sequential = FALSE,
+    title      = 'Title',
+    outputid   = 'T-00-00',
+    lhead1     = 'Company',
+    lhead2     = 'Project',
+    rhead1     = 'Confidential',
+    rhead2     = 'Draft',
+    footnotes  = '(footnotes here)',
+    na_string  = 'NA',
+    x          = data.frame()
+  )
+
   volumes <- c(
     getVolumes()(),
     examples = system.file('shiny-examples/mesa/data', package = 'tablet'),
@@ -155,30 +176,7 @@ server <- shinyServer(function(input, output, session) {
     }
   })
 
-  # declare the objects that control the application
-  oldconf <- reactiveVal()
-  conf <- reactiveValues(
-    filepath   = character(0),
-    confpath   = character(0),
-    selected   = character(0),
-    filter_by  = character(0),
-    keep       = list(), # a named list of filter_by levels to keep
-    group_by   = character(0),
-   # available  = character(0),
-    sequential = FALSE,
-    title      = 'Title',
-    outputid   = 'T-00-00',
-    lhead1     = 'Company',
-    lhead2     = 'Project',
-    rhead1     = 'Confidential',
-    rhead2     = 'Draft',
-    footnotes  = '(footnotes here)',
-    x          = data.frame()
-  )
-  # The interface can update the conf
-  # observeEvent(input$available,{
-  #   conf$available <- input$available
-  # })
+  #https://stackoverflow.com/questions/40547786/shiny-can-dynamically-generated-buttons-act-as-trigger-for-an-event
 
   observers <- list()
 
@@ -375,7 +373,7 @@ server <- shinyServer(function(input, output, session) {
         # save these for drawing the UI
         conf$keep[[filter]] <- scope
         index <- x[[filter]] %in% scope
-      x <- x[index,,drop = FALSE]
+        x <- x[index,,drop = FALSE]
       }
     }
     x
