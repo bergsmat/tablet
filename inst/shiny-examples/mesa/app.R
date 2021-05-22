@@ -315,13 +315,30 @@ server <- shinyServer(function(input, output, session) {
 
   observeEvent(conf$confpath,{
     #browser()
-    if(!length(conf$confpath))return()
-    if(!file.exists(conf$confpath))return()
-   # browser()
-    #if(is.null(oldconf()))return()
+    if(!length(conf$confpath)){
+      # showNotification(duration = NULL, type = 'message', 'configuration path is null')
+      # reset_conf()
+      return()
+    }
 
-    saved <- read_yaml(conf$confpath)
-    #browser()
+    if(!file.exists(conf$confpath)){
+      # showNotification(duration = NULL, type = 'error', paste('cannot find', conf$confpath))
+      # reset_conf()
+      return()
+    }
+
+    saved <- list()
+    tryCatch(
+      saved <- read_yaml(conf$confpath),
+      error = function(e) showNotification(duration = NULL, type = 'error', as.character(e))
+    )
+
+    if(!length(saved)){
+      showNotification(duration = NULL, type = 'message', 'resetting configuration')
+      reset_conf()
+      return()
+    }
+
     # items not saved should be re-initialized
     if(!('filepath' %in% names(saved))) {
       showNotification(duration = NULL, type = 'error', 'configuration does not specify file path')
