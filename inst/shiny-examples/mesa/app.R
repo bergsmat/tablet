@@ -209,7 +209,7 @@ server <- shinyServer(function(input, output, session) {
   # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
 
   observe({
-    shinyFileSave(input, "save", roots=volumes, session = session)
+    shinyFileSave(input, "save", roots = volumes, session = session)
     fileinfo <- parseSavePath(volumes, input$save)
     if (nrow(fileinfo) > 0) {
       path <- as.character(fileinfo$datapath)
@@ -223,6 +223,15 @@ server <- shinyServer(function(input, output, session) {
       )
       write_yaml(vals, path) # only reads on save
       conf$confpath <- path
+    }
+  })
+  observe({
+    shinyFileSave(input, "savetable", roots = ui_volumes, session = session)
+    fileinfo <- parseSavePath(ui_volumes, input$save)
+    if (nrow(fileinfo) > 0) {
+      path <- as.character(fileinfo$datapath)
+      data <- isolate(summarized())
+      as.csv(data, path)
     }
   })
 
@@ -305,7 +314,7 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(conf$confpath,{
-    # browser()
+    #browser()
     if(!length(conf$confpath))return()
     if(!file.exists(conf$confpath))return()
    # browser()
@@ -315,9 +324,23 @@ server <- shinyServer(function(input, output, session) {
     #browser()
     # items not saved should be re-initialized
     if(!('filepath' %in% names(saved))) {
-      stop('configuration does not specify file path')
+      showNotification(duration = NULL, type = 'error', 'configuration does not specify file path')
+      reset_conf()
+      return()
     }
-    if(!file.exists(saved$filepath))stop('configured file path not found')
+    if(!file.exists(saved$filepath)){
+      showNotification(duration = NULL, type = 'error', 'configured file path not found')
+      reset_conf()
+      return()
+    }
+
+    # at this point:
+    #   * confpath has changed
+    #   * confpath is readable/parseable
+    #   * configuration has a filepath
+    #   * filepath exists
+
+    # update internal configuration from saved configuration
     conf$filepath <- saved$filepath
     conf$selected <- saved$selected
     conf$filter_by <- saved$filter_by
