@@ -192,7 +192,7 @@ server <- shinyServer(function(input, output, session) {
   shinyFileChoose(
     input,
     'source',
-    roots = volumes,
+    roots = ui_volumes,
     session = session,
     filetypes = c('sas7bdat', 'csv', 'xpt', 'yaml')
   )
@@ -200,7 +200,7 @@ server <- shinyServer(function(input, output, session) {
   shinyFileChoose(
     input,
     'config',
-    roots = volumes,
+    roots = ui_volumes,
     session = session,
     filetypes = c('conf')
   )
@@ -209,8 +209,8 @@ server <- shinyServer(function(input, output, session) {
   # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
 
   observe({
-    shinyFileSave(input, "save", roots = volumes, session = session)
-    fileinfo <- parseSavePath(volumes, input$save)
+    shinyFileSave(input, "save", roots = ui_volumes, session = session)
+    fileinfo <- parseSavePath(ui_volumes, input$save)
     if (nrow(fileinfo) > 0) {
       path <- as.character(fileinfo$datapath)
       vals <- isolate(
@@ -294,12 +294,12 @@ server <- shinyServer(function(input, output, session) {
   observeEvent(input$source, {
     if(is.integer(input$source)) return()
     conf$filepath <- as.character(
-        as.data.frame(
-          parseFilePaths(
-            volumes, input$source
-          )
-        )[1,'datapath']
-      )
+      as.data.frame(
+        parseFilePaths(
+          ui_volumes, input$source
+        )
+      )[1,'datapath']
+    )
   })
 
   observeEvent(input$config, {
@@ -307,7 +307,7 @@ server <- shinyServer(function(input, output, session) {
     conf$confpath <- as.character(
       as.data.frame(
         parseFilePaths(
-          volumes, input$config
+          ui_volumes, input$config
         )
       )[1,'datapath']
     )
