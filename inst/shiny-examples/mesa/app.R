@@ -79,10 +79,13 @@ ui <- shinyUI(
       'PDF',
       sidebarLayout(
         sidebarPanel(
-          width = 0
+          width = 2,
+          uiOutput('repeatheader'),
+          uiOutput('repeatfootnote'),
+          uiOutput('na_string')
         ),
         mainPanel(
-          width = 12,
+          width = 10,
           uiOutput('pdfview')
         )
       )
@@ -99,12 +102,22 @@ ui <- shinyUI(
           uiOutput('lhead1'),
           uiOutput('lhead2'),
           uiOutput('rhead1'),
-          uiOutput('rhead2'),
-          uiOutput('na_string')
+          uiOutput('rhead2')
         ),
         mainPanel(width = 0) #end main panel
       )
     )
+    # ,
+    # tabPanel(
+    #   'tex',
+    #   sidebarLayout(
+    #     sidebarPanel(
+    #       width = 12,
+    #       verbatimTextOutput('tex')
+    #     ),
+    #     mainPanel(width = 0) #end main panel
+    #   )
+    # )
   ) # end page
 ) # end ui
 
@@ -287,7 +300,7 @@ server <- shinyServer(function(input, output, session) {
     conf$footnotes <- input$footnotes
   })
 
-  observeEvent(input$submit,{
+  observeEvent(input$na_string,{
     conf$na_string <- input$na_string
   })
 
@@ -548,8 +561,21 @@ server <- shinyServer(function(input, output, session) {
       return(character(0))
     }
     x %<>% as_kable(format = 'latex', caption = conf$title, longtable = TRUE)
+    if(input$repeatheader == 'yes') x %<>% kable_styling(latex_options = 'repeat_header')
     x %<>% footnote(general = conf$footnotes,fixed_small_size = TRUE,general_title = " ",threeparttable = TRUE)
     x %<>% as.character
+
+    # insert footnote on every page
+    insertion <- c(
+      '\\endhead',
+      '\\midrule',
+      '\\multicolumn{1}{r}{\\emph{Continued on next page}}\\\\',
+      '\\midrule',
+      '\\insertTableNotes'
+    )
+    insertion <- paste(insertion, collapse = '\n')
+    if(input$repeatfootnote == 'yes') x %<>% sub('\\endhead', insertion, ., fixed = TRUE)
+
     x %<>% as.document(
       thispagestyle = '',
       pagestyle = '',
@@ -664,6 +690,26 @@ server <- shinyServer(function(input, output, session) {
 
   })
 
+  output$repeatheader <- renderUI({
+    radioButtons(
+      'repeatheader',
+      'repeat header on each page',
+      inline = TRUE,
+      choices = c('yes','no'),
+      selected = 'yes'
+    )
+  })
+
+  output$repeatfootnote <- renderUI({
+    radioButtons(
+      'repeatfootnote',
+      'repeat footnote n each page',
+      inline = TRUE,
+      choices = c('yes','no'),
+      selected = 'yes'
+    )
+  })
+
   output$caption <- renderUI({
     textAreaInput('caption','Title', value = conf$title, resize = 'both')
   })
@@ -741,10 +787,22 @@ server <- shinyServer(function(input, output, session) {
   })
 
   pdf_location <- reactive({
+    #browser()
     x <- tex()
     if(!length(x))return('1x1.png')
     stem <- isolate(conf$outputid) # basename(tempfile())
     #browser()
+
+    # some tables need to be run twice!  Not sure why!
+    # particularly for repeat headers with nesting.
+
+    path <- as.pdf(
+      x,
+      dir = 'www',
+      stem = stem,
+      clean = FALSE
+    )
+
     path <- as.pdf(
       x,
       dir = 'www',
@@ -773,6 +831,7 @@ server <- shinyServer(function(input, output, session) {
     }
   })
 
+  output$tex <- renderText(tex(), sep = '\n')
 
 })
 
