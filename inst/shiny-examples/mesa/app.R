@@ -291,7 +291,7 @@ server <- shinyServer(function(input, output, session) {
     if (!length(conf$filepath)) {
       cat('No input data selected.')
     } else {
-      writeLines(conf$filepath)
+      cat(conf$filepath)
     }
   })
 
@@ -593,13 +593,16 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$keep <- renderUI({
-    if(length(input$filter_by) == 0)return()
+    if(!length(input$filter_by))return()
+
     myFilter <- function(var, dat){
       nms <- as.character(sort(unique(dat[[var]])))
+      lbl <- attr(dat[[var]], 'label')
+
       checkboxGroupInput(
         inline = TRUE,
-        var,
-        var,
+        inputId = paste0('mesa_filter_',var),
+        label = lbl,
         choices = nms,
         selected = conf$keep[[var]]
       )
