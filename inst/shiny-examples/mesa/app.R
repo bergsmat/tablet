@@ -368,7 +368,7 @@ server <- shinyServer(function(input, output, session) {
     x <- conf$x
     cols <- conf$filter_by
     for(filter in cols){
-      scope <- input[[filter]]
+      scope <- input[[paste0('mesa_filter_', filter)]]
       if(length(scope)){ # only filter if at least one choice was made!
         # save these for drawing the UI
         conf$keep[[filter]] <- scope
