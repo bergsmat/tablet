@@ -130,7 +130,33 @@ server <- shinyServer(function(input, output, session) {
     x          = data.frame()
   )
 
-  volumes <- c(
+  reset_conf <- function(){
+    conf$filepath   <- character(0)
+    conf$confpath   <- character(0)
+    conf$selected   <- character(0)
+    conf$filter_by  <- character(0)
+    conf$keep       <- list() # a named list of filter_by levels to keep
+    conf$group_by   <- character(0)
+    conf$sequential <- FALSE
+    conf$title      <- 'Title'
+    conf$outputid   <- 'T-00-00'
+    conf$lhead1     <- 'Company'
+    conf$lhead2     <- 'Project'
+    conf$rhead1     <- 'Confidential'
+    conf$rhead2     <- 'Draft'
+    conf$footnotes  <- '(footnotes here)'
+    conf$na_string  <- 'NA'
+    conf$x          <- data.frame()
+  }
+
+  file_ok <- function(x){
+    if(!length(x))return(FALSE)
+    if(!file.exists(x))return(FALSE)
+    return(TRUE)
+  }
+  # https://github.com/thomasp85/shinyFiles/issues/85
+
+volumes <- c(
     getVolumes()(),
     examples = system.file('shiny-examples/mesa/data', package = 'tablet'),
     Home = fs::path_home(),
