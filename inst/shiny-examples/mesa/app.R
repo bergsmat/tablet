@@ -433,7 +433,7 @@ server <- shinyServer(function(input, output, session) {
   # i.e. when we have saved it.
 
   # https://stackoverflow.com/questions/34731975/how-to-listen-for-more-than-one-event-expression-within-a-shiny-eventreactive-ha
-
+  printer <- function(x)(return())# writeLines(as.character(x))
   observeEvent(
     {
       conf$filepath # new data selected
@@ -443,11 +443,11 @@ server <- shinyServer(function(input, output, session) {
     # invalidate the keep/filter observers if data changes
     observers <<- list()
 
-    print("Hello.  I'm the code that listens for changes to filefpath and mv.")
-    print('Currently filepath is')
-    print(conf$filepath)
-    print('currently mv is')
-    print(conf$mv)
+    printer("Hello.  I'm the code that listens for changes to filefpath and mv.")
+    printer('Currently filepath is')
+    printer(conf$filepath)
+    printer('currently mv is')
+    printer(conf$mv)
 
 
     # invalidate configuration if an attempt is made to supplant data
@@ -549,6 +549,8 @@ server <- shinyServer(function(input, output, session) {
   factorized <- reactive({
     x <- filtered()
     x %<>% mutate_if(is.character, classified)
+    x %<>% modify(title = paste0(label, ' (', .data$units, ')')
+    )
     x
   })
 
@@ -909,17 +911,17 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$meta <- renderUI({
-    print("Hello.  I'm the code responsible for drawing the editor dialogue.")
+    printer("Hello.  I'm the code responsible for drawing the editor dialogue.")
     current <- conf$editor
-    print("last known length of the dialogue is")
-    print(length(current))
-    print("Presumably we're only here because conf$metapath has changed.")
-    print("Right now conf$metapath is")
-    print(conf$metapath)
+    printer("last known length of the dialogue is")
+    printer(length(current))
+    printer("Presumably we're only here because conf$metapath has changed.")
+    printer("Right now conf$metapath is")
+    printer(conf$metapath)
     if(!length(conf$metapath))return(current)
     if(is.na(conf$metapath))return(current)
     val <- NULL
-    print("I am going to try to read metadata from conf$metapath")
+    printer("I am going to try to read metadata from conf$metapath")
     tryCatch(
       val <- readLines(conf$metapath),
       error = function(e) showNotification(
@@ -928,8 +930,8 @@ server <- shinyServer(function(input, output, session) {
         as.character(e)
       )
     )
-    print("currently our metadata has this length")
-    print(length(val))
+    printer("currently our metadata has this length")
+    printer(length(val))
     if(!is.null(val)){
       val <- aceEditor(
         outputId = "meta",
@@ -937,37 +939,37 @@ server <- shinyServer(function(input, output, session) {
         mode = 'yaml',
         tabSize = 2
       )
-      print("I'm resetting the saved version of the editor")
+      printer("I'm resetting the saved version of the editor")
       conf$editor <- val
     } else {
       val <- conf$editor
     }
-    print("I'm returning an editor with this length")
-    print(length(val))
+    printer("I'm returning an editor with this length")
+    printer(length(val))
     val
   })
 
   observeEvent(input$saveMeta, {
-    print('I see someone clicked "save Metadata"')
+    printer('I see someone clicked "save Metadata"')
     tryCatch(
       {
-        print("I'm going to try to read the supplied metadata as yaml")
+        printer("I'm going to try to read the supplied metadata as yaml")
         foo <- yaml.load(input$meta)
-        print("I'm going to try to read the supplied metadata as yamlet")
+        printer("I'm going to try to read the supplied metadata as yamlet")
         foo <- read_yamlet(input$meta)
-        print("I'm going to try to write the supplied metadata to ")
-        print(conf$metapath)
-        print("It is this long:")
-        print(length(input$meta))
+        printer("I'm going to try to write the supplied metadata to ")
+        printer(conf$metapath)
+        printer("It is this long:")
+        printer(length(input$meta))
         write(x = input$meta, file = conf$metapath)
         # trigger redecoration
         # metadata version
-        print('currently mv is')
-        print(conf$mv)
-        print('updating mv')
+        printer('currently mv is')
+        printer(conf$mv)
+        printer('updating mv')
         conf$mv <- conf$mv + 1
-        print('now mv is')
-        print(conf$mv)
+        printer('now mv is')
+        printer(conf$mv)
       },
       error = function(e) showNotification(
         duration = NULL,
@@ -975,7 +977,7 @@ server <- shinyServer(function(input, output, session) {
         as.character(e)
       )
     )
-    print("done handling save-metadata button click")
+    printer("done handling save-metadata button click")
   })
 
 })
