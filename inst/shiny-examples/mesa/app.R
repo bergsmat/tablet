@@ -104,7 +104,8 @@ ui <- shinyUI(
           uiOutput('lhead1'),
           uiOutput('lhead2'),
           uiOutput('rhead1'),
-          uiOutput('rhead2')
+          uiOutput('rhead2'),
+          uiOutput('cont')
         ),
         mainPanel(width = 0) #end main panel
       )
@@ -139,6 +140,7 @@ ui <- shinyUI(
 server <- shinyServer(function(input, output, session) {
 
   # declare the objects that control the application
+
   conf <- reactiveValues(
     filepath   = character(0),
     metapath   = character(0),
@@ -154,6 +156,7 @@ server <- shinyServer(function(input, output, session) {
     lhead2     = 'Project',
     rhead1     = 'Confidential',
     rhead2     = 'Draft',
+    cont  = '(continued)',
     footnotes  = '(footnotes here)',
     na_string  = 'NA',
     x          = data.frame(),
@@ -176,6 +179,7 @@ server <- shinyServer(function(input, output, session) {
     conf$lhead2     <- 'Project'
     conf$rhead1     <- 'Confidential'
     conf$rhead2     <- 'Draft'
+    conf$cont       <- '(continued)'
     conf$footnotes  <- '(footnotes here)'
     conf$na_string  <- 'NA'
     conf$x          <- data.frame()
@@ -329,6 +333,10 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$submit,{
+    conf$cont <- input$cont
+  })
+
+  observeEvent(input$submit,{
     conf$footnotes <- input$footnotes
   })
 
@@ -421,6 +429,7 @@ server <- shinyServer(function(input, output, session) {
     conf$lhead2    <- saved$lhead2
     conf$rhead1     <- saved$rhead1
     conf$rhead2    <- saved$rhead2
+    conf$cont <- saved$cont
     conf$footnotes <- saved$footnotes
     conf$na_string <- saved$na_string
     conf$outputid <- saved$outputid
@@ -433,13 +442,15 @@ server <- shinyServer(function(input, output, session) {
   # i.e. when we have saved it.
 
   # https://stackoverflow.com/questions/34731975/how-to-listen-for-more-than-one-event-expression-within-a-shiny-eventreactive-ha
+
   printer <- function(x)(return())# writeLines(as.character(x))
-  observeEvent(
-    {
+
+  observeEvent({
       conf$filepath # new data selected
       conf$mv # metadata re-written
       1 # prevents NULL from squelching the observation
-    }, {
+    },
+    {
     # invalidate the keep/filter observers if data changes
     observers <<- list()
 
@@ -622,11 +633,22 @@ server <- shinyServer(function(input, output, session) {
     x %<>% as.character
 
     # insert footnote on every page
+
+    cont <- input$cont
+    mycont <- NULL
+    if(!is.null(cont)){
+      if(nchar(cont) > 0){
+        mycont <- c(
+          paste0('\\multicolumn{1}{r}{\\emph{', cont, '}}\\\\'),
+          '\\midrule'
+        )
+      }
+    }
+
     insertion <- c(
       '\\endhead',
       '\\midrule',
-      '\\multicolumn{1}{r}{\\emph{Continued on next page}}\\\\',
-      '\\midrule',
+      mycont,
       '\\insertTableNotes'
     )
     insertion <- paste(insertion, collapse = '\n')
@@ -686,7 +708,7 @@ server <- shinyServer(function(input, output, session) {
     )
   })
 
-    output$savepdf <- renderUI({
+  output$savepdf <- renderUI({
     shinySaveButton(
       id = 'savepdf',
       label = 'save pdf as ...',
@@ -695,8 +717,6 @@ server <- shinyServer(function(input, output, session) {
       filename = paste0(conf$outputid, '.pdf')
     )
   })
-
-
 
   output$buckets <- renderUI({
     if(!length(conf$x))return()
@@ -791,6 +811,10 @@ server <- shinyServer(function(input, output, session) {
 
   output$rhead2 <- renderUI({
     textInput('rhead2','Right Header 2', value = conf$rhead2)
+  })
+
+  output$cont <- renderUI({
+    textInput('cont','Continued', value = conf$cont)
   })
 
   output$footnotes <- renderUI({
