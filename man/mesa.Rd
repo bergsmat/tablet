@@ -40,7 +40,11 @@ If a file in the same directory has a corresponding base name but a \code{.yaml}
 extension, it is treated as metadata and an attempt is made to apply it
 to the internal version of the data. This file will not be over-written,
 but it WILL be constructed if missing.  You can hand-edit it to supply
-metadata.  See \code{?yamlet}.
+metadata.  See \code{?yamlet} for format; see the Metadata tab for an easy interface.
+
+This is a metadata-driven application.  Columns in the data that are *not*
+in the metadata will be ignored, and columns in the metadata that are *not*
+in the data will be constructed (maybe *all* of them).
 
 The \code{\link[datasets]{mtcars}} datasets in the 'examples' volume is from \pkg{datasets}.
 }

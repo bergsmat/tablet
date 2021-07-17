@@ -14,6 +14,7 @@ library(latexpdf)
 library(tools)
 library(csv)
 library(shinyAce)
+library(spork)
 
 ui <- shinyUI(
   navbarPage(
@@ -64,6 +65,7 @@ ui <- shinyUI(
       sidebarLayout(
         sidebarPanel(
           width = 2,
+          uiOutput('labelhtml'),
           uiOutput('savecsv')
           # ,
           # actionButton(
@@ -83,7 +85,9 @@ ui <- shinyUI(
           width = 2,
           uiOutput('repeatheader'),
           uiOutput('repeatfootnote'),
+          #uiOutput('spork'),
           uiOutput('na_string'),
+          uiOutput('labeltex'),
           uiOutput('savepdf')
         ),
         mainPanel(
@@ -161,7 +165,11 @@ server <- shinyServer(function(input, output, session) {
     na_string  = 'NA',
     x          = data.frame(),
     mv         = 0,
-    editor     = NULL
+    editor     = NULL,
+    labelhtml  = 'no',
+    labeltex   = 'no',
+    repeathead = 'no',
+    repeatfoot = 'no'
   )
 
   reset_conf <- function(){
@@ -185,6 +193,10 @@ server <- shinyServer(function(input, output, session) {
     conf$x          <- data.frame()
     conf$mv         <- 0
     conf$editor     <- NULL
+    labelhtml       <- 'no'
+    labeltex        <- 'no'
+    repeathead      <- 'no'
+    repeatfoot      <- 'no'
   }
 
 
@@ -275,7 +287,7 @@ server <- shinyServer(function(input, output, session) {
     }
   })
 
-    observe({
+  observe({
     shinyFileSave(input, "savepdf", roots = ui_volumes, session = session)
     fileinfo <- parseSavePath(ui_volumes, input$save)
     if (nrow(fileinfo) > 0) {
@@ -343,6 +355,18 @@ server <- shinyServer(function(input, output, session) {
   observeEvent(input$na_string,{
     conf$na_string <- input$na_string
   })
+  observeEvent(input$repeathead,{
+    conf$repeathead <- input$repeathead
+  })
+  observeEvent(input$repeatfoot,{
+    conf$repeatfoot <- input$repeatfoot
+  })
+  observeEvent(input$labelhtml,{
+    conf$labelhtml <- input$labelhtml
+  })
+  observeEvent(input$labeltex,{
+    conf$labeltex <- input$labeltex
+  })
 
   observeEvent(input$source, {
     if(is.integer(input$source)) return()
@@ -372,6 +396,8 @@ server <- shinyServer(function(input, output, session) {
       )[1,'datapath']
     )
   })
+
+
 
   observeEvent(conf$confpath,{
     if(!length(conf$confpath)){
@@ -417,22 +443,28 @@ server <- shinyServer(function(input, output, session) {
     #   * filepath exists
 
     # update internal configuration from saved configuration
-    conf$filepath <- saved$filepath
-    conf$metapath <- saved$metapath
-    conf$selected <- saved$selected
-    conf$filter_by <- saved$filter_by
-    conf$keep      <- saved$keep
-    conf$group_by   <- saved$group_by
-    conf$sequential<- saved$sequential
-    conf$title      <- saved$title
-    conf$lhead1     <- saved$lhead1
-    conf$lhead2    <- saved$lhead2
-    conf$rhead1     <- saved$rhead1
-    conf$rhead2    <- saved$rhead2
-    conf$cont <- saved$cont
-    conf$footnotes <- saved$footnotes
-    conf$na_string <- saved$na_string
-    conf$outputid <- saved$outputid
+
+    if(!is.null(saved$filepath))conf$filepath <- saved$filepath
+    if(!is.null(saved$metapath))conf$metapath <- saved$metapath
+    if(!is.null(saved$selected))conf$selected <- saved$selected
+    if(!is.null(saved$filter_by))conf$filter_by <- saved$filter_by
+    if(!is.null(saved$keep))conf$keep      <- saved$keep
+    if(!is.null(saved$group_by))conf$group_by   <- saved$group_by
+    if(!is.null(saved$sequential))conf$sequential<- saved$sequential
+    if(!is.null(saved$title))conf$title      <- saved$title
+    if(!is.null(saved$lhead1))conf$lhead1     <- saved$lhead1
+    if(!is.null(saved$lhead2))conf$lhead2    <- saved$lhead2
+    if(!is.null(saved$rhead1))conf$rhead1     <- saved$rhead1
+    if(!is.null(saved$rhead2))conf$rhead2    <- saved$rhead2
+    if(!is.null(saved$cont))conf$cont <- saved$cont
+    if(!is.null(saved$footnotes))conf$footnotes <- saved$footnotes
+    if(!is.null(saved$na_string))conf$na_string <- saved$na_string
+    if(!is.null(saved$outputid))conf$outputid <- saved$outputid
+    if(!is.null(saved$repeathead))conf$repeathead <- saved$repeathead
+    if(!is.null(saved$repeatfoot))conf$repeatfoot <- saved$repeatfoot
+    if(!is.null(saved$labelhtml))conf$labelhtml <- saved$labelhtml
+    if(!is.null(saved$labeltex))conf$labeltex <- saved$labeltex
+
     #conf$x          = data.frame()
     # if filepath has changed, data will be re-read: see observeEvent(conf$filepath)
   })
@@ -443,7 +475,7 @@ server <- shinyServer(function(input, output, session) {
 
   # https://stackoverflow.com/questions/34731975/how-to-listen-for-more-than-one-event-expression-within-a-shiny-eventreactive-ha
 
-  printer <- function(x)(return())# writeLines(as.character(x))
+  printer <- function(x)writeLines(as.character(x))
 
   observeEvent({
       conf$filepath # new data selected
@@ -454,7 +486,7 @@ server <- shinyServer(function(input, output, session) {
     # invalidate the keep/filter observers if data changes
     observers <<- list()
 
-    printer("Hello.  I'm the code that listens for changes to filefpath and mv.")
+    printer("Hello.  I'm the code that listens for changes to filepath and mv.")
     printer('Currently filepath is')
     printer(conf$filepath)
     printer('currently mv is')
@@ -560,8 +592,38 @@ server <- shinyServer(function(input, output, session) {
   factorized <- reactive({
     x <- filtered()
     x %<>% mutate_if(is.character, classified)
-    x %<>% modify(title = paste0(label, ' (', .data$units, ')')
-    )
+    x %<>% modify(title = paste0(label, ' (', .data$units, ')'))
+
+    if(length(input$labelhtml) == 1){
+      if(input$labelhtml == 'yes'){
+        x %<>% modify(
+          html = paste0(
+            as_html(as_spork(.data$label)),
+            as_html(as_spork(' (')),
+            as_html(as_spork(.data$units)),
+            as_html(as_spork(')'))
+          )
+        )
+      }
+    }
+    if(length(input$labeltex) == 1){
+      if(input$labeltex == 'yes'){
+        x %<>% modify(
+          tex = paste0(
+            as_latex(as_spork(.data$label)),
+            as_latex(as_spork(' (')),
+            as_latex(as_spork(.data$units)),
+            as_latex(as_spork(')'))
+          )
+        )
+        # at the moment, sim_double_escape()
+        # only doubles first element.
+        # we pre-double other escapes.
+        # "$\\mathrm{\\textrm{Displacement}}$$\\mathrm{\\textrm{ } \\textrm{(}}$$\\mathrm{\\textrm{in}^{\\textrm{3}}}$$\\mathrm{\\textrm{)}}$"
+        x %<>% modify(tex = gsub('\\','\\\\', .data$tex, fixed = TRUE))
+        x %<>% modify(tex = sub('\\\\','\\', .data$tex, fixed = TRUE)) # first will be doubled later
+      }
+    }
     x
   })
 
@@ -600,14 +662,23 @@ server <- shinyServer(function(input, output, session) {
   summarized <- reactive({
     fun <- tablet
     if(conf$sequential) fun <- splice
-    fun
     args <- args()
     do.call(fun,args)
   })
 
   html <- reactive({
     options(knitr.kable.NA = conf$na_string)
-    x <- summarized()
+
+    fun <- tablet
+    if(conf$sequential) fun <- splice
+    args <- args()
+
+    if(!is.null(input$labelhtml)){
+      if(input$labelhtml == 'yes'){
+        args$x %<>% modify(title = .data$html)
+      }
+    }
+    x <- do.call(fun, args)
     x %<>% as_kable(caption = conf$title)
     x %<>% kable_classic(full_width = F, html_font = "Cambria")
     x %<>% kable_styling(fixed_thead = T)
@@ -615,21 +686,42 @@ server <- shinyServer(function(input, output, session) {
   })
 
   tex <- reactive({
+    printer('Hi.  I am the code that formats the latex.')
     old <- opts_knit$get('out.format')
     opts_knit$set(out.format = 'latex')
-    options(knitr.kable.NA = conf$na_string)
-    x <- summarized()
+    options(knitr.kable.NA = escape_latex(conf$na_string))
+
+    fun <- tablet
+    if(conf$sequential) fun <- splice
+    args <- args()
+    printer(decorations(args$x))
+    if(!is.null(input$labeltex)){
+      if(input$labeltex == 'yes'){
+        printer('I see we are using spork labels.')
+        args$x %<>% modify(title = .data$tex)
+        #args$x %<>% modify(codelist = lapply(codelist, kableExtra:::escape_latex2))
+      } else {
+        args$x %<>% modify(title = kableExtra:::escape_latex(title))
+        #args$x %<>% modify(codelist = lapply(codelist, kableExtra:::escape_latex2))
+      }
+    } else {
+      args$x %<>% modify(title = kableExtra:::escape_latex(title))
+    }
+    printer(decorations(args$x))
+
+    x <- do.call(fun, args)
     if(!nrow(x)){
       showNotification(duration = NULL, type = 'error', 'no rows selected')
       return(character(0))
     }
-    x %<>% as_kable(format = 'latex', caption = conf$title, longtable = TRUE)
+
+    x %<>% as_kable(format = 'latex', caption = escape_latex(conf$title), longtable = TRUE)
     if(length(input$repeatheader) == 1){
       if(input$repeatheader == 'yes'){
         x %<>% kable_styling(latex_options = 'repeat_header')
       }
     }
-    x %<>% footnote(general = conf$footnotes,fixed_small_size = TRUE,general_title = " ",threeparttable = TRUE)
+    x %<>% footnote(general = escape_latex(conf$footnotes),fixed_small_size = TRUE, general_title = " ",threeparttable = TRUE)
     x %<>% as.character
 
     # insert footnote on every page
@@ -670,9 +762,9 @@ server <- shinyServer(function(input, output, session) {
         '\\fancyhf{}',
         '\\renewcommand{\\headrulewidth}{0pt}',
         '\\pagestyle{fancy}',
-        paste0('\\lhead{', conf$lhead1,' \\\\ ',conf$lhead2, '}'),
+        paste0('\\lhead{', escape_latex(conf$lhead1),' \\\\ ',escape_latex(conf$lhead2), '}'),
         '%\\chead{Table 0.0.0.xxx}',
-        paste0('\\rhead{', conf$rhead1,' \\\\ ',conf$rhead2, '}'),
+        paste0('\\rhead{', escape_latex(conf$rhead1),' \\\\ ',escape_latex(conf$rhead2), '}'),
         #paste0('\\lfoot{\\textit{',file_path_sans_ext(conf$filepath),'}}'),
         paste0('\\lfoot{\\textit{~', sub(getwd(),'',conf$confpath, fixed = TRUE),'}}'),
 
@@ -775,7 +867,7 @@ server <- shinyServer(function(input, output, session) {
       'repeat header on each page',
       inline = TRUE,
       choices = c('yes','no'),
-      selected = 'yes'
+      selected = conf$repeathead
     )
   })
 
@@ -785,7 +877,27 @@ server <- shinyServer(function(input, output, session) {
       'repeat footnote n each page',
       inline = TRUE,
       choices = c('yes','no'),
-      selected = 'yes'
+      selected = conf$repeatfoot
+    )
+  })
+
+  output$labelhtml <- renderUI({
+    radioButtons(
+      'labelhtml',
+      'spork labels',
+      inline = TRUE,
+      choices = c('yes','no'),
+      selected = conf$labelhtml
+    )
+  })
+
+  output$labeltex <- renderUI({
+    radioButtons(
+      'labeltex',
+      'spork labels',
+      inline = TRUE,
+      choices = c('yes','no'),
+      selected = conf$labeltex
     )
   })
 
@@ -854,6 +966,7 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$data <- DT::renderDataTable({
+    if(!nrow(conf$x))return(structure(data.frame(` `='data goes here.', check.names = F), row.names = ' '))
     out <- conf$x
     #out %<>% resolve # already done
     out %<>% modify(name = paste(name, label, sep = ': '))
@@ -870,11 +983,18 @@ server <- shinyServer(function(input, output, session) {
   })
 
   pdf_location <- reactive({
-    #browser()
+    printer("Hello.  I'm the code that compiles tex to pdf.")
+
     x <- tex()
     if(!length(x))return('1x1.png')
     stem <- isolate(conf$outputid) # basename(tempfile())
-    #browser()
+
+    # backup
+    writeLines(x, con = 'www/cache.tex')
+
+    # clean slate
+    unlink(file.path('www', paste0(stem, '.tex')))
+    unlink(file.path('www', paste0(stem, '.pdf')))
 
     # some tables need to be run twice!  Not sure why!
     # particularly for repeat headers with nesting.
@@ -886,11 +1006,18 @@ server <- shinyServer(function(input, output, session) {
       clean = FALSE
     )
 
+    # ignore incomplete pdf
+    unlink(file.path('www', paste0(stem, '.pdf')))
+
+
     path <- as.pdf(
       x,
       dir = 'www',
-      stem = stem
+      stem = stem,
+      clean = TRUE
     )
+
+    if(!file.exists(path)) return('1x1.png')
     basename(path)
   })
 
@@ -899,9 +1026,12 @@ server <- shinyServer(function(input, output, session) {
   output$pdfview <- renderUI({
     #browser()
     if(!nrow(conf$x))return('PDF displays here.')
+    loc <- pdf_location()
+    printer('I built the pdf here:')
+    printer(getwd())
     tags$iframe(
       style="height:600px; width:100%; scrolling:yes",
-      src = paste0('/',pdf_location())
+      src = paste0('/', loc)
     )
   })
 

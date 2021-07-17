@@ -889,8 +889,8 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' @param ... passed to \code{\link[kableExtra]{kbl}}
 #' @param booktabs passed to \code{\link[kableExtra]{kbl}}
 #' @param escape passed to \code{\link[kableExtra]{kbl}}; defaults FALSE to allow header linebreaks
-#' @param escape_latex a function to pre-process column content if 'escape' is FALSE (e.g., manual escaping, latex only)
-#' @param escape_html a function to pre-process column content if 'escape' is FALSE (e.g., manual escaping, html only)
+#' @param escape_latex a function to pre-process column names and content if 'escape' is FALSE (e.g., manual escaping, latex only)
+#' @param escape_html a function to pre-process column names content if 'escape' is FALSE (e.g., manual escaping, html only)
 #' @param variable a column name for the variables
 #' @param col.names passed to \code{\link[kableExtra]{kbl}} after any linebreaking
 #' @param linebreak whether to invoke \code{\link[kableExtra]{linebreak}} for column names
@@ -919,7 +919,7 @@ as_kable.tablet <- function(
    ...,
    booktabs = TRUE,
    escape = FALSE,
-   escape_latex = function(x, ...)gsub('%','\\\\%',x),
+   escape_latex = tablet::escape_latex,
    escape_html = function(x, ...)x,
    variable = ' ',
    col.names = NA,
@@ -964,8 +964,10 @@ as_kable.tablet <- function(
    if(!escape){
       if (knitr::is_latex_output()) {
          x[] <- lapply(x, escape_latex, ...)
+         names(x) <- escape_latex(names(x), ...)
       } else {
          x[] <- lapply(x, escape_html, ...)
+         names(x) <- escape_html(names(x))
       }
    }
 
@@ -996,7 +998,7 @@ as_kable.tablet <- function(
    y <- do.call(
       kableExtra::pack_rows,
       c(
-         list(y, index = index),
+         list(y, index = index, escape = escape),
          pack_rows
       )
    )
@@ -1220,4 +1222,25 @@ splice.data.frame <- function(x, all = 'All', ...){
    out <- out[,!dupcol, drop = FALSE]
    class(out) <- class(part[[1]])
    out
+}
+
+#' Escape Latex
+#'
+#' Escapes latex markup.
+#' Adapted with gratitude from KableExtra internals.
+#'
+#' @export
+#' @keywords internal
+#' @return character
+#' @param x character
+#' @param ... ignored
+#' @examples
+#' escape_latex('([#$%&_{}])')
+escape_latex <- function(x, ...){
+   x = gsub("\\\\", "\\\\textbackslash", x)
+   x = gsub("([#$%&_{}])", "\\\\\\1", x)
+   x = gsub("\\\\textbackslash", "\\\\textbackslash{}", x)
+   x = gsub("~", "\\\\textasciitilde{}", x)
+   x = gsub("\\^", "\\\\textasciicircum{}", x)
+   x
 }
