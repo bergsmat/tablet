@@ -123,5 +123,5 @@ melanoma \%>\%
   tablet
 }
 \seealso{
-as_kable.tablet
+\code{\link{as_kable.tablet}}
 }

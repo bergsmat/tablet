@@ -1099,7 +1099,7 @@ as_kable.tablet <- function(
 #' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 #' \item{All (or value of 'all' argument)}{ungrouped results}
 #' \item{_tablet_sort}{sorting column}
-#' @seealso as_kable.tablet
+#' @seealso \code{\link{as_kable.tablet}}
 #' @examples
 #' library(boot)
 #' library(dplyr)

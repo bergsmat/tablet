@@ -5,8 +5,8 @@
 %
 \documentclass[
 ]{article}
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
@@ -87,7 +87,7 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\usepackage{graphicx,grffile}
+\usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -118,10 +118,13 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 
 \title{An Introduction to Tablet for PDF}
 \author{Tim Bergsma}
-\date{2021-02-15}
+\date{2021-07-24}
 
 \begin{document}
 \maketitle
@@ -158,20 +161,20 @@ described on p.~4 of the \texttt{kableExtra}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(tidyr)}
-\KeywordTok{library}\NormalTok{(dplyr)}
-\KeywordTok{library}\NormalTok{(magrittr)}
-\KeywordTok{library}\NormalTok{(kableExtra)}
-\KeywordTok{library}\NormalTok{(boot)}
-\KeywordTok{library}\NormalTok{(yamlet)}
-\KeywordTok{library}\NormalTok{(tablet)}
+\FunctionTok{library}\NormalTok{(tidyr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(magrittr)}
+\FunctionTok{library}\NormalTok{(kableExtra)}
+\FunctionTok{library}\NormalTok{(boot)}
+\FunctionTok{library}\NormalTok{(yamlet)}
+\FunctionTok{library}\NormalTok{(tablet)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x <-}\StringTok{ }\NormalTok{melanoma}
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{time, }\OperatorTok{-}\NormalTok{year)}
+\NormalTok{x }\OtherTok{\textless{}{-}}\NormalTok{ melanoma}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{time, }\SpecialCharTok{{-}}\NormalTok{year)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -185,13 +188,13 @@ some magic).
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}
-    \DataTypeTok{sex =} \KeywordTok{factor}\NormalTok{(sex), }
-    \DataTypeTok{ulcer =} \KeywordTok{factor}\NormalTok{(ulcer)}
-\NormalTok{  ) }\OperatorTok{%>%}
-\StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}
-\StringTok{  }\NormalTok{as_kable}
+\NormalTok{x }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{sex =} \FunctionTok{factor}\NormalTok{(sex), }
+    \AttributeTok{ulcer =} \FunctionTok{factor}\NormalTok{(ulcer)}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  tablet }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  as\_kable}
 \end{Highlighting}
 \end{Shaded}
 
@@ -232,28 +235,28 @@ move status `Alive' to first position.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x <-}\StringTok{ }\NormalTok{melanoma}
+\NormalTok{x }\OtherTok{\textless{}{-}}\NormalTok{ melanoma}
 
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{decorate}\NormalTok{(}\StringTok{'}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{decorate}\NormalTok{(}\StringTok{\textquotesingle{}}
 \StringTok{time:      [ Survival Time Since Operation, day ]}
 \StringTok{status:}
-\StringTok{ - End of Study Patient Status}
-\StringTok{ -}
-\StringTok{  - Alive: 2}
-\StringTok{  - Melanoma Death: 1}
-\StringTok{  - Unrelated Death: 3}
+\StringTok{ {-} End of Study Patient Status}
+\StringTok{ {-}}
+\StringTok{  {-} Alive: 2}
+\StringTok{  {-} Melanoma Death: 1}
+\StringTok{  {-} Unrelated Death: 3}
 \StringTok{sex:       [ Sex, [ Male: 1, Female: 0 ]]}
 \StringTok{age:       [ Age at Time of Operation, year ]}
 \StringTok{year:      [ Year of Operation, year ]}
 \StringTok{thickness: [ Tumor Thickness, mm ]}
 \StringTok{ulcer:     [ Ulceration, [ Absent: 0, Present: 1 ]]}
-\StringTok{'}\NormalTok{)}
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{time, }\OperatorTok{-}\NormalTok{year)}
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status)}
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\NormalTok{resolve}
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{modify}\NormalTok{(}
+\StringTok{\textquotesingle{}}\NormalTok{)}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{time, }\SpecialCharTok{{-}}\NormalTok{year)}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(status)}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%}\NormalTok{ resolve}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{modify}\NormalTok{(}
 \NormalTok{  age, thickness, }
-  \DataTypeTok{title =} \KeywordTok{paste0}\NormalTok{(label, }\StringTok{' ('}\NormalTok{, units, }\StringTok{')'}\NormalTok{)}
+  \AttributeTok{title =} \FunctionTok{paste0}\NormalTok{(label, }\StringTok{\textquotesingle{} (\textquotesingle{}}\NormalTok{, units, }\StringTok{\textquotesingle{})\textquotesingle{}}\NormalTok{)}
 \NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -273,7 +276,7 @@ Now we pass x to tablet() and as\_kable() for a more informative result.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x }\OperatorTok{%>%}\StringTok{ }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }\NormalTok{as_kable}
+\NormalTok{x }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ tablet }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ as\_kable}
 \end{Highlighting}
 \end{Shaded}
 
@@ -338,6 +341,51 @@ the group(s):
 By the way, you can also pass \texttt{all\ =\ NULL} to suppress the
 `All' column.
 
+\hypertarget{as-xtable}{%
+\section{As Xtable}\label{as-xtable}}
+
+Some support is provided for `xtable'. Currently, grouped columns (see
+next section) are not supported.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(xtable)}
+\CommentTok{\# x \%\textgreater{}\% tablet \%\textgreater{}\% as\_kable}
+\NormalTok{  x }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ tablet }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ as\_xtable }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{print}\NormalTok{(}\AttributeTok{booktabs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{include.rownames=}\ConstantTok{FALSE}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lllll}
+  \toprule
+  & Alive
+(N = 134) & Melanoma Death
+(N = 57) & Unrelated Death
+(N = 14) & All
+(N = 205) \\ 
+  \midrule
+\multicolumn{5}{l}{Sex}\\
+Male & 43 (32.1\%) & 29 (50.9\%) & 7 (50\%) & 79 (38.5\%) \\ 
+  Female & 91 (67.9\%) & 28 (49.1\%) & 7 (50\%) & 126 (61.5\%) \\ 
+   \midrule
+\multicolumn{5}{l}{Age at Time of Operation (year)}\\
+Mean (SD) & 50 (15.9) & 55.1 (17.9) & 65.3 (10.9) & 52.5 (16.7) \\ 
+  Median (range) & 52 (4, 84) & 56 (14, 95) & 65 (49, 86) & 54 (4, 95) \\ 
+   \midrule
+\multicolumn{5}{l}{Tumor Thickness (mm)}\\
+Mean (SD) & 2.24 (2.33) & 4.31 (3.57) & 3.72 (3.63) & 2.92 (2.96) \\ 
+  Median (range) & 1.36 (0.1, 12.9) & 3.54 (0.32, 17.4) & 2.26 (0.16, 12.6) & 1.94 (0.1, 17.4) \\ 
+   \midrule
+\multicolumn{5}{l}{Ulceration}\\
+Absent & 92 (68.7\%) & 16 (28.1\%) & 7 (50\%) & 115 (56.1\%) \\ 
+  Present & 42 (31.3\%) & 41 (71.9\%) & 7 (50\%) & 90 (43.9\%) \\ 
+   \bottomrule
+\multicolumn{5}{l}{}\\
+\end{tabular}
+\end{table}
+
 \hypertarget{grouped-columns}{%
 \section{Grouped Columns}\label{grouped-columns}}
 
@@ -349,12 +397,12 @@ adding a grouping variable that groups the two kinds of death.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{class =}\NormalTok{ status)                          }\CommentTok{# copy the current group}
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{modify}\NormalTok{(class, }\DataTypeTok{label =} \StringTok{'class'}\NormalTok{)                  }\CommentTok{# change its label}
-\KeywordTok{levels}\NormalTok{(x}\OperatorTok{$}\NormalTok{status) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'Alive'}\NormalTok{,}\StringTok{'Melanoma'}\NormalTok{,}\StringTok{'Unrelated'}\NormalTok{)  }\CommentTok{# tweak current group}
-\KeywordTok{levels}\NormalTok{(x}\OperatorTok{$}\NormalTok{class)  <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{' '}\NormalTok{,    }\StringTok{'Death'}\NormalTok{,   }\StringTok{'Death'}\NormalTok{)      }\CommentTok{# cluster groups}
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(class, status)                         }\CommentTok{# nest groups}
-\NormalTok{x }\OperatorTok{%>%}\StringTok{ }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }\NormalTok{as_kable                              }\CommentTok{# render}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{class =}\NormalTok{ status)                          }\CommentTok{\# copy the current group}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{modify}\NormalTok{(class, }\AttributeTok{label =} \StringTok{\textquotesingle{}class\textquotesingle{}}\NormalTok{)                  }\CommentTok{\# change its label}
+\FunctionTok{levels}\NormalTok{(x}\SpecialCharTok{$}\NormalTok{status) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Alive\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Melanoma\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Unrelated\textquotesingle{}}\NormalTok{)  }\CommentTok{\# tweak current group}
+\FunctionTok{levels}\NormalTok{(x}\SpecialCharTok{$}\NormalTok{class)  }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{} \textquotesingle{}}\NormalTok{,    }\StringTok{\textquotesingle{}Death\textquotesingle{}}\NormalTok{,   }\StringTok{\textquotesingle{}Death\textquotesingle{}}\NormalTok{)      }\CommentTok{\# cluster groups}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(class, status)                         }\CommentTok{\# nest groups}
+\NormalTok{x }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ tablet }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ as\_kable                              }\CommentTok{\# render}
 \end{Highlighting}
 \end{Shaded}
 
@@ -392,16 +440,16 @@ group above and instead nest sex within status \ldots{}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status, sex)}
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{class)}
-\NormalTok{x }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{)}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(status, sex)}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{class)}
+\NormalTok{x }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  tablet }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  as\_kable }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{kable\_styling}\NormalTok{(}\AttributeTok{latex\_options =} \StringTok{\textquotesingle{}scale\_down\textquotesingle{}}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{table}[H]
+\begin{table}
 \centering
 \resizebox{\linewidth}{!}{
 \begin{tabular}[t]{llllllll}
@@ -430,15 +478,15 @@ group above and instead nest sex within status \ldots{}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status, ulcer)}
-\NormalTok{x }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{)}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(status, ulcer)}
+\NormalTok{x }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  tablet }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  as\_kable }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{kable\_styling}\NormalTok{(}\AttributeTok{latex\_options =} \StringTok{\textquotesingle{}scale\_down\textquotesingle{}}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{table}[H]
+\begin{table}
 \centering
 \resizebox{\linewidth}{!}{
 \begin{tabular}[t]{llllllll}
@@ -467,15 +515,15 @@ group above and instead nest sex within status \ldots{}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status, ulcer, sex)}
-\NormalTok{x }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\NormalTok{tablet }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\NormalTok{as_kable }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{latex_options =} \StringTok{'scale_down'}\NormalTok{) }\CommentTok{# %>% landscape ?}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(status, ulcer, sex)}
+\NormalTok{x }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  tablet }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  as\_kable }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{kable\_styling}\NormalTok{(}\AttributeTok{latex\_options =} \StringTok{\textquotesingle{}scale\_down\textquotesingle{}}\NormalTok{) }\CommentTok{\# \%\textgreater{}\% landscape ?}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{table}[H]
+\begin{table}
 \centering
 \resizebox{\linewidth}{!}{
 \begin{tabular}[t]{llllllllllllll}
@@ -518,14 +566,14 @@ replace these entirely. In this example, we will \ldots{}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{x }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(status)}
-\NormalTok{x }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{tablet}\NormalTok{(}
-    \DataTypeTok{fac =} \OtherTok{NULL}\NormalTok{,}
-\NormalTok{    lab }\OperatorTok{~}\StringTok{ }\NormalTok{name,}
-    \StringTok{`}\DataTypeTok{Median (range)}\StringTok{`} \OperatorTok{~}\StringTok{ }\NormalTok{med }\OperatorTok{+}\StringTok{ ' ('} \OperatorTok{+}\StringTok{ }\NormalTok{min }\OperatorTok{+}\StringTok{ ' - '} \OperatorTok{+}\StringTok{ }\NormalTok{max }\OperatorTok{+}\StringTok{ ')'}
-\NormalTok{  ) }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\NormalTok{as_kable}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(status)}
+\NormalTok{x }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{tablet}\NormalTok{(}
+    \AttributeTok{fac =} \ConstantTok{NULL}\NormalTok{,}
+\NormalTok{    lab }\SpecialCharTok{\textasciitilde{}}\NormalTok{ name,}
+    \StringTok{\textasciigrave{}}\AttributeTok{Median (range)}\StringTok{\textasciigrave{}} \SpecialCharTok{\textasciitilde{}}\NormalTok{ med }\SpecialCharTok{+} \StringTok{\textquotesingle{} (\textquotesingle{}} \SpecialCharTok{+}\NormalTok{ min }\SpecialCharTok{+} \StringTok{\textquotesingle{} {-} \textquotesingle{}} \SpecialCharTok{+}\NormalTok{ max }\SpecialCharTok{+} \StringTok{\textquotesingle{})\textquotesingle{}}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  as\_kable}
 \end{Highlighting}
 \end{Shaded}
 

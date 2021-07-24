@@ -4,6 +4,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 #knitr::opts_chunk$set(package.startup.message = FALSE)
+options(xtable.comment = FALSE)
 
 ## ----software, include = FALSE------------------------------------------------
 library(tidyr)
@@ -64,6 +65,12 @@ x %<>% modify(
 
 ## ----meta---------------------------------------------------------------------
 x %>% tablet %>% as_kable
+
+## ----xtable, results = 'asis'-------------------------------------------------
+library(xtable)
+# x %>% tablet %>% as_kable
+  x %>% tablet %>% as_xtable %>% 
+    print(booktabs = TRUE, include.rownames=FALSE )
 
 ## ---- grouped-----------------------------------------------------------------
 x %<>% mutate(class = status)                          # copy the current group

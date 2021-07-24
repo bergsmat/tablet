@@ -36,6 +36,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 #knitr::opts_chunk$set(package.startup.message = FALSE)
+options(xtable.comment = FALSE)
 ```
 
 # Motivation
@@ -176,6 +177,22 @@ you can just remove the group(s):
 * ```x %>% ungroup %>% select(-1) %>% tablet %>% as_kable```.
 
 By the way, you can also pass ```all = NULL``` to suppress the 'All' column.
+
+# As Xtable
+
+Some support is provided for 'xtable'.  Currently, grouped columns
+(see next section) are not supported.
+
+```{r xtable, results = 'asis'}
+library(xtable)
+# x %>% tablet %>% as_kable
+  x %>% tablet %>% as_xtable %>% 
+    print(
+      booktabs = TRUE, 
+      include.rownames = FALSE 
+    )
+```
+
 
 # Grouped Columns
 
