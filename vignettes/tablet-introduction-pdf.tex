@@ -352,7 +352,7 @@ next section) are not supported.
 \FunctionTok{library}\NormalTok{(xtable)}
 \NormalTok{  x }\SpecialCharTok{\%\textgreater{}\%} 
     \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{(status }\SpecialCharTok{==} \StringTok{\textquotesingle{}Alive\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ sex }\SpecialCharTok{==} \StringTok{\textquotesingle{}Male\textquotesingle{}}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{    tablet }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ as\_xtable }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{    tablet }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_xtable}\NormalTok{(}\AttributeTok{format\_value =} \ControlFlowTok{function}\NormalTok{(x,...)x) }\SpecialCharTok{\%\textgreater{}\%} 
     \FunctionTok{print}\NormalTok{(}
       \AttributeTok{booktabs =} \ConstantTok{TRUE}\NormalTok{, }
       \AttributeTok{include.rownames =} \ConstantTok{FALSE} 

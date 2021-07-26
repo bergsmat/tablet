@@ -70,7 +70,7 @@ x %>% tablet %>% as_kable
 library(xtable)
   x %>% 
     filter(!(status == 'Alive' & sex == 'Male')) %>%
-    tablet %>% as_xtable %>% 
+    tablet %>% as_xtable(format_value = function(x,...)x) %>% 
     print(
       booktabs = TRUE, 
       include.rownames = FALSE 

@@ -187,7 +187,7 @@ Some support is provided for 'xtable'.  Currently, grouped columns
 library(xtable)
   x %>% 
     filter(!(status == 'Alive' & sex == 'Male')) %>%
-    tablet %>% as_xtable %>% 
+    tablet %>% as_xtable(format_value = function(x,...)x) %>% 
     print(
       booktabs = TRUE, 
       include.rownames = FALSE 

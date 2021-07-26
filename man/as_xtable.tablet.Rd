@@ -15,7 +15,7 @@
   variable = " ",
   format_name = function(x, ...) paste0("\\\\!\\\\!\\\\textbf{", x, "}"),
   format_stat = function(x, ...) x,
-  format_value = function(x, ...) sub("0 (0.0\%)", "", x),
+  format_value = function(x, ...) x,
   ...
 )
 }
