@@ -124,7 +124,7 @@
 
 \title{An Introduction to Tablet for PDF}
 \author{Tim Bergsma}
-\date{2021-07-24}
+\date{2021-07-26}
 
 \begin{document}
 \maketitle
@@ -350,9 +350,13 @@ next section) are not supported.
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(xtable)}
-\CommentTok{\# x \%\textgreater{}\% tablet \%\textgreater{}\% as\_kable}
-\NormalTok{  x }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ tablet }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ as\_xtable }\SpecialCharTok{\%\textgreater{}\%} 
-    \FunctionTok{print}\NormalTok{(}\AttributeTok{booktabs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{include.rownames=}\ConstantTok{FALSE}\NormalTok{ )}
+\NormalTok{  x }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{(status }\SpecialCharTok{==} \StringTok{\textquotesingle{}Alive\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ sex }\SpecialCharTok{==} \StringTok{\textquotesingle{}Male\textquotesingle{}}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{    tablet }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ as\_xtable }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{print}\NormalTok{(}
+      \AttributeTok{booktabs =} \ConstantTok{TRUE}\NormalTok{, }
+      \AttributeTok{include.rownames =} \ConstantTok{FALSE} 
+\NormalTok{    )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -361,26 +365,26 @@ next section) are not supported.
 \begin{tabular}{lllll}
   \toprule
   & Alive
-(N = 134) & Melanoma Death
+(N = 91) & Melanoma Death
 (N = 57) & Unrelated Death
 (N = 14) & All
-(N = 205) \\ 
+(N = 162) \\ 
   \midrule
-\multicolumn{5}{l}{Sex}\\
-Male & 43 (32.1\%) & 29 (50.9\%) & 7 (50\%) & 79 (38.5\%) \\ 
-  Female & 91 (67.9\%) & 28 (49.1\%) & 7 (50\%) & 126 (61.5\%) \\ 
+\multicolumn{5}{l}{\!\!\textbf{Age at Time of Operation (year)}}\\
+Mean (SD) & 48.8 (15.4) & 55.1 (17.9) & 65.3 (10.9) & 52.4 (16.7) \\ 
+  Median (range) & 49 (4, 77) & 56 (14, 95) & 65 (49, 86) & 54 (4, 95) \\ 
    \midrule
-\multicolumn{5}{l}{Age at Time of Operation (year)}\\
-Mean (SD) & 50 (15.9) & 55.1 (17.9) & 65.3 (10.9) & 52.5 (16.7) \\ 
-  Median (range) & 52 (4, 84) & 56 (14, 95) & 65 (49, 86) & 54 (4, 95) \\ 
+\multicolumn{5}{l}{\!\!\textbf{Sex}}\\
+Male &  & 29 (50.9\%) & 7 (50\%) & 36 (22.2\%) \\ 
+  Female & 91 (100\%) & 28 (49.1\%) & 7 (50\%) & 126 (77.8\%) \\ 
    \midrule
-\multicolumn{5}{l}{Tumor Thickness (mm)}\\
-Mean (SD) & 2.24 (2.33) & 4.31 (3.57) & 3.72 (3.63) & 2.92 (2.96) \\ 
-  Median (range) & 1.36 (0.1, 12.9) & 3.54 (0.32, 17.4) & 2.26 (0.16, 12.6) & 1.94 (0.1, 17.4) \\ 
+\multicolumn{5}{l}{\!\!\textbf{Tumor Thickness (mm)}}\\
+Mean (SD) & 2.02 (2.22) & 4.31 (3.57) & 3.72 (3.63) & 2.97 (3.08) \\ 
+  Median (range) & 1.29 (0.1, 12.9) & 3.54 (0.32, 17.4) & 2.26 (0.16, 12.6) & 1.94 (0.1, 17.4) \\ 
    \midrule
-\multicolumn{5}{l}{Ulceration}\\
-Absent & 92 (68.7\%) & 16 (28.1\%) & 7 (50\%) & 115 (56.1\%) \\ 
-  Present & 42 (31.3\%) & 41 (71.9\%) & 7 (50\%) & 90 (43.9\%) \\ 
+\multicolumn{5}{l}{\!\!\textbf{Ulceration}}\\
+Absent & 68 (74.7\%) & 16 (28.1\%) & 7 (50\%) & 91 (56.2\%) \\ 
+  Present & 23 (25.3\%) & 41 (71.9\%) & 7 (50\%) & 71 (43.8\%) \\ 
    \bottomrule
 \multicolumn{5}{l}{}\\
 \end{tabular}

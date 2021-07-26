@@ -68,9 +68,13 @@ x %>% tablet %>% as_kable
 
 ## ----xtable, results = 'asis'-------------------------------------------------
 library(xtable)
-# x %>% tablet %>% as_kable
-  x %>% tablet %>% as_xtable %>% 
-    print(booktabs = TRUE, include.rownames=FALSE )
+  x %>% 
+    filter(!(status == 'Alive' & sex == 'Male')) %>%
+    tablet %>% as_xtable %>% 
+    print(
+      booktabs = TRUE, 
+      include.rownames = FALSE 
+    )
 
 ## ---- grouped-----------------------------------------------------------------
 x %<>% mutate(class = status)                          # copy the current group

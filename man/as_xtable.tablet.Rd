@@ -13,6 +13,9 @@
   display = NULL,
   auto = FALSE,
   variable = " ",
+  format_name = function(x, ...) paste0("\\\\!\\\\!\\\\textbf{", x, "}"),
+  format_stat = function(x, ...) x,
+  format_value = function(x, ...) sub("0 (0.0\%)", "", x),
   ...
 )
 }
@@ -29,14 +32,20 @@
 
 \item{display}{passed to \code{\link[xtable]{xtableList}}}
 
+\item{format_name}{function to format variable names (accepts at least x and dots)}
+
+\item{format_stat}{function to format names of statistics and factor levels (accepts at least x and dots)}
+
+\item{format_value}{function to format cell values (accepts at least x and dots)}
+
 \item{...}{passed to \code{\link[xtable]{xtableList}}}
 }
 \value{
 like \code{\link[xtable]{xtableList}}
 }
 \description{
-Renders a tablet.  Calls \code{\link[xtable]{xtable}} and implements
-special features like grouped columns.
+Renders a tablet as xtable.  Calls \code{\link[xtable]{xtable}} and implements
+default aesthetics.
 }
 \examples{
 library(boot)

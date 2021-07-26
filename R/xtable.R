@@ -16,8 +16,8 @@ as_xtable <- function(x, ...)UseMethod('as_xtable')
 
 #' Coerce Tablet to Xtable
 #'
-#' Renders a tablet.  Calls \code{\link[xtable]{xtable}} and implements
-#' special features like grouped columns.
+#' Renders a tablet as xtable.  Calls \code{\link[xtable]{xtable}} and implements
+#' default aesthetics.
 #'
 #' @param x \code{\link{tablet}}
 #' @param caption passed to \code{\link[xtable]{xtableList}}
@@ -25,6 +25,9 @@ as_xtable <- function(x, ...)UseMethod('as_xtable')
 #' @param align passed to \code{\link[xtable]{xtableList}}
 #' @param digits passed to \code{\link[xtable]{xtableList}}
 #' @param display passed to \code{\link[xtable]{xtableList}}
+#' @param format_name function to format variable names (accepts at least x and dots)
+#' @param format_stat function to format names of statistics and factor levels (accepts at least x and dots)
+#' @param format_value function to format cell values (accepts at least x and dots)
 #' @param ... passed to \code{\link[xtable]{xtableList}}
 #' @importFrom dplyr rename
 #' @export
@@ -51,13 +54,17 @@ as_xtable.tablet <- function(
   display = NULL,
   auto = FALSE,
   variable = ' ',
+  format_name = function(x, ...)paste0('\\!\\!\\textbf{', x, '}'),
+  format_stat = function(x, ...)x,
+  format_value = function(x, ...)sub('0 (0.0%)','', x),
   ...
 ){
-  if(!require(xtable)){
+  if(!requireNamespace('xtable')){
     stop('Please install and load the xtable package')
   }
   x$`_tablet_sort` <- NULL
   # index <- index(x)
+  x$`_tablet_name` <- match.fun(format_name)(x = x$`_tablet_name`, ...)
   split <- x$`_tablet_name`
   x$`_tablet_name` <- NULL
   x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
@@ -67,6 +74,7 @@ as_xtable.tablet <- function(
     x$`_tablet_level`
   )
   x$`_tablet_stat` <- NULL
+  x$`_tablet_level` <- match.fun(format_stat)(x = x$`_tablet_level`, ...)
   # names(x)[names(x) == 'level'] <- ''
   headerlist <- headerlist(x)
   if(length(headerlist))warning('grouped columns not currently supported')
@@ -78,6 +86,9 @@ as_xtable.tablet <- function(
   }
   stopifnot(is.character(variable), length(variable) == 1)
   names(x)[names(x) == '_tablet_level'] <- variable
+  for(nm in names(x)[names(x) != variable]){
+    x[[nm]] <- match.fun(format_value)(x = x[[nm]], ...)
+  }
   xlist <- split(x, split)
   attr(xlist, 'subheadings') <- names(xlist)
   y <- xtable::xtableList(
@@ -90,9 +101,6 @@ as_xtable.tablet <- function(
     auto = auto,
     ...
   )
-  for(i in seq_along(headerlist)){
-    y <- add_header_above(y, headerlist[[i]])
-  }
   y
 }
 
