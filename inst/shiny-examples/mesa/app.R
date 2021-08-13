@@ -26,8 +26,8 @@ ui <- shinyUI(
           width = 12,
           shinyFilesButton(
             id = 'source',
-            label = 'data / metadata',
-            title = 'choose data or metadata file:',
+            label = 'data',
+            title = 'choose data or metadata (*.yaml) file:',
             multiple = FALSE
           ),
           textOutput('filepath'),
@@ -37,8 +37,8 @@ ui <- shinyUI(
             title = 'choose configuration file:',
             multiple = FALSE
           ),
-          uiOutput('saveconfig'),
           textOutput('confpath'),
+          uiOutput('saveconfig'),
           uiOutput('splice'),
           uiOutput('keep'),
           uiOutput('buckets')
@@ -58,6 +58,38 @@ ui <- shinyUI(
           width = 12,
           DT::dataTableOutput("data"),
         )
+      )
+    ),
+    tabPanel(
+      'Columns',
+      sidebarLayout(
+        sidebarPanel(
+          width = 2,
+          uiOutput('saveMeta'),
+          textOutput('metapath')
+        ),
+        mainPanel(
+          width = 12,
+          uiOutput('meta')
+        )
+      )
+    ),
+    tabPanel(
+      'Shell',
+      sidebarLayout(
+        sidebarPanel(
+          width = 12,
+          actionButton('submit', 'submit'),
+          uiOutput('outputid'),
+          uiOutput('caption'),
+          uiOutput('footnotes'),
+          uiOutput('lhead1'),
+          uiOutput('lhead2'),
+          uiOutput('rhead1'),
+          uiOutput('rhead2'),
+          uiOutput('cont')
+        ),
+        mainPanel(width = 0) #end main panel
       )
     ),
     tabPanel(
@@ -95,49 +127,7 @@ ui <- shinyUI(
           uiOutput('pdfview')
         )
       )
-    ),
-    tabPanel(
-      'Annotations',
-      sidebarLayout(
-        sidebarPanel(
-          width = 12,
-          actionButton('submit', 'submit'),
-          uiOutput('outputid'),
-          uiOutput('caption'),
-          uiOutput('footnotes'),
-          uiOutput('lhead1'),
-          uiOutput('lhead2'),
-          uiOutput('rhead1'),
-          uiOutput('rhead2'),
-          uiOutput('cont')
-        ),
-        mainPanel(width = 0) #end main panel
-      )
-    ),
-    tabPanel(
-      'Metadata',
-      sidebarLayout(
-        sidebarPanel(
-          width = 2,
-          uiOutput('saveMeta')
-        ),
-        mainPanel(
-          width = 12,
-          uiOutput('meta')
-        )
-      )
     )
-    # ,
-    # tabPanel(
-    #   'tex',
-    #   sidebarLayout(
-    #     sidebarPanel(
-    #       width = 12,
-    #       verbatimTextOutput('tex')
-    #     ),
-    #     mainPanel(width = 0) #end main panel
-    #   )
-    # )
   ) # end page
 ) # end ui
 
@@ -239,6 +229,15 @@ server <- shinyServer(function(input, output, session) {
   # }
 
   # set up the file choosers
+  # https://stackoverflow.com/questions/53641749/how-to-use-shinyfilechoose-to-create-an-reactive-object-to-load-a-data-frame
+
+  # file_selected <- reactive({
+  #   shinyFileChoose(input, "file", roots = volumes, session = session)
+  #   req(input$file)
+  #   if (is.null(input$file))
+  #     return(NULL)
+  #   return(parseFilePaths(volumes, input$file)$datapath)
+  # })
 
   shinyFileChoose(
     input,
@@ -247,6 +246,23 @@ server <- shinyServer(function(input, output, session) {
     session = session,
     filetypes = c('sas7bdat', 'csv', 'xpt', 'yaml')
   )
+  observeEvent(input$source, {
+    if(is.integer(input$source)) return()
+
+    #####
+
+    reset_conf()
+
+    ####
+
+    conf$filepath <- as.character(
+      as.data.frame(
+        parseFilePaths(
+          ui_volumes, input$source
+        )
+      )[1,'datapath']
+    )
+  })
 
   shinyFileChoose(
     input,
@@ -256,43 +272,101 @@ server <- shinyServer(function(input, output, session) {
     filetypes = c('conf')
   )
 
+  observeEvent(
+    input$config,
+    {
+      if(!is.null(input$config)){
+        if(!is.na(input$config)){
+          conf$confpath <- as.character(
+            as.data.frame(
+              parseFilePaths(
+                ui_volumes, input$config
+              )
+            )[1,'datapath']
+          )
+        }
+      }
+    },
+    ignoreNULL = TRUE,
+    ignoreInit = TRUE
+  )
 
   # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
 
+  # save the curent config as ...
   observe({
-    shinyFileSave(input, "save", roots = ui_volumes, session = session)
-    fileinfo <- parseSavePath(ui_volumes, input$save)
+    shinyFileSave(input, 'saveconf', roots = ui_volumes, session = session)
+    fileinfo <- parseSavePath(ui_volumes, input$saveconf)
     if (nrow(fileinfo) > 0) {
       path <- as.character(fileinfo$datapath)
       vals <- isolate(
         reactiveValuesToList(conf)[
           !names(conf) %in% c(
             'x',
-            'confpath'
+            'confpath',
+            'editor'
           )
         ]
       )
-      write_yaml(vals, path) # only reads on save
-      conf$confpath <- path
+      res <- try(write_yaml(vals, path)) # only reads on save
+      res <- !inherits(res, 'try-error')
+      dur <- 10
+      if(res) dur <- 5
+      showNotification(
+        duration = dur,
+        type = ifelse(res, 'default', 'error'),
+        ui = paste(
+          ifelse(res, 'wrote', 'did not write'),
+          path
+        )
+      )
+      if(res){
+        conf$confpath <- path
+      }
     }
   })
 
+  # save the preview table as ...
   observe({
-    shinyFileSave(input, "savetable", roots = ui_volumes, session = session)
-    fileinfo <- parseSavePath(ui_volumes, input$save)
+    shinyFileSave(input, 'savetable', roots = ui_volumes, session = session)
+    fileinfo <- parseSavePath(ui_volumes, input$savetable)
     if (nrow(fileinfo) > 0) {
       path <- as.character(fileinfo$datapath)
       data <- isolate(summarized())
-      as.csv(data, path)
+      res <- try(as.csv(data, path))
+      res <- !inherits(res, 'try-error')
+      dur <- 10
+      if(res) dur <- 5
+      showNotification(
+        duration = dur,
+        type = ifelse(res, 'default', 'error'),
+        ui = paste(
+          ifelse(res, 'wrote', 'did not write'),
+          path
+        )
+      )
     }
   })
 
+  # save the pdf as ...
   observe({
-    shinyFileSave(input, "savepdf", roots = ui_volumes, session = session)
-    fileinfo <- parseSavePath(ui_volumes, input$save)
+    shinyFileSave(input, 'savepdf', roots = ui_volumes, session = session)
+    fileinfo <- parseSavePath(ui_volumes, input$savepdf)
     if (nrow(fileinfo) > 0) {
       path <- as.character(fileinfo$datapath)
-      file.copy(pdf_location(), path)
+      from <- isolate(pdf_location())
+      from <- file.path('www', from)
+      res <- file.copy(from, path, overwrite = TRUE)
+      dur <- 10
+      if(res) dur <- 5
+      showNotification(
+        duration = dur,
+        type = ifelse(res, 'default', 'error'),
+        ui = paste(
+          ifelse(res, 'wrote', 'did not write'),
+          path
+        )
+      )
     }
   })
 
@@ -367,37 +441,6 @@ server <- shinyServer(function(input, output, session) {
   observeEvent(input$labeltex,{
     conf$labeltex <- input$labeltex
   })
-
-  observeEvent(input$source, {
-    if(is.integer(input$source)) return()
-
-    #####
-
-    reset_conf()
-
-    ####
-
-    conf$filepath <- as.character(
-      as.data.frame(
-        parseFilePaths(
-          ui_volumes, input$source
-        )
-      )[1,'datapath']
-    )
-  })
-
-  observeEvent(input$config, {
-    #browser()
-    conf$confpath <- as.character(
-      as.data.frame(
-        parseFilePaths(
-          ui_volumes, input$config
-        )
-      )[1,'datapath']
-    )
-  })
-
-
 
   observeEvent(conf$confpath,{
     if(!length(conf$confpath)){
@@ -475,7 +518,7 @@ server <- shinyServer(function(input, output, session) {
 
   # https://stackoverflow.com/questions/34731975/how-to-listen-for-more-than-one-event-expression-within-a-shiny-eventreactive-ha
 
-  printer <- function(x)writeLines(as.character(x))
+  printer <- function(x){} # writeLines(as.character(x))
 
   observeEvent({
       conf$filepath # new data selected
@@ -795,7 +838,7 @@ server <- shinyServer(function(input, output, session) {
       id = 'savetable',
       label = 'save table as ...',
       title = 'save table as:',
-      filetype = list(conf = 'csv'),
+      filetype = list(csv = 'csv'),
       filename = paste0(conf$outputid, '.csv')
     )
   })
@@ -805,7 +848,7 @@ server <- shinyServer(function(input, output, session) {
       id = 'savepdf',
       label = 'save pdf as ...',
       title = 'save pdf as:',
-      filetype = list(conf = 'pdf'),
+      filetype = list(pdf = 'pdf'),
       filename = paste0(conf$outputid, '.pdf')
     )
   })
@@ -884,7 +927,7 @@ server <- shinyServer(function(input, output, session) {
   output$labelhtml <- renderUI({
     radioButtons(
       'labelhtml',
-      'spork labels',
+      'scripted labels',
       inline = TRUE,
       choices = c('yes','no'),
       selected = conf$labelhtml
@@ -894,7 +937,7 @@ server <- shinyServer(function(input, output, session) {
   output$labeltex <- renderUI({
     radioButtons(
       'labeltex',
-      'spork labels',
+      'scripted labels',
       inline = TRUE,
       choices = c('yes','no'),
       selected = conf$labeltex
@@ -1036,19 +1079,33 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$confpath <- renderPrint({
-    #browser()
-    if (!length(conf$confpath)) {
+    path <- conf$confpath
+    if(!length(path)){
       cat('No configuration selected.')
     } else {
-      cat(conf$confpath)
+      if(is.na(path)){
+        cat('No configuration selected.')
+      } else {
+        cat(path)
+      }
     }
   })
+
+  output$metapath <- renderPrint({
+    if (!length(conf$metapath)) {
+    cat('No data selected.')
+  } else {
+    cat(conf$metapath)
+  }
+})
+
+
 
   output$tex <- renderText(tex(), sep = '\n')
 
   output$saveconfig <- renderUI({
     shinySaveButton(
-      id = 'save',
+      id = 'saveconf',
       label = 'save configuration as ...',
       title = 'save configuration as:',
       filetype = list(conf = 'conf'),
@@ -1061,7 +1118,7 @@ server <- shinyServer(function(input, output, session) {
   # https://stackoverflow.com/questions/54304518/how-to-edit-a-yml-file-in-shiny
 
   output$saveMeta <- renderUI({
-    actionButton("saveMeta", label = "Save Metadata")
+    actionButton("saveMeta", label = "Save")
   })
 
   output$meta <- renderUI({
@@ -1104,36 +1161,28 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$saveMeta, {
-    printer('I see someone clicked "save Metadata"')
-    tryCatch(
-      {
-        printer("I'm going to try to read the supplied metadata as yaml")
-        foo <- yaml.load(input$meta)
-        printer("I'm going to try to read the supplied metadata as yamlet")
-        foo <- read_yamlet(input$meta)
-        printer("I'm going to try to write the supplied metadata to ")
-        printer(conf$metapath)
-        printer("It is this long:")
-        printer(length(input$meta))
-        write(x = input$meta, file = conf$metapath)
-        # trigger redecoration
-        # metadata version
-        printer('currently mv is')
-        printer(conf$mv)
-        printer('updating mv')
-        conf$mv <- conf$mv + 1
-        printer('now mv is')
-        printer(conf$mv)
-      },
-      error = function(e) showNotification(
-        duration = NULL,
-        type = 'error',
-        as.character(e)
-      )
+    path <- isolate(conf$metapath)
+    res <- try(yaml.load(input$meta))
+    if(!inherits(res,'try-error')){
+      res <- try(read_yamlet(input$meta))
+    }
+    err <- as.character(res)
+    res <- !inherits(res, 'try-error')
+    msg <- paste(ifelse(res, 'wrote', 'did not write'), path)
+    if(!res) msg <- paste(msg, err)
+    if(res){
+      write(x = input$meta, file = path)
+      # trigger redecoration
+      conf$mv <- conf$mv + 1
+    }
+    dur <- 10
+    if(res) dur <- 5
+    showNotification(
+      duration = dur,
+      type = ifelse(res, 'default', 'error'),
+      ui = msg
     )
-    printer("done handling save-metadata button click")
   })
-
 })
 # Create Shiny app ----
 shinyApp(ui, server)
