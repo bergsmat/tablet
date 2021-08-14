@@ -204,7 +204,7 @@ server <- shinyServer(function(input, output, session) {
     home = fs::path_home(),
     R = R.home()
   )
-  ui_volumes <- reactive( {
+  ui_volumes <- reactive({
     volumes <- moreVolumes()
     if(length(conf$filepath) & !any(is.na(conf$filepath))){
       sel_path <- dirname(conf$filepath)
@@ -223,11 +223,6 @@ server <- shinyServer(function(input, output, session) {
     volumes
   })
 
-  # safe_volumes <- function(){
-  #   browser()
-  #   ui_volumes()
-  # }
-
   # set up the file choosers
   # https://stackoverflow.com/questions/53641749/how-to-use-shinyfilechoose-to-create-an-reactive-object-to-load-a-data-frame
 
@@ -239,6 +234,7 @@ server <- shinyServer(function(input, output, session) {
   #   return(parseFilePaths(volumes, input$file)$datapath)
   # })
 
+  # choose data (or metadata)
   shinyFileChoose(
     input,
     'source',
@@ -247,22 +243,13 @@ server <- shinyServer(function(input, output, session) {
     filetypes = c('sas7bdat', 'csv', 'xpt', 'yaml')
   )
   observeEvent(input$source, {
-    if(is.integer(input$source)) return()
-
-    #####
-
+    req(input$source)
+    if(is.null(input$source)) return(NULL)
     reset_conf()
-
-    ####
-
-    conf$filepath <- as.character(
-      as.data.frame(
-        parseFilePaths(
-          ui_volumes, input$source
-        )
-      )[1,'datapath']
-    )
+    conf$filepath <- parseFilePaths(ui_volumes, input$source)$datapath
   })
+
+  # choose config
 
   shinyFileChoose(
     input,
@@ -272,28 +259,15 @@ server <- shinyServer(function(input, output, session) {
     filetypes = c('conf')
   )
 
-  observeEvent(
-    input$config,
-    {
-      if(!is.null(input$config)){
-        if(!is.na(input$config)){
-          conf$confpath <- as.character(
-            as.data.frame(
-              parseFilePaths(
-                ui_volumes, input$config
-              )
-            )[1,'datapath']
-          )
-        }
-      }
-    },
-    ignoreNULL = TRUE,
-    ignoreInit = TRUE
-  )
+  observeEvent(input$config,{
+    req(input$config)
+    if(is.null(input$config)) return(NULL)
+    conf$confpath <- parseFilePaths(ui_volumes, input$config)$datapath
+  })
 
   # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
 
-  # save the curent config as ...
+  # save the current config as ...
   observe({
     shinyFileSave(input, 'saveconf', roots = ui_volumes, session = session)
     fileinfo <- parseSavePath(ui_volumes, input$saveconf)
@@ -327,7 +301,8 @@ server <- shinyServer(function(input, output, session) {
   })
 
   # save the preview table as ...
-  observe({
+  observeEvent(input$savetable, {
+    req(input$savetable)
     shinyFileSave(input, 'savetable', roots = ui_volumes, session = session)
     fileinfo <- parseSavePath(ui_volumes, input$savetable)
     if (nrow(fileinfo) > 0) {
@@ -349,7 +324,8 @@ server <- shinyServer(function(input, output, session) {
   })
 
   # save the pdf as ...
-  observe({
+  observeEvent(input$savepdf, {
+    req(input$savepdf)
     shinyFileSave(input, 'savepdf', roots = ui_volumes, session = session)
     fileinfo <- parseSavePath(ui_volumes, input$savepdf)
     if (nrow(fileinfo) > 0) {
