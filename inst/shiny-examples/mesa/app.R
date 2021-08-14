@@ -61,7 +61,7 @@ ui <- shinyUI(
       )
     ),
     tabPanel(
-      'Columns',
+      'Variables',
       sidebarLayout(
         sidebarPanel(
           width = 2,
@@ -79,7 +79,7 @@ ui <- shinyUI(
       sidebarLayout(
         sidebarPanel(
           width = 12,
-          actionButton('submit', 'submit'),
+          actionButton('submit', 'Save'),
           uiOutput('outputid'),
           uiOutput('caption'),
           uiOutput('footnotes'),
@@ -267,8 +267,20 @@ server <- shinyServer(function(input, output, session) {
 
   # https://stackoverflow.com/questions/39517199/how-to-specify-file-and-path-to-save-a-file-with-r-shiny-and-shinyfiles
 
-  # save the current config as ...
-  observe({
+  output$saveconfig <- renderUI({
+    shinySaveButton(
+      id = 'saveconf',
+      label = 'save configuration',
+      title = 'save configuration as:',
+      filetype = list(conf = 'conf'),
+      filename = paste0(conf$outputid, '.conf')
+    )
+
+  })
+
+  # save the current config
+  observeEvent(input$saveconf, {
+    req(input$saveconf)
     shinyFileSave(input, 'saveconf', roots = ui_volumes, session = session)
     fileinfo <- parseSavePath(ui_volumes, input$saveconf)
     if (nrow(fileinfo) > 0) {
@@ -300,7 +312,17 @@ server <- shinyServer(function(input, output, session) {
     }
   })
 
-  # save the preview table as ...
+  output$savecsv <- renderUI({
+    shinySaveButton(
+      id = 'savetable',
+      label = 'save table',
+      title = 'save table as:',
+      filetype = list(csv = 'csv'),
+      filename = paste0(conf$outputid, '.csv')
+    )
+  })
+
+  # save the preview table
   observeEvent(input$savetable, {
     req(input$savetable)
     shinyFileSave(input, 'savetable', roots = ui_volumes, session = session)
@@ -323,7 +345,17 @@ server <- shinyServer(function(input, output, session) {
     }
   })
 
-  # save the pdf as ...
+  output$savepdf <- renderUI({
+    shinySaveButton(
+      id = 'savepdf',
+      label = 'save pdf',
+      title = 'save pdf as:',
+      filetype = list(pdf = 'pdf'),
+      filename = paste0(conf$outputid, '.pdf')
+    )
+  })
+
+  # save the pdf as
   observeEvent(input$savepdf, {
     req(input$savepdf)
     shinyFileSave(input, 'savepdf', roots = ui_volumes, session = session)
@@ -809,25 +841,6 @@ server <- shinyServer(function(input, output, session) {
     x
   })
 
-  output$savecsv <- renderUI({
-    shinySaveButton(
-      id = 'savetable',
-      label = 'save table as ...',
-      title = 'save table as:',
-      filetype = list(csv = 'csv'),
-      filename = paste0(conf$outputid, '.csv')
-    )
-  })
-
-  output$savepdf <- renderUI({
-    shinySaveButton(
-      id = 'savepdf',
-      label = 'save pdf as ...',
-      title = 'save pdf as:',
-      filetype = list(pdf = 'pdf'),
-      filename = paste0(conf$outputid, '.pdf')
-    )
-  })
 
   output$buckets <- renderUI({
     if(!length(conf$x))return()
@@ -1078,18 +1091,6 @@ server <- shinyServer(function(input, output, session) {
 
 
   output$tex <- renderText(tex(), sep = '\n')
-
-  output$saveconfig <- renderUI({
-    shinySaveButton(
-      id = 'saveconf',
-      label = 'save configuration as ...',
-      title = 'save configuration as:',
-      filetype = list(conf = 'conf'),
-      filename = paste0(conf$outputid, '.conf')
-    )
-
-  })
-
 
   # https://stackoverflow.com/questions/54304518/how-to-edit-a-yml-file-in-shiny
 
