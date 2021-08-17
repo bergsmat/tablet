@@ -243,8 +243,15 @@ server <- shinyServer(function(input, output, session) {
     printer('observeEvent:input$source')
     req(input$source)
     if(is.null(input$source)) return(NULL)
-    reset_conf()
-    conf$filepath <- parseFilePaths(ui_volumes, input$source)$datapath
+    newsource <- parseFilePaths(ui_volumes, input$source)$datapath
+    if(is.character(newsource)){
+      if(length(newsource)){
+        if(file.exists(newsource)){
+          reset_conf()
+          conf$filepath <- newsource
+        }
+      }
+    }
   })
 
   # choose config
