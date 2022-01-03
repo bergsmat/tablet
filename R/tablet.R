@@ -575,6 +575,8 @@ groupwise.data.frame <- function(
 #' @export
 #' @return see methods
 #' @keywords internal
+#' @examples
+#' example(tablet.data.frame)
 tablet <- function(x, ...)UseMethod('tablet')
 
 #' Generate a Group-wise Tablet
