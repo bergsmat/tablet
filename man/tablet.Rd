@@ -17,4 +17,7 @@ see methods
 \description{
 Generates a tablet.  Generic. See \code{\link{tablet.data.frame}} and \code{\link{as_kable.tablet}}.
 }
+\examples{
+example(tablet.data.frame)
+}
 \keyword{internal}
