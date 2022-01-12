@@ -19,4 +19,4 @@ RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Suggests: knitr, magrittr, rmarkdown, yamlet (>= 0.6.9), boot, 
  testthat, shiny, shinyFiles, fs, haven, yaml, sortable, 
- latexpdf, tools, csv, xtable, shinyAce, spork
+ latexpdf, tools, csv, xtable, shinyAce
