@@ -2,23 +2,28 @@
 % Please edit documentation in R/tablet.R
 \name{escape_latex}
 \alias{escape_latex}
-\title{Escape Latex}
+\title{Escape Latex.}
 \usage{
 escape_latex(x, ...)
 }
 \arguments{
-\item{x}{character}
+\item{x}{presumably character}
 
-\item{...}{ignored}
+\item{...}{passed arguments}
 }
 \value{
-character
+see methods
 }
 \description{
-Escapes latex markup.
-Adapted with gratitude from KableExtra internals.
+Escaples latex.  Generic, with method \code{link{escape_latex.default}}.
 }
 \examples{
-escape_latex('([#$\%&_{}])')
+example(escape_latex.default)
 }
-\keyword{internal}
+\seealso{
+Other escape: 
+\code{\link{escape_latex.default}()},
+\code{\link{escape_latex.escaped}()}
+}
+\concept{escape}
+\keyword{internall}

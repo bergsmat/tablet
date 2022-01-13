@@ -29,9 +29,9 @@
 
 \item{escape}{passed to \code{\link[kableExtra]{kbl}}; defaults FALSE to allow header linebreaks}
 
-\item{escape_latex}{a function to pre-process column names and content if 'escape' is FALSE (e.g., manual escaping, latex only)}
+\item{escape_latex}{a function to pre-process column names and content if 'escape' is FALSE (e.g., manual escaping, latex only); default \code{\link{escape_latex}}}
 
-\item{escape_html}{a function to pre-process column names content if 'escape' is FALSE (e.g., manual escaping, html only)}
+\item{escape_html}{a function to pre-process column names and content if 'escape' is FALSE (e.g., manual escaping, html only)}
 
 \item{variable}{a column name for the variables}
 
