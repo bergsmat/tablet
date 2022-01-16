@@ -2,12 +2,12 @@
 % Please edit documentation in R/tablet.R
 \name{escape_latex}
 \alias{escape_latex}
-\title{Escape Latex.}
+\title{Escape Special Characters for Latex}
 \usage{
 escape_latex(x, ...)
 }
 \arguments{
-\item{x}{presumably character}
+\item{x}{typically inherits character}
 
 \item{...}{passed arguments}
 }
@@ -15,7 +15,7 @@ escape_latex(x, ...)
 see methods
 }
 \description{
-Escaples latex.  Generic, with method \code{link{escape_latex.default}}.
+Escapes special characters in Latex context.  Generic, with method \code{link{escape_latex.default}}.
 }
 \examples{
 example(escape_latex.default)
@@ -23,7 +23,7 @@ example(escape_latex.default)
 \seealso{
 Other escape: 
 \code{\link{escape_latex.default}()},
-\code{\link{escape_latex.escaped}()}
+\code{\link{escape_latex.latex}()}
 }
 \concept{escape}
-\keyword{internall}
+\keyword{internal}
