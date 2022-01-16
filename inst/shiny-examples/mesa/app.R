@@ -678,37 +678,26 @@ server <- shinyServer(function(input, output, session) {
     if(length(input$labelhtml) == 1){
       printer('factorized - labelhtml')
       if(input$labelhtml == 'yes'){
-        suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$label)))) # default
-        suppressWarnings(x %<>% modify(html_units = paste0(
-          as_html(as_spork(' (')),
-          as_html(as_spork(.data$units)),
-          as_html(as_spork(')'))
-        )))
-        suppressWarnings(x %<>% modify(html = paste0(html, html_units))) # succeeds conditional on units
+        suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$name)))) # default
+        suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$label))))
+        suppressWarnings(x %<>% modify(
+          html = concatenate(as_html(as_spork(c(.data$label, ' (', .data$units,')'))))
+        ))
       }
     }else{printer('factorized - no labelhtml')}
     if(length(input$labeltex) == 1){
       printer('factorized - labeltex')
+
       if(input$labeltex == 'yes'){
         # browser()
-        suppressWarnings(
-          x %<>% modify(
-            tex = concatenate(
-              # should retain class 'latex'
-              # currently pre-doubled by escape_latex.latex
-              as_latex(
-                as_spork(
-                  c(
-                    .data$label,
-                    ' (',
-                    .data$units,
-                    ')'
-                  )
-                )
-              )
-            )
-          )
-        )
+        # we need default 'latex' tex attributes for all columns ...
+        suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$name))))
+        suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$label))))
+        suppressWarnings(x %<>% modify(
+          # should retain class 'latex'
+          # currently pre-doubled by escape_latex.latex
+          tex = concatenate(as_latex(as_spork(c(.data$label, ' (', .data$units,')'))))
+        ))
       }
     }else{printer('factorized - no labeltex')}
     x
@@ -824,7 +813,7 @@ server <- shinyServer(function(input, output, session) {
     # _tablet_name has been thoroughly pre-escaped for all cases.
     # however, it is created as factor.
     # we flag it as latex to invoke the right method in as_kable(escape_latex = tablet::escape_latex)
-    x %<>% mutate(`_tablet_name` = as_latex(`tablet_name`))
+    x %<>% mutate(`_tablet_name` = as_latex(`_tablet_name`))
     x %<>% as_kable(format = 'latex', caption = escape_latex(conf$title), longtable = TRUE)
     if(length(input$repeatheader) == 1){
       if(input$repeatheader == 'yes'){

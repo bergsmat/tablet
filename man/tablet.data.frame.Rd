@@ -61,7 +61,7 @@
 }
 \value{
 'tablet', with columns for each combination of groups, and:
-\item{_tablet_name}{observation identifier}
+\item{_tablet_name}{observation identifier: character, possibly 'latex', see details}
 \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
 \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 \item{All (or value of 'all' argument)}{ungrouped results}
@@ -111,6 +111,16 @@ The goal is to support all possible ways of expressing or ignoring
 missingness. That said, if aggregate functions are removing
 NA, the values of arguments beginning with 'na.rm' or 'exclude'
 may not matter.
+
+Output includes the column \code{_tablet_name} which inherits character.
+Its values are typically the names of the original columns
+that were factor or numeric but not in groups(x). If the first
+of these had a label attribute or (priority) a title attribute
+with class 'latex', then \code{_tablet_name} is assigned the
+class 'latex' as well. It makes sense therefore to be consistent
+across input columns regarding the presence or not of a 'latex'
+label or title. By default, \code{\link{as_kable.tablet}} dispatches
+class-specific methods for \code{\link{escape_latex}}.
 }
 \examples{
 library(boot)

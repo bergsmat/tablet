@@ -1086,6 +1086,16 @@ as_kable.tablet <- function(
 #' NA, the values of arguments beginning with 'na.rm' or 'exclude'
 #' may not matter.
 #'
+#' Output includes the column \code{_tablet_name} which inherits character.
+#' Its values are typically the names of the original columns
+#' that were factor or numeric but not in groups(x). If the first
+#' of these had a label attribute or (priority) a title attribute
+#' with class 'latex', then \code{_tablet_name} is assigned the
+#' class 'latex' as well. It makes sense therefore to be consistent
+#' across input columns regarding the presence or not of a 'latex'
+#' label or title. By default, \code{\link{as_kable.tablet}} dispatches
+#' class-specific methods for \code{\link{escape_latex}}.
+#'
 #' @usage
 #' \method{tablet}{data.frame}(
 #'  x,
@@ -1130,7 +1140,7 @@ as_kable.tablet <- function(
 #' @param exclude_name whether to drop NA values of column name (for completeness); passed to \code{\link[tidyr]{gather}}
 #' @export
 #' @return 'tablet', with columns for each combination of groups, and:
-#' \item{_tablet_name}{observation identifier}
+#' \item{_tablet_name}{observation identifier: character, possibly 'latex', see details}
 #' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
 #' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 #' \item{All (or value of 'all' argument)}{ungrouped results}
@@ -1190,6 +1200,20 @@ tablet.data.frame <- function(
       exclude_name = exclude_name
    )
    y <- tablet(y, ..., all = all, lab = lab ) # tablet.groupwise
+   y$`_tablet_name` <- as.character(y$`_tablet_name`)
+   # check for prime target inheriting 'latex' and coerce _tablet_name accordingly
+   fac <- sapply(x, is.factor)
+   num <- sapply(x, is.numeric)
+   col <- names(x)[fac | num]
+   if(length(col)){
+      prime <- col[[1]]
+      targets <- intersect(c('title','label'), names(attributes(x[[prime]])))
+      if(length(targets)){
+         target <- targets[[1]]
+         if(inherits(attr(x[[prime]], target), 'latex'))
+            class(y$`_tablet_name`) <- union('latex', class(y$`_tablet_name`))
+      }
+   }
    y
 }
 
