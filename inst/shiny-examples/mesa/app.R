@@ -675,20 +675,28 @@ server <- shinyServer(function(input, output, session) {
     suppressWarnings(x %<>% modify(title = label))
     suppressWarnings(x %<>% modify(title = paste0(label, ' (', .data$units, ')')))
 
-    if(length(input$labelhtml) == 1){
-      printer('factorized - labelhtml')
-      if(input$labelhtml == 'yes'){
+    # conditionally creating scripted labels has the
+    # unintended effect of making the pdf and preview displays
+    # co-dependent, since the output of factorized() changes
+    # when either flag changes.
+    # Meanwhile, it is easy and cheap to calculate html/tex labels
+    # unconditionally, but use them conditionally.
+    # Accordingly, we unconditionalize the following code.
+
+    # if(length(input$labelhtml) == 1){
+    #   printer('factorized - labelhtml')
+    #   if(input$labelhtml == 'yes'){
         suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$name)))) # default
         suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$label))))
         suppressWarnings(x %<>% modify(
           html = concatenate(as_html(as_spork(c(.data$label, ' (', .data$units,')'))))
         ))
-      }
-    }else{printer('factorized - no labelhtml')}
-    if(length(input$labeltex) == 1){
-      printer('factorized - labeltex')
-
-      if(input$labeltex == 'yes'){
+    #   }
+    # }else{printer('factorized - no labelhtml')}
+    # if(length(input$labeltex) == 1){
+    #   printer('factorized - labeltex')
+    #
+    #   if(input$labeltex == 'yes'){
         # browser()
         # we need default 'latex' tex attributes for all columns ...
         suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$name))))
@@ -698,8 +706,8 @@ server <- shinyServer(function(input, output, session) {
           # currently pre-doubled by escape_latex.latex
           tex = concatenate(as_latex(as_spork(c(.data$label, ' (', .data$units,')'))))
         ))
-      }
-    }else{printer('factorized - no labeltex')}
+    #   }
+    # }else{printer('factorized - no labeltex')}
     x
   })
 
