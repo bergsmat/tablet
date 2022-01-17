@@ -932,6 +932,7 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' library(dplyr)
 #' library(magrittr)
 #' library(haven)
+#' library(yamlet)
 #' melanoma %>%
 #'   select(-time, -year) %>%
 #'   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
@@ -941,7 +942,7 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #'
 #' x <- system.file(package = 'tablet', 'shiny-examples/mesa/data/adsl.sas7bdat')
 #' x %<>% read_sas %>% data.frame
-#' x %>% decorations # note weight in pounds
+#' decorations(x) # note weight in pounds
 #' x %<>% mutate(weight = signif(digits = 3, weight * 2.2))
 #'
 #' # calculate BMI by assuming all males are 1.75 m, all females 1.63 cm
