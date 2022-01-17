@@ -931,12 +931,50 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' library(boot)
 #' library(dplyr)
 #' library(magrittr)
+#' library(haven)
 #' melanoma %>%
 #'   select(-time, -year) %>%
 #'   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
 #'   group_by(status) %>%
 #'   tablet %>%
 #'   as_kable
+#'
+#' x <- system.file(package = 'tablet', 'shiny-examples/mesa/data/adsl.sas7bdat')
+#' x %<>% read_sas %>% data.frame
+#' x %>% decorations # note weight in pounds
+#' x %<>% mutate(weight = signif(digits = 3, weight * 2.2))
+#'
+#' # calculate BMI by assuming all males are 1.75 m, all females 1.63 cm
+#' x %<>% mutate(height = ifelse(sex == 'F', 1.63, 1.75))
+#' x %<>% mutate(bmi = signif(digits = 3, weight / (height^2)))
+#' x %<>% filter(saffl == 'Y')
+#' x %<>% select(trt01a, age, sex, weight, bmi)
+#' x %<>% redecorate('
+#' trt01a: [ Treatment, [ Placebo, TRT 10 mg, TRT 20 mg ]]
+#' age:    [ Age, year ]
+#' sex:    [ Sex, [ Female: F, Male: M ]]
+#' weight: [ Body Weight, kg ]
+#' bmi:    [ Index_body mass, kg/m^2 ]
+#' ')
+#' x %<>% resolve
+#' x %<>% group_by(trt01a)
+#'
+#' x %>% tablet %>% as_kable
+#'
+#' # supply default and unit-conditional latex titles
+#' x %<>% modify(title = concatenate(as_latex(as_spork(c(.data$label)))))
+#' x %<>% modify(
+#' age, weight, bmi,
+#'   title = concatenate(
+#'     sep = '',  # default ok in pdf
+#'     as_latex(
+#'       as_spork(
+#'         c(.data$label, ' (', .data$units, ')')
+#'       )
+#'     )
+#'   )
+#' )
+#' x %>% tablet %>% as_kable
 
 
 as_kable.tablet <- function(
