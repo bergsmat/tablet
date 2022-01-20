@@ -933,6 +933,7 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' library(magrittr)
 #' library(haven)
 #' library(yamlet)
+#' library(spork)
 #' melanoma %>%
 #'   select(-time, -year) %>%
 #'   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
