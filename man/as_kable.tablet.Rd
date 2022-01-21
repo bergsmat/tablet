@@ -54,12 +54,22 @@ like \code{\link[kableExtra]{kbl}}
 Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
 special features like grouped columns.
 }
+\details{
+See also \code{\link{tablet.data.frame}}.
+Column \code{_tablet_name} must inherit 'character' and
+by default (in a latex render context) its values
+will eventually be processed by \code{escape_latex}.
+Thus, if \code{_tablet_name} is of class 'latex'
+it will be handled by method \code{\link{escape_latex.latex}}
+(which tries not to re-escape metacharacters).
+}
 \examples{
 library(boot)
 library(dplyr)
 library(magrittr)
 library(haven)
 library(yamlet)
+library(spork)
 melanoma \%>\%
   select(-time, -year) \%>\%
   mutate(sex = factor(sex), ulcer = factor(ulcer)) \%>\%

@@ -786,6 +786,7 @@ tablet.groupwise <- function(
 
 
   # this is the only constructor for 'tablet'
+  x$`_tablet_name` <- as.character(x$`_tablet_name`)
   class(x) <- union('tablet', setdiff(class(x), 'groupwise'))
   x
 }
@@ -910,6 +911,15 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
 #' special features like grouped columns.
 #'
+#' See also \code{\link{tablet.data.frame}}.
+#' Column \code{_tablet_name} must inherit 'character' and
+#' by default (in a latex render context) its values
+#' will eventually be processed by \code{escape_latex}.
+#' Thus, if \code{_tablet_name} is of class 'latex'
+#' it will be handled by method \code{\link{escape_latex.latex}}
+#' (which tries not to re-escape metacharacters).
+#'
+#'
 #' @param x \code{\link{tablet}}
 #' @param ... passed to \code{\link[kableExtra]{kbl}}
 #' @param booktabs passed to \code{\link[kableExtra]{kbl}}
@@ -1004,13 +1014,15 @@ as_kable.tablet <- function(
    # }
    stopifnot(is.logical(escape), length(escape) == 1)
    x$`_tablet_sort` <- NULL
-   index <- index(x) # draws on _tablet_name, which should be factor or 'latex', 'factor'
+   index <- index(x)
+   # draws on _tablet_name, which should be character or c('latex', 'character')
    nmsi <- names(index) # isolate to assign class
-   if(inherits(x$`_tablet_name`, 'latex')) nmsi <- as_latex(nmsi) # class propagation
+   stopifnot(is.character(x$`_tablet_name`))
+   class(nmsi) <- class(x$`_tablet_name`) # class propagaton
    x$`_tablet_name` <- NULL # done
    if(!escape){
       if (knitr::is_latex_output()) {
-         nmsi <- escape_latex(nmsi) # invokes class-specific method
+         nmsi <- escape_latex(nmsi) # invokes class-specific method, possibly escaping or ignoring latex metacharacters
       } else {
          nmsi <- escape_html(nmsi)
       }
