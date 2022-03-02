@@ -1002,7 +1002,7 @@ as_kable.tablet <- function(
    align = 'c',
    double_escape = FALSE,
    linebreaker = '\n',
-   pack_rows = list()
+   pack_rows = list(escape = escape)
 ){
 
    # if(is.na(escape)){
@@ -1086,7 +1086,7 @@ as_kable.tablet <- function(
    y <- do.call(
       kableExtra::pack_rows,
       c(
-         list(y, index = index, escape = escape),
+         list(y, index = index), # @0.4.9 removing ', escape = escape
          pack_rows
       )
    )
