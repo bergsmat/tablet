@@ -965,7 +965,7 @@ server <- shinyServer(function(input, output, session) {
     printer('output$repeatfootnote')
     radioButtons(
       'repeatfootnote',
-      'repeat footnote n each page',
+      'repeat footnote on each page',
       inline = TRUE,
       choices = c('yes','no'),
       selected = conf$repeatfoot
