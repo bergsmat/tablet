@@ -769,7 +769,7 @@ server <- shinyServer(function(input, output, session) {
     args <- args()
 
     if(!is.null(input$labelhtml)){
-      if(input$labelhtml == TRUE){
+      if(input$labelhtml == 'yes'){
         args$x %<>% modify(title = .data$html)
       }
     } else {
@@ -808,7 +808,7 @@ server <- shinyServer(function(input, output, session) {
     # browser()
     if(!is.null(input$labeltex)){
       # browser()
-      if(input$labeltex == TRUE){
+      if(input$labeltex == 'yes'){
         printer('using spork')
         args$x %<>% modify(title = .data$tex) # should have class 'latex', unescaped
         #args$x %<>% modify(codelist = lapply(codelist, kableExtra:::escape_latex2))
@@ -851,8 +851,8 @@ server <- shinyServer(function(input, output, session) {
     x %<>% mutate(`_tablet_name` = as_latex(`_tablet_name`))
     x %<>% as_kable(format = 'latex', caption = escape_latex(conf$title), longtable = TRUE)
     if(length(input$repeatheader) == 1){
-      if(input$repeatheader == TRUE){
-        x %<>% kable_styling(latex_options = 'repeat_header')
+      if(input$repeatheader == 'yes'){
+        x %<>% kable_styling(latex_options = 'repeat_header', repeat_header_text = '')
       }
     }
     x %<>% footnote(general = unlist(strsplit(conf$footnotes, '\n')),fixed_small_size = TRUE, general_title = " ",threeparttable = TRUE)
@@ -879,7 +879,7 @@ server <- shinyServer(function(input, output, session) {
     )
     insertion <- paste(insertion, collapse = '\n')
     if(length(input$repeatfootnote) == 1){
-      if(input$repeatfootnote == TRUE){
+      if(input$repeatfootnote == 'yes'){
         x %<>% sub('\\endhead', insertion, ., fixed = TRUE)
       }
     }
