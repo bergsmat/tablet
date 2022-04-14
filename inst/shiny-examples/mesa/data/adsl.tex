@@ -1,0 +1,366 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\title{Test}
+\author{Tim Bergsma}
+\date{2022-04-12}
+
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Test},
+  pdfauthor={Tim Bergsma},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tablet)}
+\FunctionTok{library}\NormalTok{(haven)}
+\FunctionTok{library}\NormalTok{(yamlet)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'yamlet'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:stats':
+## 
+##     filter
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(magrittr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(kableExtra)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'kableExtra'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:dplyr':
+## 
+##     group_rows
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:yamlet':
+## 
+##     footnote
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(knitr)}
+
+\CommentTok{\# make adsl with imputed bmi, imputed race, and two{-}row footnote}
+\NormalTok{d }\OtherTok{\textless{}{-}} \FunctionTok{read\_sas}\NormalTok{(}\StringTok{\textquotesingle{}adsl.sas7bdat\textquotesingle{}}\NormalTok{)}
+\NormalTok{m }\OtherTok{\textless{}{-}} \FunctionTok{read\_yamlet}\NormalTok{(}\StringTok{\textquotesingle{}adsl.yaml\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# fortify to mimic app.R}
+\NormalTok{have }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(d)}
+\NormalTok{need }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(m)}
+\NormalTok{make }\OtherTok{\textless{}{-}} \FunctionTok{setdiff}\NormalTok{(need, have)}
+\ControlFlowTok{for}\NormalTok{(col }\ControlFlowTok{in}\NormalTok{ make) d[[col]] }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\ConstantTok{NA\_integer\_}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(d))}
+
+\CommentTok{\# ensure positive nrow}
+\ControlFlowTok{if}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(d) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) d }\OtherTok{\textless{}{-}}\NormalTok{ d[}\StringTok{\textquotesingle{}\textquotesingle{}}\NormalTok{,,drop }\OtherTok{=} \ConstantTok{FALSE}\NormalTok{]}
+
+\CommentTok{\# drop unspecified}
+\NormalTok{d }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{!!!}\FunctionTok{names}\NormalTok{(m))}
+
+\CommentTok{\# apply meta}
+\NormalTok{d }\OtherTok{\textless{}{-}} \FunctionTok{redecorate}\NormalTok{(d, m)}
+
+\CommentTok{\# \# Promote NA to a level of the factor}
+\CommentTok{\# d \%\textless{}\textgreater{}\% resolve(exclude = NULL)}
+\NormalTok{d }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{resolve}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in match.fun(test)(val, data = data[[i]], ...): data has values not in
+## Placebo, TRT 10 mg, TRT 20 mg: e.g.
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in match.fun(test)(val, data = data[[i]], ...): data has values not in
+## Placebo, TRT 10 mg, TRT 20 mg, TRT Total: e.g.
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in match.fun(test)(val, data = data[[i]], ...): data has values not in
+## White, Black, Asian, Other, : e.g. NA
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{foot }\OtherTok{\textless{}{-}}
+\StringTok{\textquotesingle{}a clinicaltrial.gov}
+\StringTok{b some other comment\textquotesingle{}}
+\FunctionTok{options}\NormalTok{(}\AttributeTok{knitr.kable.NA =} \DecValTok{0}\NormalTok{)}
+\CommentTok{\#opts\_knit$set(out.format = \textquotesingle{}latex\textquotesingle{})}
+\CommentTok{\# debug(tablet:::widgets.devalued)}
+\NormalTok{t }\OtherTok{\textless{}{-}}\NormalTok{ d }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(saffl }\SpecialCharTok{==} \StringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(trt01a) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(age, agegr, sex, weight, bmi, race) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{tablet}\NormalTok{(}
+    \AttributeTok{all\_levels =} \ConstantTok{TRUE}\NormalTok{,}
+    \AttributeTok{fun =} \FunctionTok{list}\NormalTok{(}
+\NormalTok{      sum }\SpecialCharTok{\textasciitilde{}}  \FunctionTok{sum}\NormalTok{(x,  }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+\NormalTok{      pct }\SpecialCharTok{\textasciitilde{}} \FunctionTok{signif}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{,     sum }\SpecialCharTok{/}\NormalTok{ n }\SpecialCharTok{*} \DecValTok{100}\NormalTok{        ),}
+\NormalTok{      ave }\SpecialCharTok{\textasciitilde{}} \FunctionTok{signif}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{,    }\FunctionTok{mean}\NormalTok{(x,  }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)),}
+\NormalTok{      std }\SpecialCharTok{\textasciitilde{}} \FunctionTok{signif}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{,      }\FunctionTok{sd}\NormalTok{(x,  }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)),}
+\NormalTok{      med }\SpecialCharTok{\textasciitilde{}} \FunctionTok{signif}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{,  }\FunctionTok{median}\NormalTok{(x,  }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)),}
+\NormalTok{      min }\SpecialCharTok{\textasciitilde{}} \FunctionTok{signif}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{,     }\FunctionTok{min}\NormalTok{(x,  }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)),}
+\NormalTok{      max }\SpecialCharTok{\textasciitilde{}} \FunctionTok{signif}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{,     }\FunctionTok{max}\NormalTok{(x,  }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)),}
+\NormalTok{      smn }\SpecialCharTok{\textasciitilde{}} \FunctionTok{sum}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(x))}
+\NormalTok{    ),}
+    \AttributeTok{num =} \FunctionTok{list}\NormalTok{(}
+\NormalTok{      n }\SpecialCharTok{\textasciitilde{}}\NormalTok{ smn,}
+      \StringTok{\textasciigrave{}}\AttributeTok{Mean (SD)}\StringTok{\textasciigrave{}} \SpecialCharTok{\textasciitilde{}}\NormalTok{  ave }\SpecialCharTok{+} \StringTok{\textquotesingle{} (\textquotesingle{}} \SpecialCharTok{+}\NormalTok{ std }\SpecialCharTok{+} \StringTok{\textquotesingle{})\textquotesingle{}}\NormalTok{,}
+\NormalTok{      Median }\SpecialCharTok{\textasciitilde{}}  \FunctionTok{paste}\NormalTok{(med),}
+      \StringTok{\textasciigrave{}}\AttributeTok{Min, Max}\StringTok{\textasciigrave{}} \SpecialCharTok{\textasciitilde{}}\NormalTok{  min }\SpecialCharTok{+} \StringTok{\textquotesingle{}, \textquotesingle{}} \SpecialCharTok{+}\NormalTok{ max}
+\NormalTok{    ),}
+    \AttributeTok{fac =} \FunctionTok{list}\NormalTok{(}
+      \StringTok{\textasciigrave{}}\AttributeTok{ }\StringTok{\textasciigrave{}} \SpecialCharTok{\textasciitilde{}} \FunctionTok{ifelse}\NormalTok{(sum }\SpecialCharTok{==} \DecValTok{0}\NormalTok{, }\StringTok{\textquotesingle{}0\textquotesingle{}}\NormalTok{, sum }\SpecialCharTok{+} \StringTok{\textquotesingle{} (\textquotesingle{}} \SpecialCharTok{+}\NormalTok{ pct }\SpecialCharTok{+} \StringTok{\textquotesingle{}\%\textquotesingle{}} \SpecialCharTok{+} \StringTok{\textquotesingle{})\textquotesingle{}}\NormalTok{)}
+\NormalTok{    )}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Adding missing grouping variables: `trt01a`
+\end{verbatim}
+
+\begin{verbatim}
+## Joining, by = c("Treatment", "_tablet_N", "_tablet_n", "_tablet_name", "_tablet_level")
+\end{verbatim}
+
+\begin{verbatim}
+## Joining, by = c("_tablet_N", "_tablet_n", "_tablet_name", "_tablet_level")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# reverse lookup on}
+\NormalTok{imputed }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{select}\NormalTok{(d, }\SpecialCharTok{!!!}\NormalTok{make), attr, }\StringTok{\textquotesingle{}label\textquotesingle{}}\NormalTok{)}
+\CommentTok{\#to substitute \textquotesingle{}{-}\textquotesingle{} for all imputeds}
+
+\NormalTok{t }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}
+  \FunctionTok{across}\NormalTok{(}
+    \AttributeTok{.cols =} \SpecialCharTok{{-}}\FunctionTok{starts\_with}\NormalTok{(}\StringTok{\textquotesingle{}\_tablet\_\textquotesingle{}}\NormalTok{),}
+    \AttributeTok{.fns =} \SpecialCharTok{\textasciitilde{}} \FunctionTok{ifelse}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_name}\StringTok{\textasciigrave{}} \SpecialCharTok{\%in\%}\NormalTok{ imputed, }\StringTok{\textquotesingle{}{-}\textquotesingle{}}\NormalTok{, .x)}
+\NormalTok{  )}
+\NormalTok{)}
+
+\NormalTok{t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  as\_kable }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{footnote}\NormalTok{(}
+    \AttributeTok{general =} \CommentTok{\# escape\_latex(}
+      \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}a something\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}b something\textquotesingle{}}\NormalTok{)}
+      \CommentTok{\# )}
+\NormalTok{    ,}
+    \AttributeTok{fixed\_small\_size =} \ConstantTok{TRUE}\NormalTok{,}
+    \AttributeTok{general\_title =} \StringTok{" "}\NormalTok{,}
+    \AttributeTok{threeparttable =} \ConstantTok{TRUE}
+\NormalTok{  ) }\CommentTok{\# \%\textgreater{}\% as.character \%\textgreater{}\% writeLines}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{threeparttable}
+\begin{tabular}[t]{lllll}
+\toprule
+  & Placebo & TRT 10 mg & TRT 20 mg & All\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Age}}\\
+\hspace{1em}n & 4 & 4 & 4 & \vphantom{1} 12\\
+\hspace{1em}Mean (SD) & 42 (27.1) & 42.5 (15.4) & 44.2 (21.2) & 42.9 (19.7)\\
+\hspace{1em}Median & 42 & 36.5 & 44.5 & 42\\
+\hspace{1em}Min, Max & 18, 66 & 32, 65 & 18, 70 & 18, 70\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Age Categories}}\\
+\hspace{1em}<=18 yrs & 1 (25\%) & 0 & 1 (25\%) & 2 (16.7\%)\\
+\hspace{1em}19 - <65 yrs & 1 (25\%) & 4 (100\%) & 2 (50\%) & 7 (58.3\%)\\
+\hspace{1em}>=65 yrs & 2 (50\%) & 0 & 1 (25\%) & 3 (25\%)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Gender}}\\
+\hspace{1em}F & 2 (50\%) & 3 (75\%) & 1 (25\%) & 6 (50\%)\\
+\hspace{1em}M & 2 (50\%) & 1 (25\%) & 3 (75\%) & 6 (50\%)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Weight}}\\
+\hspace{1em}n & 4 & 4 & 4 & 12\\
+\hspace{1em}Mean (SD) & 134 (28.4) & 145 (16.9) & 170 (26.8) & 150 (27.3)\\
+\hspace{1em}Median & 130 & 144 & 158 & 154\\
+\hspace{1em}Min, Max & 109, 165 & 128, 165 & 154, 210 & 109, 210\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Body Mass Index}}\\
+\hspace{1em}n & - & - & - & -\\
+\hspace{1em}Mean (SD) & - & - & - & -\\
+\hspace{1em}Median & - & - & - & -\\
+\hspace{1em}Min, Max & - & - & - & -\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Race}}\\
+\hspace{1em}White & - & - & - & -\\
+\hspace{1em}Black & - & - & - & -\\
+\hspace{1em}Asian & - & - & - & -\\
+\hspace{1em}Other & - & - & - & -\\
+\hspace{1em}Missing & - & - & - & -\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item \textit{ } 
+\item a something
+\item b something
+\end{tablenotes}
+\end{threeparttable}
+
+\end{document}
