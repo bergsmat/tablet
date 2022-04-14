@@ -165,7 +165,8 @@ categoricals.data.frame <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NUL
 #' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
 #' @importFrom tidyr gather
-#' @importFrom dplyr all_of across everything
+#' @importFrom dplyr all_of across everything full_join anti_join
+#' @importFrom magrittr %<>% %>%
 #' @export
 #' @keywords internal
 #' @return same class as x
