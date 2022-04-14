@@ -6,11 +6,10 @@
 \usage{
 \method{groupwise}{data.frame}(
   x,
-  fun = list(sum ~ signif(digits = 3, sum(x, na.rm = TRUE)), pct ~ signif(digits = 3,
-    sum/n * 100), ave ~ signif(digits = 3, mean(x, na.rm = TRUE)), std ~ signif(digits =
-    3, sd(x, na.rm = TRUE)), med ~ signif(digits = 3, median(x, na.rm = TRUE)), min ~
-    signif(digits = 3, min(x, na.rm = TRUE)), max ~ signif(digits = 3, max(x, na.rm =
-    TRUE))),
+  fun = list(sum ~ sum(x, na.rm = TRUE), pct ~ signif(digits = 3, sum/n * 100), ave ~
+    signif(digits = 3, mean(x, na.rm = TRUE)), std ~ signif(digits = 3, sd(x, na.rm =
+    TRUE)), med ~ signif(digits = 3, median(x, na.rm = TRUE)), min ~ signif(digits = 3,
+    min(x, na.rm = TRUE)), max ~ signif(digits = 3, max(x, na.rm = TRUE))),
   fac = list(` ` ~ sum + " (" + pct + "\%" + ")"),
   num = list(`Mean (SD)` ~ ave + " (" + std + ")", `Median (range)` ~ med + " (" + min
     + ", " + max + ")"),

@@ -10,7 +10,7 @@
  na.rm = FALSE,
  all = 'All',
  fun = list(
-  sum ~ signif(digits = 3,     sum(x,  na.rm = TRUE)),
+  sum ~ sum(x,  na.rm = TRUE),
   pct ~ signif(digits = 3,     sum / n * 100        ),
   ave ~ signif(digits = 3,    mean(x,  na.rm = TRUE)),
   std ~ signif(digits = 3,      sd(x,  na.rm = TRUE)),
@@ -133,5 +133,5 @@ melanoma \%>\%
   tablet
 }
 \seealso{
-\code{\link{as_kable.tablet}}
+\code{\link{as_kable.tablet}} \code{\link{tablet.decorated}}
 }

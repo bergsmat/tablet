@@ -42,6 +42,7 @@ mesa <- function(launch.browser = TRUE, display.mode = 'normal', ...) {
   dependencies <- c(
     'shiny',
     'shinyFiles',
+    #'shinyWidgets',
     'fs',
     'haven',
     'tablet',

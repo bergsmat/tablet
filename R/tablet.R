@@ -106,52 +106,102 @@ classifiers.data.frame <- function(x, ...){
 #' categoricals(x)
 #' levels(categoricals(x)$level)
 categoricals.data.frame <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL){
-   for(i in c('_tablet_name','_tablet_level','_tablet_value'))if(i %in% names(x))stop('names x cannot include ',i)
-   if(any(duplicated(names(x))))stop('names cannot be duplicated')
-   x <- select(x, !!!groups(x),where(is.factor))
-   var <- setdiff(names(x), sapply(groups(x), rlang::as_string))
-   for(i in var){
-      # prepend each factor level with column name for uniqueness
-      levels(x[[i]]) <- paste(sep = '_tablet_', i, levels(x[[i]]))
-   }
-   lev <- unlist(lapply(select(ungroup(x), all_of(var)), levels))
-   # if('tablet_numeric' %in% lev)stop('levels of factors in x cannot include \'tablet_numeric\'')
-   x <- classifiers(x,...)
-   x <- mutate(x, across(where(is.factor), as.character))
-   x <- suppressWarnings(
-      # attributes not identical across groups, they will be dropped
-      # this is where _tablet_name is created
-      gather(
-         x,
-         factor_key = TRUE,
-         key = '_tablet_name',
-         value = '_tablet_level',
-         var,
-         na.rm = na.rm_fac
-      )
-   )
-   # possibly no var
-   if(length(var) == 0){
-      x <- slice(x, 0)
-      x <- mutate(
-         x,
-         # _tablet_name created here too
-         `_tablet_name` = factor(), # was character() before 0.4.3
-         `_tablet_level` = factor()
-      )
-   }
-   x <- mutate(x, `_tablet_level` = factor(`_tablet_level`, levels = lev, exclude = exclude_fac))
-   x <- mutate(x, `_tablet_value` = 1L) # bogus value
-   # missing observation of some category is moot if na.rm = TRUE
-   # if exclude is NULL, NA is a distinct category and value should be available for tally
-   # but if na not removed and not categorized, it should be passed to summary functions as na
-   # ???
-   # if(!na.rm){
-   #    if(!is.null(exclude)){
-   #       x <- mutate(x, value = ifelse(is.na(level), NA_integer_, value))
-   #    }
-   # }
-   x
+  for(i in c('_tablet_name','_tablet_level','_tablet_value'))if(i %in% names(x))stop('names x cannot include ',i)
+  if(any(duplicated(names(x))))stop('names cannot be duplicated')
+  x <- select(x, !!!groups(x),where(is.factor))
+  var <- setdiff(names(x), sapply(groups(x), rlang::as_string))
+  for(i in var){
+    # prepend each factor level with column name for uniqueness
+    levels(x[[i]]) <- paste(sep = '_tablet_', i, levels(x[[i]]))
+  }
+  lev <- unlist(lapply(select(ungroup(x), all_of(var)), levels))
+
+  # if('tablet_numeric' %in% lev)stop('levels of factors in x cannot include \'tablet_numeric\'')
+  x <- classifiers(x,...)
+  x <- mutate(x, across(where(is.factor), as.character))
+  x <- suppressWarnings(
+    # attributes not identical across groups, they will be dropped
+    # this is where _tablet_name is created
+    gather(
+      x,
+      factor_key = TRUE,
+      key = '_tablet_name',
+      value = '_tablet_level',
+      var,
+      na.rm = na.rm_fac
+    )
+  )
+  # possibly no var
+  if(length(var) == 0){
+    x <- slice(x, 0)
+    x <- mutate(
+      x,
+      # _tablet_name created here too
+      `_tablet_name` = factor(), # was character() before 0.4.3
+      `_tablet_level` = factor()
+    )
+  }
+  x <- mutate(x, `_tablet_level` = factor(`_tablet_level`, levels = lev, exclude = exclude_fac))
+  x <- mutate(x, `_tablet_value` = 1L) # bogus value
+  # missing observation of some category is moot if na.rm = TRUE
+  # if exclude is NULL, NA is a distinct category and value should be available for tally
+  # but if na not removed and not categorized, it should be passed to summary functions as na
+  # ???
+  # if(!na.rm){
+  #    if(!is.null(exclude)){
+  #       x <- mutate(x, value = ifelse(is.na(level), NA_integer_, value))
+  #    }
+  # }
+  x
+}
+#' Identify Categoricals for Decorated
+#'
+#' Identifies categorical columns: literally, factors. Stacks factor levels and supplies value = 1.
+#' Optionally generates placeholder records with value = 0 for unobserved factor levels.
+#' @param x data.frame; names must not include 'name' or 'level'
+#' @param ... passed to \code{\link{classifiers}}
+#' @param na.rm_fac whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
+#' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
+#' @param all_levels whether to supply records for unobserved levels
+#' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
+#' @importFrom tidyr gather
+#' @importFrom dplyr all_of across everything
+#' @export
+#' @keywords internal
+#' @return same class as x
+#' @examples
+#' example(classifiers)
+#' categoricals(x)
+#' levels(categoricals(x)$level)
+categoricals.decorated <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL, all_levels = FALSE){
+  y <- NextMethod()
+  stopifnot(is.logical(all_levels), length(all_levels) == 1)
+  if(!all_levels) return(y)
+  # what groups must be populated?
+  g <- y %>% select(c(!!!groups(y), `_tablet_N`, `_tablet_n`)) %>% unique
+  # what factors are in play?
+  p <- x %>% select(where(is.factor)) %>% names
+  p %<>% setdiff(groups(x))
+  var <- character(0)
+  need <- character(0)
+  for(i in p){
+    levs <- levels(x[[i]])
+    for(lev in levs){
+      var %<>% append(i)
+      need %<>% append(paste0(i, '_tablet_', lev))
+    }
+  }
+  stopifnot(length(var) == length(need))
+  q <- data.frame(`_tablet_name` = var, `_tablet_level` = need, check.names = F)
+  q$`_tablet_name` %<>% factor(levels = levels(y$`_tablet_name`))
+  q$`_tablet_level` %<>% factor(levels = levels(y$`_tablet_level`))
+  g %<>% full_join(q, by = character())
+  g %<>% anti_join(y) # exclude combos already observed
+  g$`_tablet_value` <- 0L
+  stopifnot(setequal(names(g), names(y)))
+  y %<>% bind_rows(g)
+  y %<>% arrange(!!!groups(y), `_tablet_name`, `_tablet_level`)
+  y
 }
 
 #' Identify Numerics for Data Frame
@@ -271,7 +321,7 @@ devalued.observations <- function(
    x,
    ...,
    fun = list(
-      sum ~ signif(digits = 3,    sum(x, na.rm = TRUE)),
+      sum ~ sum(x, na.rm = TRUE),
       pct ~ signif(digits = 3,    sum / n * 100       ),
       ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),
       std ~ signif(digits = 3,     sd(x, na.rm = TRUE)),
@@ -550,7 +600,7 @@ groupwise <- function(x, ...)UseMethod('groupwise')
 groupwise.data.frame <- function(
    x,
    fun = list(
-      sum ~ signif(digits = 3,    sum(x, na.rm = TRUE)),
+      sum ~ sum(x, na.rm = TRUE),
       pct ~ signif(digits = 3,    sum / n * 100    ),
       ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),
       std ~ signif(digits = 3,     sd(x, na.rm = TRUE)),
@@ -1155,7 +1205,7 @@ as_kable.tablet <- function(
 #'  na.rm = FALSE,
 #'  all = 'All',
 #'  fun = list(
-#'   sum ~ signif(digits = 3,     sum(x,  na.rm = TRUE)),
+#'   sum ~ sum(x,  na.rm = TRUE),
 #'   pct ~ signif(digits = 3,     sum / n * 100        ),
 #'   ave ~ signif(digits = 3,    mean(x,  na.rm = TRUE)),
 #'   std ~ signif(digits = 3,      sd(x,  na.rm = TRUE)),
@@ -1197,7 +1247,7 @@ as_kable.tablet <- function(
 #' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 #' \item{All (or value of 'all' argument)}{ungrouped results}
 #' \item{_tablet_sort}{sorting column}
-#' @seealso \code{\link{as_kable.tablet}}
+#' @seealso \code{\link{as_kable.tablet}} \code{\link{tablet.decorated}}
 #' @examples
 #' library(boot)
 #' library(dplyr)
@@ -1214,7 +1264,7 @@ tablet.data.frame <- function(
    na.rm = FALSE,
    all = 'All',
    fun = list(
-      sum ~ signif(digits = 3,    sum(x, na.rm = TRUE)),
+      sum ~ sum(x, na.rm = TRUE),
       pct ~ signif(digits = 3,    sum / n * 100    ),
       ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),
       std ~ signif(digits = 3,     sd(x, na.rm = TRUE)),
@@ -1268,6 +1318,25 @@ tablet.data.frame <- function(
    }
    y
 }
+
+#' Generate a Tablet for Decorated
+#'
+#' Generates a tablet for decorated data.frame.
+#' Simply passes argument \code{all_levels} to
+#' \code{\link{tablet.data.frame}}, where it is
+#' intercepted downstream by \code{\link{categoricals.decorated}}.
+#' Can be used to force the display of levels not present in the data.
+#'
+#' @export
+#' @return tablet
+#' @param x decorated
+#' @param ... passed arguments
+#' @param all_levels whether to supply records for unobserved levels
+tablet.decorated <- function(x, ..., all_levels = FALSE){
+  NextMethod()
+}
+
+
 
 #' Splice Some Things Together
 #'

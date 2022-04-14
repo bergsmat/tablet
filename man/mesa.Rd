@@ -15,6 +15,7 @@ mesa(launch.browser = TRUE, display.mode = "normal", ...)
 }
 \value{
 used for side effects: launches shiny application
+shinyWidgets',
 }
 \description{
 Generate a table of descriptive statistics

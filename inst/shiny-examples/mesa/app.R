@@ -15,7 +15,6 @@ library(tools)
 library(csv)
 library(shinyAce)
 library(spork)
-
 ui <- shinyUI(
   navbarPage(
     'Mesa',
@@ -177,6 +176,7 @@ server <- shinyServer(function(input, output, session) {
     conf$footnotes  <- '(footnotes here)'
  #   conf$na_string  <- 'NA'
     conf$x          <- data.frame()
+    conf$imputed    <- character()
     conf$mv         <- 0
     conf$editor     <- NULL
     labelhtml       <- 'no'
@@ -568,6 +568,7 @@ server <- shinyServer(function(input, output, session) {
     },
     {
     printer('observeEvent:conf$filepath')
+
     # invalidate the keep/filter observers if data changes
     observers <<- list()
 
@@ -592,7 +593,8 @@ server <- shinyServer(function(input, output, session) {
     has_data <- file.exists(datafile)
     has_meta <- file.exists(metafile)
 
-    d <- data.frame()
+   # d <- data.frame() # 2022/04/13 make html() responsive to coerced columns
+    d <- conf$x
 
     if(has_data){
       if(grepl('sas7bdat$', datafile)) d <- data.frame(read_sas(datafile))
@@ -626,6 +628,7 @@ server <- shinyServer(function(input, output, session) {
     make <- setdiff(need, have)
     for(col in make) d[[col]] <- rep(NA_real_, nrow(d))
 
+
     # ensure positive nrow
     if(nrow(d) == 0) d <- d['',,drop = FALSE]
 
@@ -636,10 +639,12 @@ server <- shinyServer(function(input, output, session) {
     d <- redecorate(d, m)
 
     # # Promote NA to a level of the factor
-    d %<>% resolve(exclude = NULL)
+    # d %<>% resolve(exclude = NULL)
+    d %<>% resolve()
 
     # store on the session
     conf$x <- d
+    conf$imputed <- sapply(select(d, !!!make), attr, 'label')
 
   })
 
@@ -685,7 +690,7 @@ server <- shinyServer(function(input, output, session) {
 
     # if(length(input$labelhtml) == 1){
     #   printer('factorized - labelhtml')
-    #   if(input$labelhtml == 'yes'){
+    #   if(input$labelhtml == TRUE){
         suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$name)))) # default
         suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$label))))
         suppressWarnings(x %<>% modify(
@@ -696,7 +701,7 @@ server <- shinyServer(function(input, output, session) {
     # if(length(input$labeltex) == 1){
     #   printer('factorized - labeltex')
     #
-    #   if(input$labeltex == 'yes'){
+    #   if(input$labeltex == TRUE){
         # browser()
         # we need default 'latex' tex attributes for all columns ...
         suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$name))))
@@ -723,9 +728,10 @@ server <- shinyServer(function(input, output, session) {
     printer('args')
     x <- list(x = selected())
     extra <- list(
+      all_levels = TRUE,
       # all = 'All',
       fun = list(
-        sum ~ signif(digits = 3,     sum(x,  na.rm = TRUE)),
+        sum ~ sum(x,  na.rm = TRUE),
         pct ~ signif(digits = 3,     sum / n * 100        ),
         ave ~ signif(digits = 3,    mean(x,  na.rm = TRUE)),
         std ~ signif(digits = 3,      sd(x,  na.rm = TRUE)),
@@ -757,13 +763,13 @@ server <- shinyServer(function(input, output, session) {
     printer('html')
    # options(knitr.kable.NA = conf$na_string)
     options(knitr.kable.NA = 0)
-
+    #browser()
     fun <- tablet
     if(conf$sequential) fun <- splice
     args <- args()
 
     if(!is.null(input$labelhtml)){
-      if(input$labelhtml == 'yes'){
+      if(input$labelhtml == TRUE){
         args$x %<>% modify(title = .data$html)
       }
     } else {
@@ -771,6 +777,17 @@ server <- shinyServer(function(input, output, session) {
       return()
     }
     x <- do.call(fun, args)
+    # strikethru imputed columns for visual clarity
+    # possibly, " (<units>)" has been appended to _tablet_name,
+    # breaking the connection to conf$imputed.
+    # we hack through the problem by stripping appendage.
+    strip <- function(x)sub(' \\([^)]*\\)$','',x)
+    x %<>% mutate(
+      across(
+        .cols = -starts_with('_tablet_'),
+        .fns = ~ ifelse(strip(`_tablet_name`) %in% conf$imputed, '-', .x)
+      )
+    )
     x %<>% as_kable(caption = conf$title)
     x %<>% kable_classic(full_width = F, html_font = "Cambria")
     x %<>% kable_styling(fixed_thead = T)
@@ -779,7 +796,7 @@ server <- shinyServer(function(input, output, session) {
 
   tex <- reactive({
     printer('tex')
-    # browser()
+    #browser()
     old <- opts_knit$get('out.format')
     opts_knit$set(out.format = 'latex')
     # options(knitr.kable.NA = escape_latex(conf$na_string))
@@ -791,7 +808,7 @@ server <- shinyServer(function(input, output, session) {
     # browser()
     if(!is.null(input$labeltex)){
       # browser()
-      if(input$labeltex == 'yes'){
+      if(input$labeltex == TRUE){
         printer('using spork')
         args$x %<>% modify(title = .data$tex) # should have class 'latex', unescaped
         #args$x %<>% modify(codelist = lapply(codelist, kableExtra:::escape_latex2))
@@ -811,7 +828,17 @@ server <- shinyServer(function(input, output, session) {
 
     # call tablet
     x <- do.call(fun, args)
-
+    # strikethru imputed columns for visual clarity
+    # possibly, " (<units>)" has been appended to _tablet_name,
+    # breaking the connection to conf$imputed.
+    # we hack through the problem by stripping appendage.
+    strip <- function(x)sub(' \\([^)]*\\)$','',x)
+    x %<>% mutate(
+      across(
+        .cols = -starts_with('_tablet_'),
+        .fns = ~ ifelse(strip(`_tablet_name`) %in% conf$imputed, '-', .x)
+      )
+    )
 
     if(!nrow(x)){
       showNotification(duration = 5, type = 'error', 'nothing selected')
@@ -824,11 +851,11 @@ server <- shinyServer(function(input, output, session) {
     x %<>% mutate(`_tablet_name` = as_latex(`_tablet_name`))
     x %<>% as_kable(format = 'latex', caption = escape_latex(conf$title), longtable = TRUE)
     if(length(input$repeatheader) == 1){
-      if(input$repeatheader == 'yes'){
+      if(input$repeatheader == TRUE){
         x %<>% kable_styling(latex_options = 'repeat_header')
       }
     }
-    x %<>% footnote(general = escape_latex(conf$footnotes),fixed_small_size = TRUE, general_title = " ",threeparttable = TRUE)
+    x %<>% footnote(general = unlist(strsplit(conf$footnotes, '\n')),fixed_small_size = TRUE, general_title = " ",threeparttable = TRUE)
     x %<>% as.character
 
     # insert footnote on every page
@@ -852,7 +879,7 @@ server <- shinyServer(function(input, output, session) {
     )
     insertion <- paste(insertion, collapse = '\n')
     if(length(input$repeatfootnote) == 1){
-      if(input$repeatfootnote == 'yes'){
+      if(input$repeatfootnote == TRUE){
         x %<>% sub('\\endhead', insertion, ., fixed = TRUE)
       }
     }
@@ -956,7 +983,7 @@ server <- shinyServer(function(input, output, session) {
       'repeatheader',
       'repeat header on each page',
       inline = TRUE,
-      choices = c('yes','no'),
+      choices = c('no','yes'),
       selected = conf$repeathead
     )
   })
@@ -967,7 +994,7 @@ server <- shinyServer(function(input, output, session) {
       'repeatfootnote',
       'repeat footnote on each page',
       inline = TRUE,
-      choices = c('yes','no'),
+      choices = c('no','yes'),
       selected = conf$repeatfoot
     )
   })
@@ -978,7 +1005,7 @@ server <- shinyServer(function(input, output, session) {
       'labelhtml',
       'scripted labels',
       inline = TRUE,
-      choices = c('yes','no'),
+      choices = c('no','yes'),
       selected = conf$labelhtml
     )
   })
@@ -989,7 +1016,7 @@ server <- shinyServer(function(input, output, session) {
       'labeltex',
       'scripted labels',
       inline = TRUE,
-      choices = c('yes','no'),
+      choices = c('no','yes'),
       selected = conf$labeltex
     )
   })
@@ -1211,6 +1238,7 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$saveMeta, {
+
     printer('observeEvent: input$saveMeta')
     path <- isolate(conf$metapath)
     res <- try(yaml.load(input$meta))
