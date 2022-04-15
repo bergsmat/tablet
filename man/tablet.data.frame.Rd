@@ -61,7 +61,7 @@
 }
 \value{
 'tablet', with columns for each combination of groups, and:
-\item{_tablet_name}{observation identifier: character, possibly 'latex', see details}
+\item{_tablet_name}{observation identifier: character, possibly 'latex', see details; has a codelist attribute the values of which are the original column names}
 \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
 \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 \item{All (or value of 'all' argument)}{ungrouped results}

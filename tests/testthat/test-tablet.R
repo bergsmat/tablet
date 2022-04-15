@@ -161,3 +161,4 @@ test_that('splice returns tablet',{
   expect_true(inherits(x,'tablet'))
 
 })
+

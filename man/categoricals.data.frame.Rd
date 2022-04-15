@@ -7,7 +7,7 @@
 \method{categoricals}{data.frame}(x, ..., na.rm_fac = FALSE, exclude_fac = NULL)
 }
 \arguments{
-\item{x}{data.frame; names must not include 'name' or 'level'}
+\item{x}{data.frame; names must not start with '_tablet_'}
 
 \item{...}{passed to \code{\link{classifiers}}}
 

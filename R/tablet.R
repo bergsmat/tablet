@@ -91,7 +91,7 @@ classifiers.data.frame <- function(x, ...){
 #' Identify Categoricals for Data Frame
 #'
 #' Identifies categorical columns: literally, factors. Stacks factor levels and supplies value = 1.
-#' @param x data.frame; names must not include 'name' or 'level'
+#' @param x data.frame; names must not start with '_tablet_'
 #' @param ... passed to \code{\link{classifiers}}
 #' @param na.rm_fac whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
 #' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
@@ -618,13 +618,13 @@ groupwise.data.frame <- function(
    ),
    ...
 ){
-   # promote labels and titles where present
-   for(i in seq_len(ncol(x))){
-      lab <- attr(x[[i]],'label')
-      ttl <- attr(x[[i]], 'title')
-      if(length(lab)) names(x)[[i]] <- lab
-      if(length(ttl)) names(x)[[i]] <- ttl
-   }
+   # # promote labels and titles where present
+   # for(i in seq_len(ncol(x))){
+   #    lab <- attr(x[[i]],'label')
+   #    ttl <- attr(x[[i]], 'title')
+   #    if(length(lab)) names(x)[[i]] <- lab
+   #    if(length(ttl)) names(x)[[i]] <- ttl
+   # }
 
    # execute data.frame -> observations -> devalued -> widgets
    y <- groupfull(x, fun = fun, fac = fac, num = num, ...)
@@ -1243,7 +1243,7 @@ as_kable.tablet <- function(
 #' @param exclude_name whether to drop NA values of column name (for completeness); passed to \code{\link[tidyr]{gather}}
 #' @export
 #' @return 'tablet', with columns for each combination of groups, and:
-#' \item{_tablet_name}{observation identifier: character, possibly 'latex', see details}
+#' \item{_tablet_name}{observation identifier: character, possibly 'latex', see details; has a codelist attribute the values of which are the original column names}
 #' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
 #' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 #' \item{All (or value of 'all' argument)}{ungrouped results}
@@ -1304,6 +1304,21 @@ tablet.data.frame <- function(
    )
    y <- tablet(y, ..., all = all, lab = lab ) # tablet.groupwise
    y$`_tablet_name` <- as.character(y$`_tablet_name`)
+
+   codes <- unique(y$`_tablet_name`)
+   decod <- codes
+   for(i in seq_along(codes)){
+     lbl <- attr(x[[ codes[[i]] ]],'label')
+     ttl <- attr(x[[ codes[[i]] ]], 'title')
+     if(length(lbl)) decod[[i]] <- lbl
+     if(length(ttl)) decod[[i]] <- ttl
+   }
+   y$`_tablet_name` %<>% factor(levels = codes, labels = decod) %>% as.character
+   codelist <- codes
+   names(codelist) <- decod
+   codelist %<>% as.list
+   attr(y$`_tablet_name`, 'codelist') <- codelist
+
    # check for prime target inheriting 'latex' and coerce _tablet_name accordingly
    fac <- sapply(x, is.factor)
    num <- sapply(x, is.numeric)

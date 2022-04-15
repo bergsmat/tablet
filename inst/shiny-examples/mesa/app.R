@@ -691,11 +691,13 @@ server <- shinyServer(function(input, output, session) {
     # if(length(input$labelhtml) == 1){
     #   printer('factorized - labelhtml')
     #   if(input$labelhtml == TRUE){
-        suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$name)))) # default
-        suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$label))))
-        suppressWarnings(x %<>% modify(
-          html = concatenate(as_html(as_spork(c(.data$label, ' (', .data$units,')'))))
-        ))
+
+    suppressWarnings(x %<>% modify(original = name))
+    suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$name)))) # default
+    suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$label))))
+    suppressWarnings(x %<>% modify(
+      html = concatenate(as_html(as_spork(c(.data$label, ' (', .data$units,')'))))
+    ))
     #   }
     # }else{printer('factorized - no labelhtml')}
     # if(length(input$labeltex) == 1){
@@ -704,13 +706,13 @@ server <- shinyServer(function(input, output, session) {
     #   if(input$labeltex == TRUE){
         # browser()
         # we need default 'latex' tex attributes for all columns ...
-        suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$name))))
-        suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$label))))
-        suppressWarnings(x %<>% modify(
-          # should retain class 'latex'
-          # currently pre-doubled by escape_latex.latex
-          tex = concatenate(as_latex(as_spork(c(.data$label, ' (', .data$units,')'))))
-        ))
+    suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$name))))
+    suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$label))))
+    suppressWarnings(x %<>% modify(
+      # should retain class 'latex'
+      # currently pre-doubled by escape_latex.latex
+      tex = concatenate(as_latex(as_spork(c(.data$label, ' (', .data$units,')'))))
+    ))
     #   }
     # }else{printer('factorized - no labeltex')}
     x
@@ -743,7 +745,7 @@ server <- shinyServer(function(input, output, session) {
       num = list(
         n ~ smn,
         `Mean (SD)` ~ ave + ' (' + std + ')',
-        Median ~ med,
+        Median ~ paste(med),
         `Min, Max` ~ min + ', ' + max
       )
     )
@@ -776,18 +778,22 @@ server <- shinyServer(function(input, output, session) {
       printer('no labelhtml yet')
       return()
     }
+    #browser()
     x <- do.call(fun, args)
     # strikethru imputed columns for visual clarity
-    # possibly, " (<units>)" has been appended to _tablet_name,
-    # breaking the connection to conf$imputed.
-    # we hack through the problem by stripping appendage.
-    strip <- function(x)sub(' \\([^)]*\\)$','',x)
-    x %<>% mutate(
-      across(
-        .cols = -starts_with('_tablet_'),
-        .fns = ~ ifelse(strip(`_tablet_name`) %in% conf$imputed, '-', .x)
-      )
-    )
+    codelist <- attr(x$`_tablet_name`, 'codelist')
+    x$`_tablet_original` <- unlist(codelist[x$`_tablet_name`])
+    # very elegant, but blows away attributes
+    # x %<>% mutate(
+    #   across(
+    #     .cols = -starts_with('_tablet_'),
+    #     .fns = ~ ifelse(`_tablet_original` %in% names(conf$imputed), '-', .x)
+    #   )
+    # )
+    targets <- x %>% select(-starts_with('_tablet_')) %>% names
+    imputed <- x$`_tablet_original` %in% names(conf$imputed)
+    if(length(imputed) & length(targets)) x[imputed, targets] <- '-'
+    x$`_tablet_original` <- NULL
     x %<>% as_kable(caption = conf$title)
     x %<>% kable_classic(full_width = F, html_font = "Cambria")
     x %<>% kable_styling(fixed_thead = T)
@@ -829,17 +835,19 @@ server <- shinyServer(function(input, output, session) {
     # call tablet
     x <- do.call(fun, args)
     # strikethru imputed columns for visual clarity
-    # possibly, " (<units>)" has been appended to _tablet_name,
-    # breaking the connection to conf$imputed.
-    # we hack through the problem by stripping appendage.
-    strip <- function(x)sub(' \\([^)]*\\)$','',x)
-    x %<>% mutate(
-      across(
-        .cols = -starts_with('_tablet_'),
-        .fns = ~ ifelse(strip(`_tablet_name`) %in% conf$imputed, '-', .x)
-      )
-    )
-
+    codelist <- attr(x$`_tablet_name`, 'codelist')
+    x$`_tablet_original` <- unlist(codelist[x$`_tablet_name`])
+    # very elegant, but blows away attributes
+    # x %<>% mutate(
+    #   across(
+    #     .cols = -starts_with('_tablet_'),
+    #     .fns = ~ ifelse(`_tablet_original` %in% names(conf$imputed), '-', .x)
+    #   )
+    # )
+    targets <- x %>% select(-starts_with('_tablet_')) %>% names
+    imputed <- x$`_tablet_original` %in% names(conf$imputed)
+    if(length(imputed) & length(targets)) x[imputed, targets] <- '-'
+    x$`_tablet_original` <- NULL
     if(!nrow(x)){
       showNotification(duration = 5, type = 'error', 'nothing selected')
       return(character(0))
