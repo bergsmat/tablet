@@ -95,17 +95,27 @@ classifiers.data.frame <- function(x, ...){
 #' @param ... passed to \code{\link{classifiers}}
 #' @param na.rm_fac whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
 #' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
+#' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
 #' @importFrom tidyr gather
-#' @importFrom dplyr all_of across everything
+#' @importFrom dplyr all_of across everything full_join anti_join
+#' @importFrom magrittr %>% %<>%
 #' @export
 #' @keywords internal
 #' @return same class as x
 #' @examples
 #' example(classifiers)
 #' categoricals(x)
-#' levels(categoricals(x)$level)
-categoricals.data.frame <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL){
+#' levels(categoricals(x)$`_tablet_level`)
+
+categoricals.data.frame <- function(
+  x,
+  ...,
+  na.rm_fac = FALSE,
+  exclude_fac = NULL,
+  all_levels = FALSE
+){
+  y <- x
   for(i in c('_tablet_name','_tablet_level','_tablet_value'))if(i %in% names(x))stop('names x cannot include ',i)
   if(any(duplicated(names(x))))stop('names cannot be duplicated')
   x <- select(x, !!!groups(x),where(is.factor))
@@ -152,41 +162,17 @@ categoricals.data.frame <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NUL
   #       x <- mutate(x, value = ifelse(is.na(level), NA_integer_, value))
   #    }
   # }
-  x
-}
-#' Identify Categoricals for Decorated
-#'
-#' Identifies categorical columns: literally, factors. Stacks factor levels and supplies value = 1.
-#' Optionally generates placeholder records with value = 0 for unobserved factor levels.
-#' @param x data.frame; names must not include 'name' or 'level'
-#' @param ... passed to \code{\link{classifiers}}
-#' @param na.rm_fac whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
-#' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
-#' @param all_levels whether to supply records for unobserved levels
-#' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
-#' @importFrom tidyr gather
-#' @importFrom dplyr all_of across everything full_join anti_join
-#' @importFrom magrittr %<>% %>%
-#' @export
-#' @keywords internal
-#' @return same class as x
-#' @examples
-#' example(classifiers)
-#' categoricals(x)
-#' levels(categoricals(x)$level)
-categoricals.decorated <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL, all_levels = FALSE){
-  y <- NextMethod()
-  stopifnot(is.logical(all_levels), length(all_levels) == 1)
-  if(!all_levels) return(y)
+
+  if(!all_levels) return(x)
   # what groups must be populated?
-  g <- y %>% select(c(!!!groups(y), `_tablet_N`, `_tablet_n`)) %>% unique
+  g <- x %>% select(c(!!!groups(x), `_tablet_N`, `_tablet_n`)) %>% unique
   # what factors are in play?
-  p <- x %>% select(where(is.factor)) %>% names
-  p %<>% setdiff(groups(x))
+  p <- y %>% select(where(is.factor)) %>% names
+  p %<>% setdiff(groups(y))
   var <- character(0)
   need <- character(0)
   for(i in p){
-    levs <- levels(x[[i]])
+    levs <- levels(y[[i]])
     for(lev in levs){
       var %<>% append(i)
       need %<>% append(paste0(i, '_tablet_', lev))
@@ -194,15 +180,15 @@ categoricals.decorated <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL
   }
   stopifnot(length(var) == length(need))
   q <- data.frame(`_tablet_name` = var, `_tablet_level` = need, check.names = F)
-  q$`_tablet_name` %<>% factor(levels = levels(y$`_tablet_name`))
-  q$`_tablet_level` %<>% factor(levels = levels(y$`_tablet_level`))
+  q$`_tablet_name` %<>% factor(levels = levels(x$`_tablet_name`))
+  q$`_tablet_level` %<>% factor(levels = levels(x$`_tablet_level`))
   g %<>% full_join(q, by = character())
-  g %<>% anti_join(y) # exclude combos already observed
+  g %<>% anti_join(x) # exclude combos already observed
   g$`_tablet_value` <- 0L
-  stopifnot(setequal(names(g), names(y)))
-  y %<>% bind_rows(g)
-  y %<>% arrange(!!!groups(y), `_tablet_name`, `_tablet_level`)
-  y
+  stopifnot(setequal(names(g), names(x)))
+  x %<>% bind_rows(g)
+  x %<>% arrange(!!!groups(x), `_tablet_name`, `_tablet_level`)
+  x
 }
 
 #' Identify Numerics for Data Frame
