@@ -95,6 +95,7 @@ classifiers.data.frame <- function(x, ...){
 #' @param ... passed to \code{\link{classifiers}}
 #' @param na.rm_fac whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
 #' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
+#' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
 #' @importFrom tidyr gather
 #' @importFrom dplyr all_of across everything
@@ -105,7 +106,14 @@ classifiers.data.frame <- function(x, ...){
 #' example(classifiers)
 #' categoricals(x)
 #' levels(categoricals(x)$level)
-categoricals.data.frame <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL){
+
+categoricals.data.frame <- function(
+  x,
+  ...,
+  na.rm_fac = FALSE,
+  exclude_fac = NULL,
+  all_levels = FALSE
+){
   for(i in c('_tablet_name','_tablet_level','_tablet_value'))if(i %in% names(x))stop('names x cannot include ',i)
   if(any(duplicated(names(x))))stop('names cannot be duplicated')
   x <- select(x, !!!groups(x),where(is.factor))
@@ -152,31 +160,7 @@ categoricals.data.frame <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NUL
   #       x <- mutate(x, value = ifelse(is.na(level), NA_integer_, value))
   #    }
   # }
-  x
-}
-#' Identify Categoricals for Decorated
-#'
-#' Identifies categorical columns: literally, factors. Stacks factor levels and supplies value = 1.
-#' Optionally generates placeholder records with value = 0 for unobserved factor levels.
-#' @param x data.frame; names must not include 'name' or 'level'
-#' @param ... passed to \code{\link{classifiers}}
-#' @param na.rm_fac whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
-#' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
-#' @param all_levels whether to supply records for unobserved levels
-#' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
-#' @importFrom tidyr gather
-#' @importFrom dplyr all_of across everything full_join anti_join
-#' @importFrom magrittr %<>% %>%
-#' @export
-#' @keywords internal
-#' @return same class as x
-#' @examples
-#' example(classifiers)
-#' categoricals(x)
-#' levels(categoricals(x)$level)
-categoricals.decorated <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL, all_levels = FALSE){
-  y <- NextMethod()
-  stopifnot(is.logical(all_levels), length(all_levels) == 1)
+  y <- x
   if(!all_levels) return(y)
   # what groups must be populated?
   g <- y %>% select(c(!!!groups(y), `_tablet_N`, `_tablet_n`)) %>% unique
@@ -204,6 +188,7 @@ categoricals.decorated <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL
   y %<>% arrange(!!!groups(y), `_tablet_name`, `_tablet_level`)
   y
 }
+
 
 #' Identify Numerics for Data Frame
 #'
@@ -1241,6 +1226,7 @@ as_kable.tablet <- function(
 #' @param na.rm_num whether to drop NA numeric observations; passed to \code{\link[tidyr]{gather}} as na.rm
 #' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
 #' @param exclude_name whether to drop NA values of column name (for completeness); passed to \code{\link[tidyr]{gather}}
+#' @param all_levels whether to supply records for unobserved levels
 #' @export
 #' @return 'tablet', with columns for each combination of groups, and:
 #' \item{_tablet_name}{observation identifier: character, possibly 'latex', see details; has a codelist attribute the values of which are the original column names}
@@ -1286,7 +1272,8 @@ tablet.data.frame <- function(
    na.rm_fac = na.rm,
    na.rm_num = na.rm,
    exclude_fac = NULL,
-   exclude_name = NULL
+   exclude_name = NULL,
+   all_levels = FALSE
 ){
    y <- groupwise( # groupwise.data.frame
       x,
@@ -1334,24 +1321,6 @@ tablet.data.frame <- function(
    }
    y
 }
-
-#' Generate a Tablet for Decorated
-#'
-#' Generates a tablet for decorated data.frame.
-#' Simply passes argument \code{all_levels} to
-#' \code{\link{tablet.data.frame}}, where it is
-#' intercepted downstream by \code{\link{categoricals.decorated}}.
-#' Can be used to force the display of levels not present in the data.
-#'
-#' @export
-#' @return tablet
-#' @param x decorated
-#' @param ... passed arguments
-#' @param all_levels whether to supply records for unobserved levels
-tablet.decorated <- function(x, ..., all_levels = FALSE){
-  NextMethod()
-}
-
 
 
 #' Splice Some Things Together
