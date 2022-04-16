@@ -95,11 +95,9 @@ classifiers.data.frame <- function(x, ...){
 #' @param ... passed to \code{\link{classifiers}}
 #' @param na.rm_fac whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
 #' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
-#' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
 #' @importFrom tidyr gather
-#' @importFrom dplyr all_of across everything full_join anti_join
-#' @importFrom magrittr %>% %<>%
+#' @importFrom dplyr all_of across everything
 #' @export
 #' @keywords internal
 #' @return same class as x
@@ -107,14 +105,7 @@ classifiers.data.frame <- function(x, ...){
 #' example(classifiers)
 #' categoricals(x)
 #' levels(categoricals(x)$level)
-
-categoricals.data.frame <- function(
-  x,
-  ...,
-  na.rm_fac = FALSE,
-  exclude_fac = NULL,
-  all_levels = FALSE
-){
+categoricals.data.frame <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL){
   for(i in c('_tablet_name','_tablet_level','_tablet_value'))if(i %in% names(x))stop('names x cannot include ',i)
   if(any(duplicated(names(x))))stop('names cannot be duplicated')
   x <- select(x, !!!groups(x),where(is.factor))
@@ -161,7 +152,31 @@ categoricals.data.frame <- function(
   #       x <- mutate(x, value = ifelse(is.na(level), NA_integer_, value))
   #    }
   # }
-  y <- x
+  x
+}
+#' Identify Categoricals for Decorated
+#'
+#' Identifies categorical columns: literally, factors. Stacks factor levels and supplies value = 1.
+#' Optionally generates placeholder records with value = 0 for unobserved factor levels.
+#' @param x data.frame; names must not include 'name' or 'level'
+#' @param ... passed to \code{\link{classifiers}}
+#' @param na.rm_fac whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
+#' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
+#' @param all_levels whether to supply records for unobserved levels
+#' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
+#' @importFrom tidyr gather
+#' @importFrom dplyr all_of across everything full_join anti_join
+#' @importFrom magrittr %<>% %>%
+#' @export
+#' @keywords internal
+#' @return same class as x
+#' @examples
+#' example(classifiers)
+#' categoricals(x)
+#' levels(categoricals(x)$level)
+categoricals.decorated <- function(x, ..., na.rm_fac = FALSE, exclude_fac = NULL, all_levels = FALSE){
+  y <- NextMethod()
+  stopifnot(is.logical(all_levels), length(all_levels) == 1)
   if(!all_levels) return(y)
   # what groups must be populated?
   g <- y %>% select(c(!!!groups(y), `_tablet_N`, `_tablet_n`)) %>% unique
@@ -190,20 +205,18 @@ categoricals.data.frame <- function(
   y
 }
 
-
 #' Identify Numerics for Data Frame
 #'
 #' Identifies numeric columns. Stacks values and supplies factor level 'numeric'.
 #' @param x data.frame; names must not include 'name' or 'level'
 #' @param ... passed to \code{\link{classifiers}}
 #' @param na.rm_num whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
-#' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup tally add_count select group_by mutate slice
 #' @importFrom tidyr gather
 #' @export
 #' @keywords internal
 #' @return same class as x
-numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
+numerics.data.frame <- function(x, ..., na.rm_num = FALSE){
    for(i in c('_tablet_level', '_tablet_name','_tablet_value'))if(i %in% names(x))stop('names x cannot include ',i)
    x <- select(x, !!!groups(x),where(is.numeric))
    var <- setdiff(names(x), sapply(groups(x),rlang::as_string))
@@ -1292,7 +1305,8 @@ tablet.data.frame <- function(
       na.rm_fac = na.rm_fac,
       na.rm_num = na.rm_num,
       exclude_fac = exclude_fac,
-      exclude_name = exclude_name
+      exclude_name = exclude_name,
+      all_levels = all_levels
    )
    y <- tablet(y, ..., all = all, lab = lab ) # tablet.groupwise
    y$`_tablet_name` <- as.character(y$`_tablet_name`)

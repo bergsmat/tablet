@@ -199,27 +199,30 @@
 \FunctionTok{library}\NormalTok{(knitr)}
 
 \CommentTok{\# make adsl with imputed bmi, imputed race, and two{-}row footnote}
-\NormalTok{d }\OtherTok{\textless{}{-}} \FunctionTok{read\_sas}\NormalTok{(}\StringTok{\textquotesingle{}adsl.sas7bdat\textquotesingle{}}\NormalTok{)}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{read\_sas}\NormalTok{(}\StringTok{\textquotesingle{}adsl.sas7bdat\textquotesingle{}}\NormalTok{)}
 \NormalTok{m }\OtherTok{\textless{}{-}} \FunctionTok{read\_yamlet}\NormalTok{(}\StringTok{\textquotesingle{}adsl.yaml\textquotesingle{}}\NormalTok{)}
 
+\CommentTok{\# https://github.com/haozhu233/kableExtra/issues/703}
+\FunctionTok{names}\NormalTok{(m}\SpecialCharTok{$}\NormalTok{race}\SpecialCharTok{$}\NormalTok{guide)[[}\DecValTok{3}\NormalTok{]] }\OtherTok{\textless{}{-}} \StringTok{\textquotesingle{}Oriental\textquotesingle{}}
+
 \CommentTok{\# fortify to mimic app.R}
-\NormalTok{have }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(d)}
+\NormalTok{have }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(x)}
 \NormalTok{need }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(m)}
 \NormalTok{make }\OtherTok{\textless{}{-}} \FunctionTok{setdiff}\NormalTok{(need, have)}
-\ControlFlowTok{for}\NormalTok{(col }\ControlFlowTok{in}\NormalTok{ make) d[[col]] }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\ConstantTok{NA\_integer\_}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(d))}
+\ControlFlowTok{for}\NormalTok{(col }\ControlFlowTok{in}\NormalTok{ make) x[[col]] }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\ConstantTok{NA\_integer\_}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(x))}
 
 \CommentTok{\# ensure positive nrow}
-\ControlFlowTok{if}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(d) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) d }\OtherTok{\textless{}{-}}\NormalTok{ d[}\StringTok{\textquotesingle{}\textquotesingle{}}\NormalTok{,,drop }\OtherTok{=} \ConstantTok{FALSE}\NormalTok{]}
+\ControlFlowTok{if}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(x) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) x }\OtherTok{\textless{}{-}}\NormalTok{ x[}\StringTok{\textquotesingle{}\textquotesingle{}}\NormalTok{,,drop }\OtherTok{=} \ConstantTok{FALSE}\NormalTok{]}
 
 \CommentTok{\# drop unspecified}
-\NormalTok{d }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{!!!}\FunctionTok{names}\NormalTok{(m))}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{!!!}\FunctionTok{names}\NormalTok{(m))}
 
 \CommentTok{\# apply meta}
-\NormalTok{d }\OtherTok{\textless{}{-}} \FunctionTok{redecorate}\NormalTok{(d, m)}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{redecorate}\NormalTok{(x, m)}
 
 \CommentTok{\# \# Promote NA to a level of the factor}
-\CommentTok{\# d \%\textless{}\textgreater{}\% resolve(exclude = NULL)}
-\NormalTok{d }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{resolve}\NormalTok{()}
+\CommentTok{\# x \%\textless{}\textgreater{}\% resolve(exclude = NULL)}
+\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{resolve}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
@@ -246,27 +249,16 @@
 \FunctionTok{options}\NormalTok{(}\AttributeTok{knitr.kable.NA =} \DecValTok{0}\NormalTok{)}
 \CommentTok{\#opts\_knit$set(out.format = \textquotesingle{}latex\textquotesingle{})}
 \CommentTok{\# debug(tablet:::widgets.devalued)}
-\NormalTok{d }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(trt01a, trt01aa) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(race) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ tablet}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## Adding missing grouping variables: `trt01a`, `trt01aa`
-\end{verbatim}
-
-\begin{verbatim}
-## [1] _tablet_name  _tablet_level _tablet_sort  _tablet_stat  All          
-## <0 rows> (or 0-length row.names)
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{t }\OtherTok{\textless{}{-}}\NormalTok{ d }\SpecialCharTok{\%\textgreater{}\%}
+\CommentTok{\#x \%\textgreater{}\% group\_by(trt01a, trt01aa) \%\textgreater{}\% select(race) \%\textgreater{}\% tablet}
+\CommentTok{\# x$trt01a[] \textless{}{-} NA}
+\CommentTok{\# x$trt01aa[] \textless{}{-} NA}
+\CommentTok{\# debug(categoricals)}
+\NormalTok{x }\OtherTok{\textless{}{-}}\NormalTok{ x }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{filter}\NormalTok{(saffl }\SpecialCharTok{==} \StringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{group\_by}\NormalTok{(trt01a, trt01aa) }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{select}\NormalTok{(}
   \CommentTok{\#  age, agegr, sex, weight, bmi,}
-\NormalTok{    race}
+\NormalTok{    race, bmi}
 \NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{tablet}\NormalTok{(}
     \AttributeTok{all\_levels =} \ConstantTok{TRUE}\NormalTok{,}
@@ -307,18 +299,23 @@
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# reverse lookup on}
-\NormalTok{imputed }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{select}\NormalTok{(d, }\SpecialCharTok{!!!}\NormalTok{make), attr, }\StringTok{\textquotesingle{}label\textquotesingle{}}\NormalTok{)}
-\CommentTok{\#to substitute \textquotesingle{}{-}\textquotesingle{} for all imputeds}
-\CommentTok{\# t \textless{}{-} t[names(t)[!duplicated(names(t))]]}
-\CommentTok{\# t \%\textless{}\textgreater{}\% mutate(}
+\CommentTok{\# reverse lookup on make}
+
+\NormalTok{codelist }\OtherTok{\textless{}{-}} \FunctionTok{attr}\NormalTok{(x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_name}\StringTok{\textasciigrave{}}\NormalTok{, }\StringTok{\textquotesingle{}codelist\textquotesingle{}}\NormalTok{)}
+\NormalTok{x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_original}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}} \FunctionTok{unlist}\NormalTok{(codelist[x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_name}\StringTok{\textasciigrave{}}\NormalTok{])}
+\CommentTok{\# very elegant, but blows away attributes}
+\CommentTok{\# x \%\textless{}\textgreater{}\% mutate(}
 \CommentTok{\#   across(}
 \CommentTok{\#     .cols = {-}starts\_with(\textquotesingle{}\_tablet\_\textquotesingle{}),}
-\CommentTok{\#     .fns = \textasciitilde{} ifelse(\textasciigrave{}\_tablet\_name\textasciigrave{} \%in\% imputed, \textquotesingle{}{-}\textquotesingle{}, .x)}
+\CommentTok{\#     .fns = \textasciitilde{} ifelse(\textasciigrave{}\_tablet\_original\textasciigrave{} \%in\% names(conf$imputed), \textquotesingle{}{-}\textquotesingle{}, .x)}
 \CommentTok{\#   )}
 \CommentTok{\# )}
+\NormalTok{targets }\OtherTok{\textless{}{-}} \FunctionTok{seq\_along}\NormalTok{(x)[}\SpecialCharTok{!}\NormalTok{(}\FunctionTok{grepl}\NormalTok{(}\StringTok{\textquotesingle{}\_tablet\_\textquotesingle{}}\NormalTok{, }\FunctionTok{names}\NormalTok{(x)))]}
+\NormalTok{imputed }\OtherTok{\textless{}{-}}\NormalTok{ x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_original}\StringTok{\textasciigrave{}} \SpecialCharTok{\%in\%}\NormalTok{ make}
+\ControlFlowTok{if}\NormalTok{(}\FunctionTok{length}\NormalTok{(imputed) }\SpecialCharTok{\&} \FunctionTok{length}\NormalTok{(targets)) x[imputed, targets] }\OtherTok{\textless{}{-}} \StringTok{\textquotesingle{}{-}\textquotesingle{}}
+\NormalTok{x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_original}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}} \ConstantTok{NULL}
 
-\NormalTok{t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{x }\SpecialCharTok{\%\textgreater{}\%}
 \NormalTok{  as\_kable }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{footnote}\NormalTok{(}
     \AttributeTok{general =} \CommentTok{\# escape\_latex(}
@@ -341,11 +338,17 @@
 \midrule
 \addlinespace[0.3em]
 \multicolumn{5}{l}{\textbf{Race}}\\
-\hspace{1em}White & 0 & 0 & 0 & 0\\
-\hspace{1em}Black & 0 & 0 & 0 & 0\\
-\hspace{1em}Asian & 0 & 0 & 0 & 0\\
-\hspace{1em}Other & 0 & 0 & 0 & 0\\
-\hspace{1em}Missing & 0 & 0 & 0 & 0\\
+\hspace{1em}White & - & - & - & -\\
+\hspace{1em}Black & - & - & - & -\\
+\hspace{1em}Oriental & - & - & - & -\\
+\hspace{1em}Other & - & - & - & -\\
+\hspace{1em}Missing & - & - & - & -\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Body Mass Index}}\\
+\hspace{1em}n & - & - & - & -\\
+\hspace{1em}Mean (SD) & - & - & - & -\\
+\hspace{1em}Median & - & - & - & -\\
+\hspace{1em}Min, Max & - & - & - & -\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}

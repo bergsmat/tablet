@@ -17,27 +17,30 @@ library(kableExtra)
 library(knitr)
 
 # make adsl with imputed bmi, imputed race, and two-row footnote
-d <- read_sas('adsl.sas7bdat')
+x <- read_sas('adsl.sas7bdat')
 m <- read_yamlet('adsl.yaml')
 
+# https://github.com/haozhu233/kableExtra/issues/703
+names(m$race$guide)[[3]] <- 'Oriental'
+
 # fortify to mimic app.R
-have <- names(d)
+have <- names(x)
 need <- names(m)
 make <- setdiff(need, have)
-for(col in make) d[[col]] <- rep(NA_integer_, nrow(d))
+for(col in make) x[[col]] <- rep(NA_integer_, nrow(x))
 
 # ensure positive nrow
-if(nrow(d) == 0) d <- d['',,drop = FALSE]
+if(nrow(x) == 0) x <- x['',,drop = FALSE]
 
 # drop unspecified
-d %<>% select(!!!names(m))
+x %<>% select(!!!names(m))
 
 # apply meta
-d <- redecorate(d, m)
+x <- redecorate(x, m)
 
 # # Promote NA to a level of the factor
-# d %<>% resolve(exclude = NULL)
-d %<>% resolve()
+# x %<>% resolve(exclude = NULL)
+x %<>% resolve()
 
 foot <-
 'a clinicaltrial.gov
@@ -45,10 +48,11 @@ b some other comment'
 options(knitr.kable.NA = 0)
 #opts_knit$set(out.format = 'latex')
 # debug(tablet:::widgets.devalued)
-#d %>% group_by(trt01a, trt01aa) %>% select(race) %>% tablet
-d$trt01a[] <- NA
-d$trt01aa[] <- NA
-t <- d %>%
+#x %>% group_by(trt01a, trt01aa) %>% select(race) %>% tablet
+# x$trt01a[] <- NA
+# x$trt01aa[] <- NA
+# debug(categoricals)
+x <- x %>%
   filter(saffl == 'Y') %>%
   group_by(trt01a, trt01aa) %>%
   select(
@@ -78,18 +82,23 @@ t <- d %>%
     )
   )
 
-# reverse lookup on
-imputed <- sapply(select(d, !!!make), attr, 'label')
-#to substitute '-' for all imputeds
-# t <- t[names(t)[!duplicated(names(t))]]
-# t %<>% mutate(
+# reverse lookup on make
+
+codelist <- attr(x$`_tablet_name`, 'codelist')
+x$`_tablet_original` <- unlist(codelist[x$`_tablet_name`])
+# very elegant, but blows away attributes
+# x %<>% mutate(
 #   across(
 #     .cols = -starts_with('_tablet_'),
-#     .fns = ~ ifelse(`_tablet_name` %in% imputed, '-', .x)
+#     .fns = ~ ifelse(`_tablet_original` %in% names(conf$imputed), '-', .x)
 #   )
 # )
+targets <- seq_along(x)[!(grepl('_tablet_', names(x)))]
+imputed <- x$`_tablet_original` %in% make
+if(length(imputed) & length(targets)) x[imputed, targets] <- '-'
+x$`_tablet_original` <- NULL
 
-t %>%
+x %>%
   as_kable %>%
   footnote(
     general = # escape_latex(

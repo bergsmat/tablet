@@ -799,7 +799,7 @@ server <- shinyServer(function(input, output, session) {
       printer('no labelhtml yet')
       return()
     }
-    browser()
+    #browser()
     x <- do.call(fun, args)
     # strikethru imputed columns for visual clarity
     codelist <- attr(x$`_tablet_name`, 'codelist')
