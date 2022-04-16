@@ -45,13 +45,15 @@ b some other comment'
 options(knitr.kable.NA = 0)
 #opts_knit$set(out.format = 'latex')
 # debug(tablet:::widgets.devalued)
-d %>% group_by(trt01a) %>% select(race) %>% tablet
+#d %>% group_by(trt01a, trt01aa) %>% select(race) %>% tablet
+d$trt01a[] <- NA
+d$trt01aa[] <- NA
 t <- d %>%
   filter(saffl == 'Y') %>%
-  group_by(trt01a) %>%
+  group_by(trt01a, trt01aa) %>%
   select(
   #  age, agegr, sex, weight, bmi,
-    race
+    race, bmi
   ) %>%
   tablet(
     all_levels = TRUE,
@@ -79,13 +81,13 @@ t <- d %>%
 # reverse lookup on
 imputed <- sapply(select(d, !!!make), attr, 'label')
 #to substitute '-' for all imputeds
-
-t %<>% mutate(
-  across(
-    .cols = -starts_with('_tablet_'),
-    .fns = ~ ifelse(`_tablet_name` %in% imputed, '-', .x)
-  )
-)
+# t <- t[names(t)[!duplicated(names(t))]]
+# t %<>% mutate(
+#   across(
+#     .cols = -starts_with('_tablet_'),
+#     .fns = ~ ifelse(`_tablet_name` %in% imputed, '-', .x)
+#   )
+# )
 
 t %>%
   as_kable %>%

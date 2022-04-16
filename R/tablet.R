@@ -98,7 +98,8 @@ classifiers.data.frame <- function(x, ...){
 #' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
 #' @importFrom tidyr gather
-#' @importFrom dplyr all_of across everything
+#' @importFrom dplyr all_of across everything full_join anti_join
+#' @importFrom magrittr %>% %<>%
 #' @export
 #' @keywords internal
 #' @return same class as x
@@ -196,12 +197,13 @@ categoricals.data.frame <- function(
 #' @param x data.frame; names must not include 'name' or 'level'
 #' @param ... passed to \code{\link{classifiers}}
 #' @param na.rm_num whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
+#' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup tally add_count select group_by mutate slice
 #' @importFrom tidyr gather
 #' @export
 #' @keywords internal
 #' @return same class as x
-numerics.data.frame <- function(x, ..., na.rm_num = FALSE){
+numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
    for(i in c('_tablet_level', '_tablet_name','_tablet_value'))if(i %in% names(x))stop('names x cannot include ',i)
    x <- select(x, !!!groups(x),where(is.numeric))
    var <- setdiff(names(x), sapply(groups(x),rlang::as_string))
@@ -1212,7 +1214,8 @@ as_kable.tablet <- function(
 #'  na.rm_fac = na.rm,
 #'  na.rm_num = na.rm,
 #'  exclude_fac = NULL,
-#'  exclude_name = NULL
+#'  exclude_name = NULL,
+#'  all_levels = FALSE
 #' )
 #' @param x data.frame (possibly grouped)
 #' @param ... substitute formulas for elements of fun, fac, num, lab
@@ -1227,6 +1230,8 @@ as_kable.tablet <- function(
 #' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
 #' @param exclude_name whether to drop NA values of column name (for completeness); passed to \code{\link[tidyr]{gather}}
 #' @param all_levels whether to supply records for unobserved levels
+#' @importFrom dplyr all_of across everything full_join anti_join
+#' @importFrom magrittr %>% %<>%
 #' @export
 #' @return 'tablet', with columns for each combination of groups, and:
 #' \item{_tablet_name}{observation identifier: character, possibly 'latex', see details; has a codelist attribute the values of which are the original column names}
@@ -1234,7 +1239,7 @@ as_kable.tablet <- function(
 #' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 #' \item{All (or value of 'all' argument)}{ungrouped results}
 #' \item{_tablet_sort}{sorting column}
-#' @seealso \code{\link{as_kable.tablet}} \code{\link{tablet.decorated}}
+#' @seealso \code{\link{as_kable.tablet}}
 #' @examples
 #' library(boot)
 #' library(dplyr)

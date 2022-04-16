@@ -153,7 +153,8 @@ server <- shinyServer(function(input, output, session) {
     labelhtml  = 'no',
     labeltex   = 'no',
     repeathead = 'no',
-    repeatfoot = 'no'
+    repeatfoot = 'no',
+    tablet     = as.character(packageVersion('tablet'))
   )
 
   reset_conf <- function(){
@@ -183,6 +184,7 @@ server <- shinyServer(function(input, output, session) {
     labeltex        <- 'no'
     repeathead      <- 'no'
     repeatfoot      <- 'no'
+    tablet          <- as.character(packageVersion('tablet'))
   }
 
 
@@ -305,7 +307,9 @@ server <- shinyServer(function(input, output, session) {
           !names(conf) %in% c(
             'x',
             'confpath',
-            'editor'
+            'editor',
+            'mv',
+            'imputed'
           )
         ]
       )
@@ -549,6 +553,20 @@ server <- shinyServer(function(input, output, session) {
     if(!is.null(saved$labelhtml))conf$labelhtml <- saved$labelhtml
     if(!is.null(saved$labeltex))conf$labeltex <- saved$labeltex
 
+    # version control
+    if(!is.null(saved$tablet)){
+      if(!identical(saved$tablet, conf$tablet)){
+        showNotification(
+          duration = NULL,
+          type = 'warning',
+          paste(
+            'configuration was last saved by tablet version', saved$tablet,
+            'but currently using', conf$tablet
+          )
+        )
+      }
+    }
+
     #conf$x          = data.frame()
     # if filepath has changed, data will be re-read: see observeEvent(conf$filepath)
   })
@@ -747,6 +765,9 @@ server <- shinyServer(function(input, output, session) {
         `Mean (SD)` ~ ave + ' (' + std + ')',
         Median ~ paste(med),
         `Min, Max` ~ min + ', ' + max
+      ),
+      fac = list(
+        ` ` ~ ifelse(sum == 0, '0', sum + ' (' + pct + '%' + ')')
       )
     )
     bundle <- c(x, extra)
@@ -778,7 +799,7 @@ server <- shinyServer(function(input, output, session) {
       printer('no labelhtml yet')
       return()
     }
-    #browser()
+    browser()
     x <- do.call(fun, args)
     # strikethru imputed columns for visual clarity
     codelist <- attr(x$`_tablet_name`, 'codelist')

@@ -6,7 +6,7 @@
 ]{article}
 \title{Test}
 \author{Tim Bergsma}
-\date{2022-04-12}
+\date{2022-04-16}
 
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -246,10 +246,28 @@
 \FunctionTok{options}\NormalTok{(}\AttributeTok{knitr.kable.NA =} \DecValTok{0}\NormalTok{)}
 \CommentTok{\#opts\_knit$set(out.format = \textquotesingle{}latex\textquotesingle{})}
 \CommentTok{\# debug(tablet:::widgets.devalued)}
+\NormalTok{d }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(trt01a, trt01aa) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(race) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ tablet}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Adding missing grouping variables: `trt01a`, `trt01aa`
+\end{verbatim}
+
+\begin{verbatim}
+## [1] _tablet_name  _tablet_level _tablet_sort  _tablet_stat  All          
+## <0 rows> (or 0-length row.names)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \NormalTok{t }\OtherTok{\textless{}{-}}\NormalTok{ d }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{filter}\NormalTok{(saffl }\SpecialCharTok{==} \StringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{group\_by}\NormalTok{(trt01a) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{select}\NormalTok{(age, agegr, sex, weight, bmi, race) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(trt01a, trt01aa) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(}
+  \CommentTok{\#  age, agegr, sex, weight, bmi,}
+\NormalTok{    race}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{tablet}\NormalTok{(}
     \AttributeTok{all\_levels =} \ConstantTok{TRUE}\NormalTok{,}
     \AttributeTok{fun =} \FunctionTok{list}\NormalTok{(}
@@ -276,11 +294,11 @@
 \end{Shaded}
 
 \begin{verbatim}
-## Adding missing grouping variables: `trt01a`
+## Adding missing grouping variables: `trt01a`, `trt01aa`
 \end{verbatim}
 
 \begin{verbatim}
-## Joining, by = c("Treatment", "_tablet_N", "_tablet_n", "_tablet_name", "_tablet_level")
+## Joining, by = c("trt01a", "trt01aa", "_tablet_N", "_tablet_n", "_tablet_name", "_tablet_level")
 \end{verbatim}
 
 \begin{verbatim}
@@ -292,13 +310,13 @@
 \CommentTok{\# reverse lookup on}
 \NormalTok{imputed }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{select}\NormalTok{(d, }\SpecialCharTok{!!!}\NormalTok{make), attr, }\StringTok{\textquotesingle{}label\textquotesingle{}}\NormalTok{)}
 \CommentTok{\#to substitute \textquotesingle{}{-}\textquotesingle{} for all imputeds}
-
-\NormalTok{t }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}
-  \FunctionTok{across}\NormalTok{(}
-    \AttributeTok{.cols =} \SpecialCharTok{{-}}\FunctionTok{starts\_with}\NormalTok{(}\StringTok{\textquotesingle{}\_tablet\_\textquotesingle{}}\NormalTok{),}
-    \AttributeTok{.fns =} \SpecialCharTok{\textasciitilde{}} \FunctionTok{ifelse}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_name}\StringTok{\textasciigrave{}} \SpecialCharTok{\%in\%}\NormalTok{ imputed, }\StringTok{\textquotesingle{}{-}\textquotesingle{}}\NormalTok{, .x)}
-\NormalTok{  )}
-\NormalTok{)}
+\CommentTok{\# t \textless{}{-} t[names(t)[!duplicated(names(t))]]}
+\CommentTok{\# t \%\textless{}\textgreater{}\% mutate(}
+\CommentTok{\#   across(}
+\CommentTok{\#     .cols = {-}starts\_with(\textquotesingle{}\_tablet\_\textquotesingle{}),}
+\CommentTok{\#     .fns = \textasciitilde{} ifelse(\textasciigrave{}\_tablet\_name\textasciigrave{} \%in\% imputed, \textquotesingle{}{-}\textquotesingle{}, .x)}
+\CommentTok{\#   )}
+\CommentTok{\# )}
 
 \NormalTok{t }\SpecialCharTok{\%\textgreater{}\%}
 \NormalTok{  as\_kable }\SpecialCharTok{\%\textgreater{}\%}
@@ -317,42 +335,17 @@
 \begin{threeparttable}
 \begin{tabular}[t]{lllll}
 \toprule
-  & Placebo & TRT 10 mg & TRT 20 mg & All\\
+\multicolumn{1}{c}{ } & \multicolumn{1}{c}{Placebo} & \multicolumn{1}{c}{TRT 10 mg} & \multicolumn{1}{c}{TRT 20 mg} & \multicolumn{1}{c}{ } \\
+\cmidrule(l{3pt}r{3pt}){2-2} \cmidrule(l{3pt}r{3pt}){3-3} \cmidrule(l{3pt}r{3pt}){4-4}
+  & \makecell[c]{Placebo\\(N = 4)} & \makecell[c]{TRT Total\\(N = 4)} & \makecell[c]{TRT Total\\(N = 4)} & \makecell[c]{All\\(N = 12)}\\
 \midrule
 \addlinespace[0.3em]
-\multicolumn{5}{l}{\textbf{Age}}\\
-\hspace{1em}n & 4 & 4 & 4 & \vphantom{1} 12\\
-\hspace{1em}Mean (SD) & 42 (27.1) & 42.5 (15.4) & 44.2 (21.2) & 42.9 (19.7)\\
-\hspace{1em}Median & 42 & 36.5 & 44.5 & 42\\
-\hspace{1em}Min, Max & 18, 66 & 32, 65 & 18, 70 & 18, 70\\
-\addlinespace[0.3em]
-\multicolumn{5}{l}{\textbf{Age Categories}}\\
-\hspace{1em}<=18 yrs & 1 (25\%) & 0 & 1 (25\%) & 2 (16.7\%)\\
-\hspace{1em}19 - <65 yrs & 1 (25\%) & 4 (100\%) & 2 (50\%) & 7 (58.3\%)\\
-\hspace{1em}>=65 yrs & 2 (50\%) & 0 & 1 (25\%) & 3 (25\%)\\
-\addlinespace[0.3em]
-\multicolumn{5}{l}{\textbf{Gender}}\\
-\hspace{1em}F & 2 (50\%) & 3 (75\%) & 1 (25\%) & 6 (50\%)\\
-\hspace{1em}M & 2 (50\%) & 1 (25\%) & 3 (75\%) & 6 (50\%)\\
-\addlinespace[0.3em]
-\multicolumn{5}{l}{\textbf{Weight}}\\
-\hspace{1em}n & 4 & 4 & 4 & 12\\
-\hspace{1em}Mean (SD) & 134 (28.4) & 145 (16.9) & 170 (26.8) & 150 (27.3)\\
-\hspace{1em}Median & 130 & 144 & 158 & 154\\
-\hspace{1em}Min, Max & 109, 165 & 128, 165 & 154, 210 & 109, 210\\
-\addlinespace[0.3em]
-\multicolumn{5}{l}{\textbf{Body Mass Index}}\\
-\hspace{1em}n & - & - & - & -\\
-\hspace{1em}Mean (SD) & - & - & - & -\\
-\hspace{1em}Median & - & - & - & -\\
-\hspace{1em}Min, Max & - & - & - & -\\
-\addlinespace[0.3em]
 \multicolumn{5}{l}{\textbf{Race}}\\
-\hspace{1em}White & - & - & - & -\\
-\hspace{1em}Black & - & - & - & -\\
-\hspace{1em}Asian & - & - & - & -\\
-\hspace{1em}Other & - & - & - & -\\
-\hspace{1em}Missing & - & - & - & -\\
+\hspace{1em}White & 0 & 0 & 0 & 0\\
+\hspace{1em}Black & 0 & 0 & 0 & 0\\
+\hspace{1em}Asian & 0 & 0 & 0 & 0\\
+\hspace{1em}Other & 0 & 0 & 0 & 0\\
+\hspace{1em}Missing & 0 & 0 & 0 & 0\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
