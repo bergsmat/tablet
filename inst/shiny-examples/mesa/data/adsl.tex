@@ -250,9 +250,11 @@
 \CommentTok{\#opts\_knit$set(out.format = \textquotesingle{}latex\textquotesingle{})}
 \CommentTok{\# debug(tablet:::widgets.devalued)}
 \CommentTok{\#x \%\textgreater{}\% group\_by(trt01a, trt01aa) \%\textgreater{}\% select(race) \%\textgreater{}\% tablet}
-\CommentTok{\# x$trt01a[] \textless{}{-} NA}
-\CommentTok{\# x$trt01aa[] \textless{}{-} NA}
-\CommentTok{\# debug(categoricals)}
+\NormalTok{x}\SpecialCharTok{$}\NormalTok{trt01a[] }\OtherTok{\textless{}{-}} \ConstantTok{NA}
+\NormalTok{x}\SpecialCharTok{$}\NormalTok{trt01aa[] }\OtherTok{\textless{}{-}} \ConstantTok{NA}
+\CommentTok{\#debug(categoricals)}
+\CommentTok{\#debug(numerics)}
+\CommentTok{\#debug(groupfull)}
 \NormalTok{x }\OtherTok{\textless{}{-}}\NormalTok{ x }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{filter}\NormalTok{(saffl }\SpecialCharTok{==} \StringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{group\_by}\NormalTok{(trt01a, trt01aa) }\SpecialCharTok{\%\textgreater{}\%}
@@ -289,14 +291,6 @@
 ## Adding missing grouping variables: `trt01a`, `trt01aa`
 \end{verbatim}
 
-\begin{verbatim}
-## Joining, by = c("trt01a", "trt01aa", "_tablet_N", "_tablet_n", "_tablet_name", "_tablet_level")
-\end{verbatim}
-
-\begin{verbatim}
-## Joining, by = c("_tablet_N", "_tablet_n", "_tablet_name", "_tablet_level")
-\end{verbatim}
-
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# reverse lookup on make}
@@ -325,32 +319,36 @@
     \AttributeTok{fixed\_small\_size =} \ConstantTok{TRUE}\NormalTok{,}
     \AttributeTok{general\_title =} \StringTok{" "}\NormalTok{,}
     \AttributeTok{threeparttable =} \ConstantTok{TRUE}
-\NormalTok{  ) }\CommentTok{\# \%\textgreater{}\% as.character \%\textgreater{}\% writeLines}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable\_styling}\NormalTok{(}\AttributeTok{latex\_options =} \StringTok{\textquotesingle{}scale\_down\textquotesingle{}}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{table}
+\centering
 \begin{threeparttable}
-\begin{tabular}[t]{lllll}
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{lllllllllllllll}
 \toprule
-\multicolumn{1}{c}{ } & \multicolumn{1}{c}{Placebo} & \multicolumn{1}{c}{TRT 10 mg} & \multicolumn{1}{c}{TRT 20 mg} & \multicolumn{1}{c}{ } \\
-\cmidrule(l{3pt}r{3pt}){2-2} \cmidrule(l{3pt}r{3pt}){3-3} \cmidrule(l{3pt}r{3pt}){4-4}
-  & \makecell[c]{Placebo\\(N = 4)} & \makecell[c]{TRT Total\\(N = 4)} & \makecell[c]{TRT Total\\(N = 4)} & \makecell[c]{All\\(N = 12)}\\
+\multicolumn{1}{c}{ } & \multicolumn{4}{c}{Placebo} & \multicolumn{4}{c}{TRT 10 mg} & \multicolumn{4}{c}{TRT 20 mg} & \multicolumn{1}{c}{NA} & \multicolumn{1}{c}{ } \\
+\cmidrule(l{3pt}r{3pt}){2-5} \cmidrule(l{3pt}r{3pt}){6-9} \cmidrule(l{3pt}r{3pt}){10-13} \cmidrule(l{3pt}r{3pt}){14-14}
+  & \makecell[c]{Placebo\\(N = 0)} & \makecell[c]{TRT 10 mg\\(N = 0)} & \makecell[c]{TRT 20 mg\\(N = 0)} & \makecell[c]{TRT Total\\(N = 0)} & \makecell[c]{Placebo\\(N = 0)} & \makecell[c]{TRT 10 mg\\(N = 0)} & \makecell[c]{TRT 20 mg\\(N = 0)} & \makecell[c]{TRT Total\\(N = 0)} & \makecell[c]{Placebo\\(N = 0)} & \makecell[c]{TRT 10 mg\\(N = 0)} & \makecell[c]{TRT 20 mg\\(N = 0)} & \makecell[c]{TRT Total\\(N = 0)} & \makecell[c]{NA\\(N = 12)} & \makecell[c]{All\\(N = 12)}\\
 \midrule
 \addlinespace[0.3em]
-\multicolumn{5}{l}{\textbf{Race}}\\
-\hspace{1em}White & - & - & - & -\\
-\hspace{1em}Black & - & - & - & -\\
-\hspace{1em}Oriental & - & - & - & -\\
-\hspace{1em}Other & - & - & - & -\\
-\hspace{1em}Missing & - & - & - & -\\
+\multicolumn{15}{l}{\textbf{Race}}\\
+\hspace{1em}White & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\hspace{1em}Black & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\hspace{1em}Oriental & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\hspace{1em}Other & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\hspace{1em}Missing & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
 \addlinespace[0.3em]
-\multicolumn{5}{l}{\textbf{Body Mass Index}}\\
-\hspace{1em}n & - & - & - & -\\
-\hspace{1em}Mean (SD) & - & - & - & -\\
-\hspace{1em}Median & - & - & - & -\\
-\hspace{1em}Min, Max & - & - & - & -\\
+\multicolumn{15}{l}{\textbf{Body Mass Index}}\\
+\hspace{1em}n & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\hspace{1em}Mean (SD) & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\hspace{1em}Median & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\hspace{1em}Min, Max & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \begin{tablenotes}
 \small
 \item \textit{ } 
@@ -358,5 +356,6 @@
 \item b something
 \end{tablenotes}
 \end{threeparttable}
+\end{table}
 
 \end{document}

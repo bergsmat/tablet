@@ -4,7 +4,7 @@
 \alias{numerics.data.frame}
 \title{Identify Numerics for Data Frame}
 \usage{
-\method{numerics}{data.frame}(x, ..., na.rm_num = FALSE)
+numerics.data.frame(x, ..., na.rm_num = FALSE, all_levels = FALSE)
 }
 \arguments{
 \item{x}{data.frame; names must not include 'name' or 'level'}
@@ -12,6 +12,8 @@
 \item{...}{passed to \code{\link{classifiers}}}
 
 \item{na.rm_num}{whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm}
+
+\item{all_levels}{whether to supply records for unobserved levels}
 }
 \value{
 same class as x

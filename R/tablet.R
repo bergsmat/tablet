@@ -78,7 +78,9 @@ classifiers.data.frame <- function(x, ...){
    grp <- groups(x)
    x <- ungroup(x)
    x <- add_count(x, name = '_tablet_N') #, wt = n())
+   suppressMessages(
    x <- select(x, `_tablet_N`, everything())
+   )
    for(col in grp){
       #nm <- paste0('n_', col)
       x <- group_by(x, .data[[col]], .add = TRUE)
@@ -164,31 +166,65 @@ categoricals.data.frame <- function(
   # }
 
   if(!all_levels) return(x)
+  if(!length(groups(x))) return(x)
   # what groups must be populated?
-  g <- x %>% select(c(!!!groups(x), `_tablet_N`, `_tablet_n`)) %>% unique
-  # what factors are in play?
-  p <- y %>% select(where(is.factor)) %>% names
-  p %<>% setdiff(groups(y))
-  var <- character(0)
-  need <- character(0)
-  for(i in p){
-    levs <- levels(y[[i]])
-    for(lev in levs){
-      var %<>% append(i)
-      need %<>% append(paste0(i, '_tablet_', lev))
-    }
+
+  template <- function(x, ...)UseMethod('template')
+  template.factor <- function(x,...){
+    # create vector of all levels
+    levs <- levels(x)
+    x <- x[0]
+    for(i in seq_along(levs))x[i] <- levs[i]
+    x
   }
-  stopifnot(length(var) == length(need))
-  q <- data.frame(`_tablet_name` = var, `_tablet_level` = need, check.names = F)
-  q$`_tablet_name` %<>% factor(levels = levels(x$`_tablet_name`))
-  q$`_tablet_level` %<>% factor(levels = levels(x$`_tablet_level`))
-  g %<>% full_join(q, by = character())
-  g %<>% anti_join(x) # exclude combos already observed
-  g$`_tablet_value` <- 0L
-  stopifnot(setequal(names(g), names(x)))
-  x %<>% bind_rows(g)
-  x %<>% arrange(!!!groups(x), `_tablet_name`, `_tablet_level`)
-  x
+  groups <-  x %>% select(c(!!!groups(x))) #, `_tablet_N`, `_tablet_n`)) %>% unique
+  groups <- groups[0,]
+  nms <- names(groups)
+  groups <- sapply(groups, template.factor)
+  names(groups) <- groups(x)
+  for(g in names(groups)){
+    groups[[g]] <- data.frame(groups[[g]])
+    names(groups[[g]]) <- g
+  }
+  while (length(groups) > 1){
+    groups[[1]] <- full_join(by = character(), groups[[1]], groups[[2]])
+    groups[[2]] <- NULL
+  }
+ groups <- groups[[1]]
+ groups$`_tablet_N` <- unique(x$`_tablet_N`)
+ suppressMessages(
+ groups %<>% left_join(x %>% select(c(!!!groups(x)), `_tablet_n`))
+ )
+ groups$`_tablet_n`[is.na(groups$`_tablet_n`)] <- 0
+
+  # what factors are in play?
+ factors <- y %>% select(where(is.factor)) %>% names
+ factors %<>% setdiff(groups(y))
+ `_tablet_name` <- character(0)
+ `_tablet_level` <- character(0)
+ for(i in factors){
+   levs <- levels(y[[i]])
+   for(lev in levs){
+     `_tablet_name` %<>% append(i)
+     `_tablet_level` %<>% append(paste0(i, '_tablet_', lev))
+   }
+ }
+ stopifnot(length(`_tablet_name`) == length(`_tablet_level`))
+ factors <- data.frame(`_tablet_name`,`_tablet_level`, check.names = F)
+ factors$`_tablet_name` %<>% factor(levels = levels(x$`_tablet_name`))
+ factors$`_tablet_level` %<>% factor(levels = levels(x$`_tablet_level`))
+ suppressMessages(
+ groups %<>% full_join(factors, by = character())
+ )
+ suppressMessages(
+ groups %<>% anti_join(x %>% select(-c(`_tablet_N`, `_tablet_n`))) # exclude combos already observed
+ )
+ groups$`_tablet_value` <- 0L
+ stopifnot(setequal(names(groups), names(x)))
+ x %<>% bind_rows(groups)
+ x %<>% arrange(!!!groups(x), `_tablet_name`, `_tablet_level`)
+ x
+
 }
 
 #' Identify Numerics for Data Frame
@@ -197,13 +233,16 @@ categoricals.data.frame <- function(
 #' @param x data.frame; names must not include 'name' or 'level'
 #' @param ... passed to \code{\link{classifiers}}
 #' @param na.rm_num whether to drop NA observations; passed to \code{\link[tidyr]{gather}} as na.rm
+#' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup tally add_count select group_by mutate slice
 #' @importFrom tidyr gather
 #' @export
 #' @keywords internal
 #' @return same class as x
-numerics.data.frame <- function(x, ..., na.rm_num = FALSE){
+numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
    for(i in c('_tablet_level', '_tablet_name','_tablet_value'))if(i %in% names(x))stop('names x cannot include ',i)
+
+   y <- x
    x <- select(x, !!!groups(x),where(is.numeric))
    var <- setdiff(names(x), sapply(groups(x),rlang::as_string))
    x <- classifiers(x,...)
@@ -223,6 +262,69 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE){
    if(!length(var)){
       x <- slice(x, 0)
    }
+   x
+   if(!all_levels)return(x)
+   if(!length(groups(x)))return(x)
+
+   # what groups must be populated?
+
+   template <- function(x, ...)UseMethod('template')
+   template.factor <- function(x,...){
+     # create vector of all levels
+     levs <- levels(x)
+     x <- x[0]
+     for(i in seq_along(levs))x[i] <- levs[i]
+     x
+   }
+   groups <-  x %>% select(c(!!!groups(x))) #, `_tablet_N`, `_tablet_n`)) %>% unique
+   groups <- groups[0,]
+   nms <- names(groups)
+   groups <- sapply(groups, template.factor)
+   names(groups) <- groups(x)
+   for(g in names(groups)){
+     groups[[g]] <- data.frame(groups[[g]])
+     names(groups[[g]]) <- g
+   }
+   while (length(groups) > 1){
+     groups[[1]] <- full_join(by = character(), groups[[1]], groups[[2]])
+     groups[[2]] <- NULL
+   }
+   groups <- groups[[1]]
+   groups$`_tablet_N` <- unique(x$`_tablet_N`)
+   suppressMessages(
+   groups %<>% left_join(x %>% select(c(!!!groups(x)), `_tablet_n`))
+   )
+   groups$`_tablet_n`[is.na(groups$`_tablet_n`)] <- 0
+
+   # what numerics are in play?
+   numerics <- y %>%
+     ungroup %>%
+     select(-where(is.factor)) %>%
+     names
+
+
+   numerics %<>% setdiff(groups(y))
+   `_tablet_name` <- character(0)
+   `_tablet_level` <- character(0)
+   for(i in numerics){
+     `_tablet_name` %<>% append(i)
+     `_tablet_level` %<>% append('numeric')
+
+   }
+   stopifnot(length(`_tablet_name`) == length(`_tablet_level`))
+   numerics <- data.frame(`_tablet_name`,`_tablet_level`, check.names = F)
+   numerics$`_tablet_name` %<>% factor(levels = levels(x$`_tablet_name`))
+   numerics$`_tablet_level` %<>% factor(levels = levels(x$`_tablet_level`))
+   suppressMessages(
+   groups %<>% full_join(numerics, by = character())
+   )
+   suppressMessages(
+   groups %<>% anti_join(x %>% select(-c(`_tablet_N`, `_tablet_n`))) # exclude combos already observed
+   )
+   groups$`_tablet_value` <- 0L
+   stopifnot(setequal(names(groups), names(x)))
+   x %<>% bind_rows(groups)
+   x %<>% arrange(!!!groups(x), `_tablet_name`, `_tablet_level`)
    x
 }
 

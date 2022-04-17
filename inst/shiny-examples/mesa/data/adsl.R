@@ -49,9 +49,11 @@ options(knitr.kable.NA = 0)
 #opts_knit$set(out.format = 'latex')
 # debug(tablet:::widgets.devalued)
 #x %>% group_by(trt01a, trt01aa) %>% select(race) %>% tablet
-# x$trt01a[] <- NA
-# x$trt01aa[] <- NA
-# debug(categoricals)
+x$trt01a[] <- NA
+x$trt01aa[] <- NA
+#debug(categoricals)
+#debug(numerics)
+#debug(groupfull)
 x <- x %>%
   filter(saffl == 'Y') %>%
   group_by(trt01a, trt01aa) %>%
@@ -108,5 +110,6 @@ x %>%
     fixed_small_size = TRUE,
     general_title = " ",
     threeparttable = TRUE
-  ) # %>% as.character %>% writeLines
+  ) %>%
+  kable_styling(latex_options = 'scale_down')
 
