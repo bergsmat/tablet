@@ -4,13 +4,7 @@
 \alias{categoricals.data.frame}
 \title{Identify Categoricals for Data Frame}
 \usage{
-categoricals.data.frame(
-  x,
-  ...,
-  na.rm_fac = FALSE,
-  exclude_fac = NULL,
-  all_levels = FALSE
-)
+\method{categoricals}{data.frame}(x, ..., na.rm_fac = FALSE, exclude_fac = NULL, all_levels = FALSE)
 }
 \arguments{
 \item{x}{data.frame; names must not start with '_tablet_'}

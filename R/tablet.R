@@ -103,6 +103,7 @@ classifiers.data.frame <- function(x, ...){
 #' @importFrom dplyr all_of across everything full_join anti_join
 #' @importFrom magrittr %>% %<>%
 #' @export
+#' @method categoricals data.frame
 #' @keywords internal
 #' @return same class as x
 #' @examples
@@ -179,8 +180,7 @@ categoricals.data.frame <- function(
   }
   groups <-  x %>% select(c(!!!groups(x))) #, `_tablet_N`, `_tablet_n`)) %>% unique
   groups <- groups[0,]
-  nms <- names(groups)
-  groups <- sapply(groups, template.factor)
+  groups <- lapply(groups, template.factor)
   names(groups) <- groups(x)
   for(g in names(groups)){
     groups[[g]] <- data.frame(groups[[g]])
@@ -237,6 +237,7 @@ categoricals.data.frame <- function(
 #' @importFrom dplyr groups ungroup tally add_count select group_by mutate slice
 #' @importFrom tidyr gather
 #' @export
+#' @method numerics data.frame
 #' @keywords internal
 #' @return same class as x
 numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
@@ -278,8 +279,7 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
    }
    groups <-  x %>% select(c(!!!groups(x))) #, `_tablet_N`, `_tablet_n`)) %>% unique
    groups <- groups[0,]
-   nms <- names(groups)
-   groups <- sapply(groups, template.factor)
+   groups <- lapply(groups, template.factor)
    names(groups) <- groups(x)
    for(g in names(groups)){
      groups[[g]] <- data.frame(groups[[g]])

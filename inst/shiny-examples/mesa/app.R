@@ -801,6 +801,10 @@ server <- shinyServer(function(input, output, session) {
     }
     #browser()
     x <- do.call(fun, args)
+    # remove NA groups
+    na <- which(names(x) == 'NA')
+    for(i in rev(na))x[[na]] <- NULL
+
     # strikethru imputed columns for visual clarity
     codelist <- attr(x$`_tablet_name`, 'codelist')
     x$`_tablet_original` <- unlist(codelist[x$`_tablet_name`])
@@ -855,6 +859,10 @@ server <- shinyServer(function(input, output, session) {
 
     # call tablet
     x <- do.call(fun, args)
+    # remove NA groups
+    na <- which(names(x) == 'NA')
+    for(i in rev(na))x[[na]] <- NULL
+
     # strikethru imputed columns for visual clarity
     codelist <- attr(x$`_tablet_name`, 'codelist')
     x$`_tablet_original` <- unlist(codelist[x$`_tablet_name`])

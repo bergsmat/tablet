@@ -4,7 +4,7 @@
 \alias{numerics.data.frame}
 \title{Identify Numerics for Data Frame}
 \usage{
-numerics.data.frame(x, ..., na.rm_num = FALSE, all_levels = FALSE)
+\method{numerics}{data.frame}(x, ..., na.rm_num = FALSE, all_levels = FALSE)
 }
 \arguments{
 \item{x}{data.frame; names must not include 'name' or 'level'}

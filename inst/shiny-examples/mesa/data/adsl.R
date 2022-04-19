@@ -61,7 +61,7 @@ x <- x %>%
   #  age, agegr, sex, weight, bmi,
     race, bmi
   ) %>%
-  tablet(
+  splice(
     all_levels = TRUE,
     fun = list(
       sum ~  sum(x,  na.rm = TRUE),
@@ -84,8 +84,11 @@ x <- x %>%
     )
   )
 
-# reverse lookup on make
+# remove NA groups
+na <- which(names(x) == 'NA')
+for(i in rev(na))x[[na]] <- NULL
 
+# reverse lookup on make
 codelist <- attr(x$`_tablet_name`, 'codelist')
 x$`_tablet_original` <- unlist(codelist[x$`_tablet_name`])
 # very elegant, but blows away attributes

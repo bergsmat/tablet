@@ -6,7 +6,7 @@
 ]{article}
 \title{Test}
 \author{Tim Bergsma}
-\date{2022-04-16}
+\date{2022-04-18}
 
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -262,7 +262,7 @@
   \CommentTok{\#  age, agegr, sex, weight, bmi,}
 \NormalTok{    race, bmi}
 \NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{tablet}\NormalTok{(}
+  \FunctionTok{splice}\NormalTok{(}
     \AttributeTok{all\_levels =} \ConstantTok{TRUE}\NormalTok{,}
     \AttributeTok{fun =} \FunctionTok{list}\NormalTok{(}
 \NormalTok{      sum }\SpecialCharTok{\textasciitilde{}}  \FunctionTok{sum}\NormalTok{(x,  }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
@@ -293,8 +293,11 @@
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# reverse lookup on make}
+\CommentTok{\# remove NA groups}
+\NormalTok{na }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(}\FunctionTok{names}\NormalTok{(x) }\SpecialCharTok{==} \StringTok{\textquotesingle{}NA\textquotesingle{}}\NormalTok{)}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \FunctionTok{rev}\NormalTok{(na))x[[na]] }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
 
+\CommentTok{\# reverse lookup on make}
 \NormalTok{codelist }\OtherTok{\textless{}{-}} \FunctionTok{attr}\NormalTok{(x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_name}\StringTok{\textasciigrave{}}\NormalTok{, }\StringTok{\textquotesingle{}codelist\textquotesingle{}}\NormalTok{)}
 \NormalTok{x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_original}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}} \FunctionTok{unlist}\NormalTok{(codelist[x}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{\_tablet\_name}\StringTok{\textasciigrave{}}\NormalTok{])}
 \CommentTok{\# very elegant, but blows away attributes}
@@ -328,25 +331,23 @@
 \centering
 \begin{threeparttable}
 \resizebox{\linewidth}{!}{
-\begin{tabular}[t]{lllllllllllllll}
+\begin{tabular}[t]{llllll}
 \toprule
-\multicolumn{1}{c}{ } & \multicolumn{4}{c}{Placebo} & \multicolumn{4}{c}{TRT 10 mg} & \multicolumn{4}{c}{TRT 20 mg} & \multicolumn{1}{c}{NA} & \multicolumn{1}{c}{ } \\
-\cmidrule(l{3pt}r{3pt}){2-5} \cmidrule(l{3pt}r{3pt}){6-9} \cmidrule(l{3pt}r{3pt}){10-13} \cmidrule(l{3pt}r{3pt}){14-14}
-  & \makecell[c]{Placebo\\(N = 0)} & \makecell[c]{TRT 10 mg\\(N = 0)} & \makecell[c]{TRT 20 mg\\(N = 0)} & \makecell[c]{TRT Total\\(N = 0)} & \makecell[c]{Placebo\\(N = 0)} & \makecell[c]{TRT 10 mg\\(N = 0)} & \makecell[c]{TRT 20 mg\\(N = 0)} & \makecell[c]{TRT Total\\(N = 0)} & \makecell[c]{Placebo\\(N = 0)} & \makecell[c]{TRT 10 mg\\(N = 0)} & \makecell[c]{TRT 20 mg\\(N = 0)} & \makecell[c]{TRT Total\\(N = 0)} & \makecell[c]{NA\\(N = 12)} & \makecell[c]{All\\(N = 12)}\\
+  & \makecell[c]{Placebo\\(N = 0)} & \makecell[c]{TRT 10 mg\\(N = 0)} & \makecell[c]{TRT 20 mg\\(N = 0)} & \makecell[c]{TRT Total\\(N = 0)} & \makecell[c]{All\\(N = 12)}\\
 \midrule
 \addlinespace[0.3em]
-\multicolumn{15}{l}{\textbf{Race}}\\
-\hspace{1em}White & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
-\hspace{1em}Black & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
-\hspace{1em}Oriental & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
-\hspace{1em}Other & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
-\hspace{1em}Missing & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\multicolumn{6}{l}{\textbf{Race}}\\
+\hspace{1em}White & - & - & - & - & -\\
+\hspace{1em}Black & - & - & - & - & -\\
+\hspace{1em}Oriental & - & - & - & - & -\\
+\hspace{1em}Other & - & - & - & - & -\\
+\hspace{1em}Missing & - & - & - & - & -\\
 \addlinespace[0.3em]
-\multicolumn{15}{l}{\textbf{Body Mass Index}}\\
-\hspace{1em}n & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
-\hspace{1em}Mean (SD) & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
-\hspace{1em}Median & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
-\hspace{1em}Min, Max & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
+\multicolumn{6}{l}{\textbf{Body Mass Index}}\\
+\hspace{1em}n & - & - & - & - & -\\
+\hspace{1em}Mean (SD) & - & - & - & - & -\\
+\hspace{1em}Median & - & - & - & - & -\\
+\hspace{1em}Min, Max & - & - & - & - & -\\
 \bottomrule
 \end{tabular}}
 \begin{tablenotes}
