@@ -1,7 +1,7 @@
 Package: tablet
 Type: Package
 Title: Tabulate Descriptive Statistics in Multiple Formats
-Version: 0.5.2
+Version: 0.5.3
 Author: Tim Bergsma
 Maintainer: Tim Bergsma <bergsmat@gmail.com>
 BugReports: https://github.com/bergsmat/tablet/issues
@@ -14,9 +14,9 @@ Description: Creates a table of descriptive statistics
 License: GPL-3
 Encoding: UTF-8
 Imports: dplyr (>= 1.0.2), rlang, tidyr, kableExtra (>= 0.9.0), 
- DT, spork (>= 0.2.2), magrittr
+ DT, spork (>= 0.2.2), magrittr, fs
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Suggests: knitr, rmarkdown, yamlet (>= 0.8.7), boot, 
- testthat, shiny, shinyFiles, fs, haven, yaml, sortable, 
+ testthat, shiny, shinyFiles, haven, yaml, sortable, 
  latexpdf (>= 0.1.7), tools, csv, xtable, shinyAce, R.utils

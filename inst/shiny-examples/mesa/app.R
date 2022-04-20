@@ -15,6 +15,7 @@ library(tools)
 library(csv)
 library(shinyAce)
 library(spork)
+
 ui <- shinyUI(
   navbarPage(
     'Mesa',
@@ -313,6 +314,14 @@ server <- shinyServer(function(input, output, session) {
           )
         ]
       )
+
+      # note: below is the only place in the application where the configuration is written to storage.
+      # filepath and metapath, like confpath, are stored internally as absolute paths.
+      # but on write they are expressed relative to confpath directory,
+      # and on read they are understood relative to confpath directory (and converted to absolute).
+
+      if(length(vals$filepath))vals$filepath <- relativizePath(vals$filepath, dirname(path))
+      if(length(vals$metapath))vals$metapath <- relativizePath(vals$metapath, dirname(path))
       res <- try(write_yaml(vals, path)) # only reads on save
       res <- !inherits(res, 'try-error')
       dur <- 10
@@ -518,7 +527,15 @@ server <- shinyServer(function(input, output, session) {
       reset_conf()
       return()
     }
-    if(!file.exists(saved$filepath)){
+
+    if(
+      !file.exists(
+        absolutizePath(
+          saved$filepath,
+          dirname(conf$confpath)
+        )
+      )
+    ){
       showNotification(duration = NULL, type = 'error', 'configured file path not found')
       reset_conf()
       return()
@@ -532,8 +549,13 @@ server <- shinyServer(function(input, output, session) {
 
     # update internal configuration from saved configuration
 
-    if(!is.null(saved$filepath))conf$filepath <- saved$filepath
-    if(!is.null(saved$metapath))conf$metapath <- saved$metapath
+    # note: below is the only place in the application where the configuration is read from storage.
+    # filepath and metapath, like confpath, are stored internally as absolute paths.
+    # but on write they are expressed relative to confpath directory,
+    # and on read they are understood relative to confpath directory (and converted to absolute).
+
+    if(!is.null(saved$filepath))conf$filepath <- absolutizePath(saved$filepath, dirname(conf$confpath))
+    if(!is.null(saved$metapath))conf$metapath <- absolutizePath(saved$metapath, dirname(conf$confpath))
     if(!is.null(saved$selected))conf$selected <- saved$selected
     if(!is.null(saved$filter_by))conf$filter_by <- saved$filter_by
     if(!is.null(saved$keep))conf$keep      <- saved$keep

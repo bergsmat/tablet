@@ -1586,3 +1586,73 @@ escape_latex.latex <- function(x, secondary = TRUE, ...){
    x
 }
 
+
+#' Relativize a Filepath
+#'
+#' Relativizes a filepath.  Somewhat the opposite of \code{\link{normalizePath}}.
+#'
+#' x and dir are first normalized, then x is expressed relative to dir.
+#' If x and dir are on different drives (i.e. C:/ D:/)
+#' x is returned as an absolute path.
+#'
+#' @export
+#' @keywords internal
+#' @param x length one character: a file path
+#' @param dir a reference directory
+#' @param sep path separator
+#' @param ... ignored arguments
+#'
+
+relativizePath <- function (x, dir = getwd(), sep = "/", ...)
+{
+  stopifnot(length(x) == 1)
+  stopifnot(file.info(dir)$isdir)
+  y <- normalizePath(x, winslash = "/")
+  z <- normalizePath(dir, winslash = "/")
+  if (!identical(substr(y, 1, 1), substr(z, 1, 1))) {
+    return(y)
+  }
+  y <- strsplit(y, sep)[[1]]
+  z <- strsplit(z, sep)[[1]]
+  count <- 0
+  while (length(y) && length(z) && y[[1]] == z[[1]]) {
+    y <- y[-1]
+    z <- z[-1]
+  }
+  z <- rep("..", length(z))
+  y <- c(z, y)
+  y <- do.call(file.path, as.list(y))
+  y
+}
+
+
+#' Absolutize a Filepath
+#'
+#' Absolutizes a filepath.  Somewhat the opposite of \code{\link{relativizePath}}.
+#'
+#' x and dir are first normalized, then x is expressed relative to dir.
+#' If x and dir are on different drives (i.e. C:/ D:/)
+#' x is returned as an absolute path.
+#'
+#' @export
+#' @keywords internal
+#' @importFrom fs is_absolute_path
+#' @param x length one character: a file path
+#' @param dir a reference directory
+#' @param winslash path separator on windows, passed to \code{\link{normalizePath}}
+#' @param ... ignored arguments
+#'
+
+absolutizePath <- function (x, dir = getwd(), winslash = "/", ...){
+  stopifnot(length(x) == 1)
+  stopifnot(is.character(x))
+  stopifnot(length(dir) == 1)
+  stopifnot(is.character(dir))
+  if(is_absolute_path(x))return(x)
+  out <- normalizePath(
+    winslash = '/',
+    file.path(dir,x)
+  )
+  return(out)
+}
+
