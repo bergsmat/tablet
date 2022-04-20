@@ -99,7 +99,7 @@ classifiers.data.frame <- function(x, ...){
 #' @param exclude_fac which factor levels to exclude; see \code{\link{factor}} (exclude)
 #' @param all_levels whether to supply records for unobserved levels
 #' @importFrom dplyr groups ungroup add_tally add_count select group_by mutate
-#' @importFrom tidyr gather
+#' @importFrom tidyr gather replace_na
 #' @importFrom dplyr all_of across everything full_join anti_join
 #' @importFrom magrittr %>% %<>%
 #' @export
@@ -195,7 +195,7 @@ categoricals.data.frame <- function(
  suppressMessages(
  groups %<>% left_join(x %>% select(c(!!!groups(x)), `_tablet_n`))
  )
- groups$`_tablet_n`[is.na(groups$`_tablet_n`)] <- 0
+ groups$`_tablet_n` %<>% replace_na(0L)
 
   # what factors are in play?
  factors <- y %>% select(where(is.factor)) %>% names
@@ -219,7 +219,7 @@ categoricals.data.frame <- function(
  suppressMessages(
  groups %<>% anti_join(x %>% select(-c(`_tablet_N`, `_tablet_n`))) # exclude combos already observed
  )
- groups$`_tablet_value` <- 0L
+ groups$`_tablet_value` <- rep(0L, nrow(groups))
  stopifnot(setequal(names(groups), names(x)))
  x %<>% bind_rows(groups)
  x %<>% arrange(!!!groups(x), `_tablet_name`, `_tablet_level`)
@@ -263,7 +263,7 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
    if(!length(var)){
       x <- slice(x, 0)
    }
-   x
+
    if(!all_levels)return(x)
    if(!length(groups(x)))return(x)
 
@@ -294,7 +294,7 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
    suppressMessages(
    groups %<>% left_join(x %>% select(c(!!!groups(x)), `_tablet_n`))
    )
-   groups$`_tablet_n`[is.na(groups$`_tablet_n`)] <- 0
+   groups$`_tablet_n` %<>% replace_na(0L)
 
    # what numerics are in play?
    numerics <- y %>%
@@ -321,7 +321,7 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
    suppressMessages(
    groups %<>% anti_join(x %>% select(-c(`_tablet_N`, `_tablet_n`))) # exclude combos already observed
    )
-   groups$`_tablet_value` <- 0L
+   groups$`_tablet_value` <- rep(0L, nrow(groups))
    stopifnot(setequal(names(groups), names(x)))
    x %<>% bind_rows(groups)
    x %<>% arrange(!!!groups(x), `_tablet_name`, `_tablet_level`)
