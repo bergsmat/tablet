@@ -191,7 +191,7 @@ categoricals.data.frame <- function(
     groups[[2]] <- NULL
   }
  groups <- groups[[1]]
- groups$`_tablet_N` <- min(0, unique(x$`_tablet_N`))
+ groups$`_tablet_N` <- max(0, unique(x$`_tablet_N`))
  suppressMessages(
  groups %<>% left_join(x %>% select(c(!!!groups(x)), `_tablet_n`))
  )
@@ -290,7 +290,7 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
      groups[[2]] <- NULL
    }
    groups <- groups[[1]]
-   groups$`_tablet_N` <- min(0, unique(x$`_tablet_N`))
+   groups$`_tablet_N` <- max(0, unique(x$`_tablet_N`))
    suppressMessages(
    groups %<>% left_join(x %>% select(c(!!!groups(x)), `_tablet_n`))
    )

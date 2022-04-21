@@ -1180,7 +1180,7 @@ server <- shinyServer(function(input, output, session) {
 
   output$data <- DT::renderDataTable({
     printer('output$data')
-    if(!nrow(conf$x))return(structure(data.frame(` `='data goes here.', check.names = F), row.names = ' '))
+    if(!ncol(conf$x))return(structure(data.frame(` `='data goes here.', check.names = F), row.names = ' '))
     out <- conf$x
     #out %<>% resolve # already done
     out %<>% modify(name = paste(name, label, sep = ': '))
