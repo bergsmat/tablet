@@ -303,6 +303,7 @@ server <- shinyServer(function(input, output, session) {
     fileinfo <- parseSavePath(ui_volumes, input$saveconf)
     if (nrow(fileinfo) > 0) {
       path <- as.character(fileinfo$datapath)
+
       vals <- isolate(
         reactiveValuesToList(conf)[
           !names(conf) %in% c(
@@ -314,6 +315,29 @@ server <- shinyServer(function(input, output, session) {
           )
         ]
       )
+      # dictate storage order!
+      vals <- vals[c(
+        'filepath',
+        'metapath',
+        'selected',
+        'group_by',
+        'filter_by',
+        'keep',
+        'sequential',
+        'outputid',
+        'title',
+        'lhead1',
+        'lhead2',
+        'rhead1',
+        'rhead2',
+        'footnotes',
+        'repeathead',
+        'repeatfoot',
+        'cont',
+        'labelhtml',
+        'labeltex',
+        'tablet'
+      )]
 
       # note: below is the only place in the application where the configuration is written to storage.
       # filepath and metapath, like confpath, are stored internally as absolute paths.
@@ -666,11 +690,12 @@ server <- shinyServer(function(input, output, session) {
     have <- names(d)
     need <- names(m)
     make <- setdiff(need, have)
+    #browser()
     for(col in make) d[[col]] <- rep(NA_real_, nrow(d))
 
 
-    # ensure positive nrow
-    if(nrow(d) == 0) d <- d['',,drop = FALSE]
+    # ensure positive nrow # removed at 0.5.4
+    # if(nrow(d) == 0) d <- d['',,drop = FALSE]
 
     # drop unspecified
     d %<>% select(!!!names(m))
@@ -1225,7 +1250,7 @@ server <- shinyServer(function(input, output, session) {
 
   output$pdfview <- renderUI({
     printer('output$pdfview')
-    if(!nrow(conf$x))return('PDF displays here.')
+    if(!ncol(conf$x))return('PDF displays here.')
     loc <- pdf_location()
     printer('directory')
     printer(getwd())
