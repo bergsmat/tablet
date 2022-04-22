@@ -833,7 +833,7 @@ server <- shinyServer(function(input, output, session) {
     printer('html')
    # options(knitr.kable.NA = conf$na_string)
     options(knitr.kable.NA = 0)
-    #browser()
+
     fun <- tablet
     if(conf$sequential) fun <- splice
     args <- args()
@@ -846,7 +846,6 @@ server <- shinyServer(function(input, output, session) {
       printer('no labelhtml yet')
       return()
     }
-    #browser()
     x <- do.call(fun, args)
     # remove NA groups
     na <- which(names(x) == 'NA')
@@ -862,7 +861,10 @@ server <- shinyServer(function(input, output, session) {
     #     .fns = ~ ifelse(`_tablet_original` %in% names(conf$imputed), '-', .x)
     #   )
     # )
-    targets <- x %>% select(-starts_with('_tablet_')) %>% names
+    nms <- names(x)
+    nontargets <- grepl('^_tablet_', nms)
+    targets <- !nontargets
+    #targets <- x %>% select(-starts_with('_tablet_')) %>% names
     imputed <- x$`_tablet_original` %in% names(conf$imputed)
     if(length(imputed) & length(targets)) x[imputed, targets] <- '-'
     x$`_tablet_original` <- NULL

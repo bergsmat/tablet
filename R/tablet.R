@@ -1414,8 +1414,8 @@ tablet.data.frame <- function(
    attr(y$`_tablet_name`, 'codelist') <- codelist
 
    # check for prime target inheriting 'latex' and coerce _tablet_name accordingly
-   fac <- sapply(x, is.factor)
-   num <- sapply(x, is.numeric)
+   fac <- unlist(sapply(x, is.factor)) # unlist necessary because 0 columns returns list() instead of logical vector
+   num <- unlist(sapply(x, is.numeric))
    col <- names(x)[fac | num]
    if(length(col)){
       prime <- col[[1]]
