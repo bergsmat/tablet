@@ -833,7 +833,7 @@ server <- shinyServer(function(input, output, session) {
     printer('html')
    # options(knitr.kable.NA = conf$na_string)
     options(knitr.kable.NA = 0)
-
+    # browser()
     fun <- tablet
     if(conf$sequential) fun <- splice
     args <- args()
@@ -847,6 +847,7 @@ server <- shinyServer(function(input, output, session) {
       return()
     }
     x <- do.call(fun, args)
+    # browser()
     # remove NA groups
     na <- which(names(x) == 'NA')
     for(i in rev(na))x[[na]] <- NULL
@@ -922,7 +923,10 @@ server <- shinyServer(function(input, output, session) {
     #     .fns = ~ ifelse(`_tablet_original` %in% names(conf$imputed), '-', .x)
     #   )
     # )
-    targets <- x %>% select(-starts_with('_tablet_')) %>% names
+    nms <- names(x)
+    nontargets <- grepl('^_tablet_', nms)
+    targets <- !nontargets
+    #targets <- x %>% select(-starts_with('_tablet_')) %>% names
     imputed <- x$`_tablet_original` %in% names(conf$imputed)
     if(length(imputed) & length(targets)) x[imputed, targets] <- '-'
     x$`_tablet_original` <- NULL
@@ -930,11 +934,11 @@ server <- shinyServer(function(input, output, session) {
       showNotification(duration = 5, type = 'error', 'nothing selected')
       return(character(0))
     }
-
+    # browser()
     # _tablet_name has been thoroughly pre-escaped for all cases.
     # however, it is created as factor.
     # we flag it as latex to invoke the right method in as_kable(escape_latex = tablet::escape_latex)
-    x %<>% mutate(`_tablet_name` = as_latex(`_tablet_name`))
+    x$`_tablet_name` %<>% as_latex
     x %<>% as_kable(format = 'latex', caption = escape_latex(conf$title), longtable = TRUE)
     if(length(input$repeatheader) == 1){
       if(input$repeatheader == 'yes'){

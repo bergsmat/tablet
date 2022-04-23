@@ -167,7 +167,8 @@ categoricals.data.frame <- function(
   # }
 
   if(!all_levels) return(x)
-  if(!length(groups(x))) return(x)
+  if(length(var) == 0) return(x) # at 0.5.7
+  # if(!length(groups(x))) return(x) # strike at 0.5.7?
   # what groups must be populated?
 
   template <- function(x, ...)UseMethod('template')
@@ -178,10 +179,10 @@ categoricals.data.frame <- function(
     for(i in seq_along(levs))x[i] <- levs[i]
     x
   }
-  groups <-  x %>% select(c(!!!groups(x))) #, `_tablet_N`, `_tablet_n`)) %>% unique
-  groups <- groups[0,]
+  groups <-  x %>% select(c(!!!groups(x),`_tablet_level`)) #, `_tablet_N`, `_tablet_n`)) %>% unique
+  groups <- groups[0,,drop = FALSE]
   groups <- lapply(groups, template.factor)
-  names(groups) <- groups(x)
+  # names(groups) <- groups(x)
   for(g in names(groups)){
     groups[[g]] <- data.frame(groups[[g]])
     names(groups[[g]]) <- g
@@ -191,10 +192,12 @@ categoricals.data.frame <- function(
     groups[[2]] <- NULL
   }
  groups <- groups[[1]]
- groups$`_tablet_N` <- max(0, unique(x$`_tablet_N`))
- suppressMessages(
- groups %<>% left_join(x %>% select(c(!!!groups(x)), `_tablet_n`))
- )
+ groups$`_tablet_N` <- rep(max(0, unique(x$`_tablet_N`)), nrow(groups))
+#  groups %<>% left_join(x %>% select(c(!!!groups(x)), `_tablet_n`, `_tablet_level`))
+ zz <- x %>% select(c(!!!groups(x)), `_tablet_n`) %>% unique # at 0.5.7
+ common <- intersect(names(groups), names(zz))
+ groups %<>% left_join(zz, by = common)
+
  groups$`_tablet_n` %<>% replace_na(0L)
 
   # what factors are in play?
@@ -214,7 +217,8 @@ categoricals.data.frame <- function(
  factors$`_tablet_name` %<>% factor(levels = levels(x$`_tablet_name`))
  factors$`_tablet_level` %<>% factor(levels = levels(x$`_tablet_level`))
  suppressMessages(
- groups %<>% full_join(factors, by = character())
+ #  groups %<>% full_join(factors, by = character())
+   groups %<>% full_join(factors) # at 0.5.7
  )
  suppressMessages(
  groups %<>% anti_join(x %>% select(-c(`_tablet_N`, `_tablet_n`))) # exclude combos already observed
@@ -262,10 +266,12 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
    )
    if(!length(var)){
       x <- slice(x, 0)
+      x$`_tablet_name`<- factor()
+      x$`_tablet_value` <- numeric(0)
    }
 
    if(!all_levels)return(x)
-   if(!length(groups(x)))return(x)
+   if(!length(groups(x)))return(x) # ? at 0.5.7
 
    # what groups must be populated?
 
@@ -321,7 +327,9 @@ numerics.data.frame <- function(x, ..., na.rm_num = FALSE, all_levels = FALSE){
    suppressMessages(
    groups %<>% anti_join(x %>% select(-c(`_tablet_N`, `_tablet_n`))) # exclude combos already observed
    )
-   groups$`_tablet_value` <- rep(0L, nrow(groups))
+  # groups$`_tablet_value` <- rep(0L, nrow(groups))
+   groups$`_tablet_value` <- rep(NA_real_, nrow(groups))
+
    stopifnot(setequal(names(groups), names(x)))
    x %<>% bind_rows(groups)
    x %<>% arrange(!!!groups(x), `_tablet_name`, `_tablet_level`)
@@ -1222,13 +1230,21 @@ as_kable.tablet <- function(
    for(i in seq_along(headerlist)){
       y <- add_header_above(y, headerlist[[i]])
    }
-   y <- do.call(
-      kableExtra::pack_rows,
-      c(
-         list(y, index = index), # @0.4.9 removing ', escape = escape
-         pack_rows
-      )
-   )
+
+   # at 0.5.7, skip this if length(index) == 0
+   # attempt to prevent error in mesa() when
+   # tabulating virtual category agegr1 in isolation:
+   # Error in `$<-.data.frame`(`*tmp*`, "start", value = 1) : replacement has 1 row, data has 0
+
+   #if(length(index) > 0){
+     y <- do.call(
+        kableExtra::pack_rows,
+        c(
+           list(y, index = index), # @0.4.9 removing ', escape = escape
+           pack_rows
+        )
+     )
+  # }
    y
 }
 
