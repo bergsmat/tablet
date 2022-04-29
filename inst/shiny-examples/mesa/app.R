@@ -945,7 +945,10 @@ server <- shinyServer(function(input, output, session) {
         x %<>% kable_styling(latex_options = 'repeat_header', repeat_header_text = '')
       }
     }
-    x %<>% footnote(general = unlist(strsplit(conf$footnotes, '\n')),fixed_small_size = TRUE, general_title = " ",threeparttable = TRUE)
+    feet <- unlist(strsplit(conf$footnotes, '\n'))
+    if(length(feet)){
+    x %<>% footnote(general = ,fixed_small_size = TRUE, general_title = " ",threeparttable = TRUE)
+    }
     x %<>% as.character
 
     # insert footnote on every page
