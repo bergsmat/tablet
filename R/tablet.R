@@ -903,7 +903,7 @@ tablet.groupwise <- function(
         dat <- attributes(x[[j]])
         dat <- c(dat, list(name = nm))
         out <- try(silent = TRUE, rlang::eval_tidy(rhs, data = dat))
-        if(class(out) != 'try-error'){
+        if(!inherits(out, 'try-error')){
            attr(x[[j]], 'label') <- out
         }
      }
