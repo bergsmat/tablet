@@ -7,8 +7,8 @@
 \method{widgets}{devalued}(
   x,
   fac = list(` ` ~ sum + " (" + pct + "\%" + ")"),
-  num = list(`Mean (SD)` ~ ave + " (" + std + ")", `Median (range)` ~ med + " (" + min
-    + ", " + max + ")"),
+  num = list(`Mean (SD)` ~ ave + " (" + std + ")", `Median (range)` ~ med + " (" + min +
+    ", " + max + ")"),
   ...
 )
 }

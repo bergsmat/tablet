@@ -11,6 +11,8 @@ vignette: >
   %\VignetteIndexEntry{An Introduction to Tablet for HTML}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -115,10 +117,7 @@ ulcer:     [ Ulceration, [ Absent: 0, Present: 1 ]]
 x %<>% select(-time, -year)
 x %<>% group_by(status)
 x %<>% resolve
-x %<>% modify(
-  age, thickness, 
-  title = paste0(label, ' (', units, ')')
-)
+
 ```
 
 * group_by(status) causes statistics to be summarized

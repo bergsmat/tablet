@@ -11,8 +11,8 @@
     TRUE)), med ~ signif(digits = 3, median(x, na.rm = TRUE)), min ~ signif(digits = 3,
     min(x, na.rm = TRUE)), max ~ signif(digits = 3, max(x, na.rm = TRUE))),
   fac = list(` ` ~ sum + " (" + pct + "\%" + ")"),
-  num = list(`Mean (SD)` ~ ave + " (" + std + ")", `Median (range)` ~ med + " (" + min
-    + ", " + max + ")"),
+  num = list(`Mean (SD)` ~ ave + " (" + std + ")", `Median (range)` ~ med + " (" + min +
+    ", " + max + ")"),
   ...
 )
 }

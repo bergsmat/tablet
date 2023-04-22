@@ -62,18 +62,18 @@ as_xtable.tablet <- function(
   if(!requireNamespace('xtable')){
     stop('Please install and load the xtable package')
   }
-  x$`_tablet_sort` <- NULL
+  # x$`_tablet_sort` <- NULL
   # index <- index(x)
   x$`_tablet_name` <- match.fun(format_name)(x = x$`_tablet_name`, ...)
   split <- x$`_tablet_name`
   x$`_tablet_name` <- NULL
-  x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
-  x$`_tablet_level` <- ifelse(
-    x$`_tablet_level` == 'numeric',
-    x$`_tablet_stat`,
-    x$`_tablet_level`
-  )
-  x$`_tablet_stat` <- NULL
+  # x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
+  # x$`_tablet_level` <- ifelse(
+  #   x$`_tablet_level` == 'numeric',
+  #   x$`_tablet_stat`,
+  #   x$`_tablet_level`
+  # )
+  # x$`_tablet_stat` <- NULL
   x$`_tablet_level` <- match.fun(format_stat)(x = x$`_tablet_level`, ...)
   # names(x)[names(x) == 'level'] <- ''
   headerlist <- headerlist(x)

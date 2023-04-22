@@ -3,7 +3,8 @@ globalVariables(c(
    '_tablet_N','_tablet_n', '_tablet_x',
    '_tablet_devalued_N','_tablet_devalued_n',
    '_tablet_widget', '_tablet_name', '_tablet_groupless',
-   '_tablet_stat','_tablet_groupfull','where',
+   '_tablet_stat',
+   '_tablet_groupfull','where',
    '_tablet_class'
 ))
 
@@ -1160,12 +1161,12 @@ as_kable.tablet <- function(
    #    }
    # }
    stopifnot(is.logical(escape), length(escape) == 1)
-   x$`_tablet_sort` <- NULL
+   # x$`_tablet_sort` <- NULL
    index <- index(x)
    # draws on _tablet_name, which should be character or c('latex', 'character')
    nmsi <- names(index) # isolate to assign class
    stopifnot(is.character(x$`_tablet_name`))
-   class(nmsi) <- class(x$`_tablet_name`) # class propagaton
+   class(nmsi) <- class(x$`_tablet_name`) # class propagation
    x$`_tablet_name` <- NULL # done
    if(!escape){
       if (knitr::is_latex_output()) {
@@ -1177,14 +1178,13 @@ as_kable.tablet <- function(
    # nmsi now as informed as possible ... assign back
    names(index) <- nmsi
    #x$`_tablet_level` <- as.character(x$`_tablet_level`)
-   x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
-   #x <- mutate(x, `_tablet_level` = ifelse(`_tablet_level` == 'numeric', `_tablet_stat`, `_tablet_level`))
-   x$`_tablet_level` <- ifelse(
-      x$`_tablet_level` == 'numeric',
-      x$`_tablet_stat`,
-      x$`_tablet_level`
-   )
-   x$`_tablet_stat` <- NULL
+   # x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
+   # x$`_tablet_level` <- ifelse(
+   #    x$`_tablet_level` == 'numeric',
+   #    x$`_tablet_stat`,
+   #    x$`_tablet_level`
+   # )
+   # x$`_tablet_stat` <- NULL
    # names(x)[names(x) == 'level'] <- ''
    headerlist <- headerlist(x)
    for(i in seq_len(ncol(x))){
@@ -1352,10 +1352,10 @@ as_kable.tablet <- function(
 #' @export
 #' @return 'tablet', with columns for each combination of groups, and:
 #' \item{_tablet_name}{observation identifier: character, possibly 'latex', see details; has a codelist attribute the values of which are the original column names}
-#' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
-#' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+#' \item{_tablet_level}{factor level, or the LHS of formulas in 'fac' and 'num'}
+# \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 #' \item{All (or value of 'all' argument)}{ungrouped results}
-#' \item{_tablet_sort}{sorting column}
+# \item{_tablet_sort}{sorting column}
 #' @seealso \code{\link{as_kable.tablet}}
 #' @examples
 #' library(boot)
@@ -1442,6 +1442,16 @@ tablet.data.frame <- function(
             class(y$`_tablet_name`) <- union('latex', class(y$`_tablet_name`))
       }
    }
+   y$`_tablet_level` <- as.character(y$`_tablet_level`)
+   y$`_tablet_stat` <- as.character(y$`_tablet_stat`)
+   y$`_tablet_level` <- ifelse(
+      y$`_tablet_level` == 'numeric',
+      y$`_tablet_stat`,
+      y$`_tablet_level`
+   )
+   y$`_tablet_stat` <- NULL
+   x$`_tablet_sort` <- NULL
+   
    y
 }
 

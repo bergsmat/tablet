@@ -1,7 +1,7 @@
 ---
 title: "An Introduction to Tablet for HTML"
 author: "Tim Bergsma"
-date: "2021-02-15"
+date: "2023-04-22"
 urlcolor: blue
 output: 
   rmarkdown::html_document:
@@ -11,6 +11,8 @@ vignette: >
   %\VignetteIndexEntry{An Introduction to Tablet for HTML}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -80,53 +82,64 @@ x %>%
  <thead>
   <tr>
    <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> _tablet_sort </th>
    <th style="text-align:left;"> All<br>(N = 205) </th>
   </tr>
  </thead>
 <tbody>
-  <tr grouplength="2"><td colspan="2" style="border-bottom: 1px solid;"><strong>status</strong></td></tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>status</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 1.79 (0.551) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 2 (1, 3) </td>
   </tr>
-  <tr grouplength="2"><td colspan="2" style="border-bottom: 1px solid;"><strong>sex</strong></td></tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>sex</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> 0 </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 126 (61.5%) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> 1 </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
    <td style="text-align:left;"> 79 (38.5%) </td>
   </tr>
-  <tr grouplength="2"><td colspan="2" style="border-bottom: 1px solid;"><strong>age</strong></td></tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>age</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 52.5 (16.7) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 54 (4, 95) </td>
   </tr>
-  <tr grouplength="2"><td colspan="2" style="border-bottom: 1px solid;"><strong>thickness</strong></td></tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>thickness</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 2.92 (2.96) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 1.94 (0.1, 17.4) </td>
   </tr>
-  <tr grouplength="2"><td colspan="2" style="border-bottom: 1px solid;"><strong>ulcer</strong></td></tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>ulcer</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> 0 </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> 0 </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 115 (56.1%) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> 1 </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> 1 </td>
+   <td style="text-align:right;"> 4 </td>
    <td style="text-align:left;"> 90 (43.9%) </td>
   </tr>
 </tbody>
@@ -160,10 +173,6 @@ ulcer:     [ Ulceration, [ Absent: 0, Present: 1 ]]
 x %<>% select(-time, -year)
 x %<>% group_by(status)
 x %<>% resolve
-x %<>% modify(
-  age, thickness, 
-  title = paste0(label, ' (', units, ')')
-)
 ```
 
 * group_by(status) causes statistics to be summarized
@@ -187,6 +196,7 @@ x %>% tablet %>% as_kable
  <thead>
   <tr>
    <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> _tablet_sort </th>
    <th style="text-align:left;"> Alive<br>(N = 134) </th>
    <th style="text-align:left;"> Melanoma Death<br>(N = 57) </th>
    <th style="text-align:left;"> Unrelated Death<br>(N = 14) </th>
@@ -194,61 +204,69 @@ x %>% tablet %>% as_kable
   </tr>
  </thead>
 <tbody>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Sex</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Sex</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Male </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Male </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 43 (32.1%) </td>
    <td style="text-align:left;"> 29 (50.9%) </td>
    <td style="text-align:left;"> 7 (50%) </td>
    <td style="text-align:left;"> 79 (38.5%) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Female </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Female </td>
+   <td style="text-align:right;"> 2 </td>
    <td style="text-align:left;"> 91 (67.9%) </td>
    <td style="text-align:left;"> 28 (49.1%) </td>
    <td style="text-align:left;"> 7 (50%) </td>
    <td style="text-align:left;"> 126 (61.5%) </td>
   </tr>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 50 (15.9) </td>
    <td style="text-align:left;"> 55.1 (17.9) </td>
    <td style="text-align:left;"> 65.3 (10.9) </td>
    <td style="text-align:left;"> 52.5 (16.7) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 52 (4, 84) </td>
    <td style="text-align:left;"> 56 (14, 95) </td>
    <td style="text-align:left;"> 65 (49, 86) </td>
    <td style="text-align:left;"> 54 (4, 95) </td>
   </tr>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 2.24 (2.33) </td>
    <td style="text-align:left;"> 4.31 (3.57) </td>
    <td style="text-align:left;"> 3.72 (3.63) </td>
    <td style="text-align:left;"> 2.92 (2.96) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 1.36 (0.1, 12.9) </td>
    <td style="text-align:left;"> 3.54 (0.32, 17.4) </td>
    <td style="text-align:left;"> 2.26 (0.16, 12.6) </td>
    <td style="text-align:left;"> 1.94 (0.1, 17.4) </td>
   </tr>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Ulceration</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Ulceration</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Absent </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Absent </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 92 (68.7%) </td>
    <td style="text-align:left;"> 16 (28.1%) </td>
    <td style="text-align:left;"> 7 (50%) </td>
    <td style="text-align:left;"> 115 (56.1%) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Present </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Present </td>
+   <td style="text-align:right;"> 4 </td>
    <td style="text-align:left;"> 42 (31.3%) </td>
    <td style="text-align:left;"> 41 (71.9%) </td>
    <td style="text-align:left;"> 7 (50%) </td>
@@ -299,12 +317,13 @@ x %>% tablet %>% as_kable                              # render
 <table>
  <thead>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="2"></th>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="3"></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Death</div></th>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
 </tr>
   <tr>
    <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> _tablet_sort </th>
    <th style="text-align:left;"> Alive<br>(N = 134) </th>
    <th style="text-align:left;"> Melanoma<br>(N = 57) </th>
    <th style="text-align:left;"> Unrelated<br>(N = 14) </th>
@@ -312,61 +331,69 @@ x %>% tablet %>% as_kable                              # render
   </tr>
  </thead>
 <tbody>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Sex</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Sex</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Male </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Male </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 43 (32.1%) </td>
    <td style="text-align:left;"> 29 (50.9%) </td>
    <td style="text-align:left;"> 7 (50%) </td>
    <td style="text-align:left;"> 79 (38.5%) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Female </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Female </td>
+   <td style="text-align:right;"> 2 </td>
    <td style="text-align:left;"> 91 (67.9%) </td>
    <td style="text-align:left;"> 28 (49.1%) </td>
    <td style="text-align:left;"> 7 (50%) </td>
    <td style="text-align:left;"> 126 (61.5%) </td>
   </tr>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 50 (15.9) </td>
    <td style="text-align:left;"> 55.1 (17.9) </td>
    <td style="text-align:left;"> 65.3 (10.9) </td>
    <td style="text-align:left;"> 52.5 (16.7) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 52 (4, 84) </td>
    <td style="text-align:left;"> 56 (14, 95) </td>
    <td style="text-align:left;"> 65 (49, 86) </td>
    <td style="text-align:left;"> 54 (4, 95) </td>
   </tr>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 2.24 (2.33) </td>
    <td style="text-align:left;"> 4.31 (3.57) </td>
    <td style="text-align:left;"> 3.72 (3.63) </td>
    <td style="text-align:left;"> 2.92 (2.96) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 1.36 (0.1, 12.9) </td>
    <td style="text-align:left;"> 3.54 (0.32, 17.4) </td>
    <td style="text-align:left;"> 2.26 (0.16, 12.6) </td>
    <td style="text-align:left;"> 1.94 (0.1, 17.4) </td>
   </tr>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Ulceration</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Ulceration</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Absent </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Absent </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 92 (68.7%) </td>
    <td style="text-align:left;"> 16 (28.1%) </td>
    <td style="text-align:left;"> 7 (50%) </td>
    <td style="text-align:left;"> 115 (56.1%) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Present </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Present </td>
+   <td style="text-align:right;"> 4 </td>
    <td style="text-align:left;"> 42 (31.3%) </td>
    <td style="text-align:left;"> 41 (71.9%) </td>
    <td style="text-align:left;"> 7 (50%) </td>
@@ -394,7 +421,7 @@ x %>%
 <table>
  <thead>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2"></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Alive</div></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Melanoma</div></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Unrelated</div></th>
@@ -402,6 +429,7 @@ x %>%
 </tr>
   <tr>
    <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> _tablet_sort </th>
    <th style="text-align:left;"> Male<br>(N = 43) </th>
    <th style="text-align:left;"> Female<br>(N = 91) </th>
    <th style="text-align:left;"> Male<br>(N = 29) </th>
@@ -412,9 +440,10 @@ x %>%
   </tr>
  </thead>
 <tbody>
-  <tr grouplength="2"><td colspan="8" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
+  <tr grouplength="2"><td colspan="9" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 52.5 (16.9) </td>
    <td style="text-align:left;"> 48.8 (15.4) </td>
    <td style="text-align:left;"> 53.9 (19.7) </td>
@@ -424,7 +453,8 @@ x %>%
    <td style="text-align:left;"> 52.5 (16.7) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 55 (12, 84) </td>
    <td style="text-align:left;"> 49 (4, 77) </td>
    <td style="text-align:left;"> 52 (19, 95) </td>
@@ -433,9 +463,10 @@ x %>%
    <td style="text-align:left;"> 66 (54, 86) </td>
    <td style="text-align:left;"> 54 (4, 95) </td>
   </tr>
-  <tr grouplength="2"><td colspan="8" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
+  <tr grouplength="2"><td colspan="9" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 2.73 (2.49) </td>
    <td style="text-align:left;"> 2.02 (2.22) </td>
    <td style="text-align:left;"> 4.63 (3.47) </td>
@@ -445,7 +476,8 @@ x %>%
    <td style="text-align:left;"> 2.92 (2.96) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 1.62 (0.16, 8.38) </td>
    <td style="text-align:left;"> 1.29 (0.1, 12.9) </td>
    <td style="text-align:left;"> 4.04 (0.81, 14.7) </td>
@@ -454,9 +486,10 @@ x %>%
    <td style="text-align:left;"> 1.45 (0.16, 8.54) </td>
    <td style="text-align:left;"> 1.94 (0.1, 17.4) </td>
   </tr>
-  <tr grouplength="2"><td colspan="8" style="border-bottom: 1px solid;"><strong>Ulceration</strong></td></tr>
+  <tr grouplength="2"><td colspan="9" style="border-bottom: 1px solid;"><strong>Ulceration</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Absent </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Absent </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 24 (55.8%) </td>
    <td style="text-align:left;"> 68 (74.7%) </td>
    <td style="text-align:left;"> 8 (27.6%) </td>
@@ -466,7 +499,8 @@ x %>%
    <td style="text-align:left;"> 115 (56.1%) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Present </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Present </td>
+   <td style="text-align:right;"> 2 </td>
    <td style="text-align:left;"> 19 (44.2%) </td>
    <td style="text-align:left;"> 23 (25.3%) </td>
    <td style="text-align:left;"> 21 (72.4%) </td>
@@ -491,7 +525,7 @@ x %>%
 <table>
  <thead>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2"></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Alive</div></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Melanoma</div></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Unrelated</div></th>
@@ -499,6 +533,7 @@ x %>%
 </tr>
   <tr>
    <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> _tablet_sort </th>
    <th style="text-align:left;"> Absent<br>(N = 92) </th>
    <th style="text-align:left;"> Present<br>(N = 42) </th>
    <th style="text-align:left;"> Absent<br>(N = 16) </th>
@@ -509,9 +544,10 @@ x %>%
   </tr>
  </thead>
 <tbody>
-  <tr grouplength="2"><td colspan="8" style="border-bottom: 1px solid;"><strong>Sex</strong></td></tr>
+  <tr grouplength="2"><td colspan="9" style="border-bottom: 1px solid;"><strong>Sex</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Male </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Male </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 24 (26.1%) </td>
    <td style="text-align:left;"> 19 (45.2%) </td>
    <td style="text-align:left;"> 8 (50%) </td>
@@ -521,7 +557,8 @@ x %>%
    <td style="text-align:left;"> 79 (38.5%) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Female </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Female </td>
+   <td style="text-align:right;"> 2 </td>
    <td style="text-align:left;"> 68 (73.9%) </td>
    <td style="text-align:left;"> 23 (54.8%) </td>
    <td style="text-align:left;"> 8 (50%) </td>
@@ -530,9 +567,10 @@ x %>%
    <td style="text-align:left;"> 4 (57.1%) </td>
    <td style="text-align:left;"> 126 (61.5%) </td>
   </tr>
-  <tr grouplength="2"><td colspan="8" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
+  <tr grouplength="2"><td colspan="9" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 49.3 (15.4) </td>
    <td style="text-align:left;"> 51.6 (17.1) </td>
    <td style="text-align:left;"> 54.9 (19.9) </td>
@@ -542,7 +580,8 @@ x %>%
    <td style="text-align:left;"> 52.5 (16.7) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 50 (4, 83) </td>
    <td style="text-align:left;"> 54.5 (12, 84) </td>
    <td style="text-align:left;"> 59 (16, 83) </td>
@@ -551,9 +590,10 @@ x %>%
    <td style="text-align:left;"> 72 (60, 86) </td>
    <td style="text-align:left;"> 54 (4, 95) </td>
   </tr>
-  <tr grouplength="2"><td colspan="8" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
+  <tr grouplength="2"><td colspan="9" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 1.63 (1.93) </td>
    <td style="text-align:left;"> 3.58 (2.58) </td>
    <td style="text-align:left;"> 2.7 (3.35) </td>
@@ -563,7 +603,8 @@ x %>%
    <td style="text-align:left;"> 2.92 (2.96) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 3 </td>
    <td style="text-align:left;"> 1.13 (0.1, 12.9) </td>
    <td style="text-align:left;"> 3.06 (0.32, 12.2) </td>
    <td style="text-align:left;"> 1.94 (0.32, 14.7) </td>
@@ -588,14 +629,14 @@ x %>%
 <table>
  <thead>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2"></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Alive</div></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Melanoma</div></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Unrelated</div></th>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
 </tr>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2"></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Absent</div></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Present</div></th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Absent</div></th>
@@ -606,6 +647,7 @@ x %>%
 </tr>
   <tr>
    <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> _tablet_sort </th>
    <th style="text-align:left;"> Male<br>(N = 24) </th>
    <th style="text-align:left;"> Female<br>(N = 68) </th>
    <th style="text-align:left;"> Male<br>(N = 19) </th>
@@ -622,9 +664,10 @@ x %>%
   </tr>
  </thead>
 <tbody>
-  <tr grouplength="2"><td colspan="14" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
+  <tr grouplength="2"><td colspan="15" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 50.4 (17) </td>
    <td style="text-align:left;"> 48.9 (14.9) </td>
    <td style="text-align:left;"> 55.3 (16.9) </td>
@@ -640,7 +683,8 @@ x %>%
    <td style="text-align:left;"> 52.5 (16.7) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 54 (15, 83) </td>
    <td style="text-align:left;"> 49 (4, 77) </td>
    <td style="text-align:left;"> 56 (12, 84) </td>
@@ -655,9 +699,10 @@ x %>%
    <td style="text-align:left;"> 70 (60, 86) </td>
    <td style="text-align:left;"> 54 (4, 95) </td>
   </tr>
-  <tr grouplength="2"><td colspan="14" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
+  <tr grouplength="2"><td colspan="15" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 1.47 (1.72) </td>
    <td style="text-align:left;"> 1.69 (2) </td>
    <td style="text-align:left;"> 4.32 (2.42) </td>
@@ -673,7 +718,8 @@ x %>%
    <td style="text-align:left;"> 2.92 (2.96) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:left;"> 0.97 (0.16, 7.09) </td>
    <td style="text-align:left;"> 1.29 (0.1, 12.9) </td>
    <td style="text-align:left;"> 3.87 (0.81, 8.38) </td>
@@ -721,6 +767,7 @@ x %>%
  <thead>
   <tr>
    <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> _tablet_sort </th>
    <th style="text-align:left;"> Alive </th>
    <th style="text-align:left;"> Melanoma </th>
    <th style="text-align:left;"> Unrelated </th>
@@ -728,31 +775,35 @@ x %>%
   </tr>
  </thead>
 <tbody>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Age at Time of Operation (year)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 50 (15.9) </td>
    <td style="text-align:left;"> 55.1 (17.9) </td>
    <td style="text-align:left;"> 65.3 (10.9) </td>
    <td style="text-align:left;"> 52.5 (16.7) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 52 (4 - 84) </td>
    <td style="text-align:left;"> 56 (14 - 95) </td>
    <td style="text-align:left;"> 65 (49 - 86) </td>
    <td style="text-align:left;"> 54 (4 - 95) </td>
   </tr>
-  <tr grouplength="2"><td colspan="5" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
+  <tr grouplength="2"><td colspan="6" style="border-bottom: 1px solid;"><strong>Tumor Thickness (mm)</strong></td></tr>
 <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean (SD) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 2.24 (2.33) </td>
    <td style="text-align:left;"> 4.31 (3.57) </td>
    <td style="text-align:left;"> 3.72 (3.63) </td>
    <td style="text-align:left;"> 2.92 (2.96) </td>
   </tr>
   <tr>
-   <td style="text-align:left; padding-left:  2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Median (range) </td>
+   <td style="text-align:right;"> 5 </td>
    <td style="text-align:left;"> 1.36 (0.1 - 12.9) </td>
    <td style="text-align:left;"> 3.54 (0.32 - 17.4) </td>
    <td style="text-align:left;"> 2.26 (0.16 - 12.6) </td>
