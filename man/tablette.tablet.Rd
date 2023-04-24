@@ -2,51 +2,34 @@
 % Please edit documentation in R/tablette.R
 \name{tablette.tablet}
 \alias{tablette.tablet}
-\title{Convert tablet to tablette}
+\title{Convert to tablette from tablet}
 \usage{
 \method{tablette}{tablet}(x, ...)
 }
 \arguments{
-\item{x}{object of dispatch}
+\item{x}{tablette}
 
 \item{...}{passed arguments}
 }
 \value{
-tablette data.frame
+tablet data.frame
 }
 \description{
-Converts 'tablet' to 'tablette'.
-I.e., makes a pretty data.frame that emulates
-the layout expected from \code{\link{as_kable}}.
+Converts to tablette from tablet.
+Intends to be the inverse of \code{\link{tablet.tablette}}.
 }
 \examples{
-library(boot)
-library(dplyr)
-library(magrittr)
-rm(melanoma)
-melanoma \%<>\% select(-time, -year) 
-melanoma \%<>\% decorate('
-time:      [ Survival Time Since Operation, day               ]
-status:    [ End of Study Patient Status,
-           [ Alive: 2, Melanoma Death: 1, Unrelated Death: 3 ]]
-sex:       [ Sex, [ Male: 1, Female: 0                       ]]
-age:       [ Age at Time of Operation, year                   ]
-thickness: [ Tumor Thickness, mm                              ]
-ulcer:     [ Ulceration, [ Absent: 0, Present: 1             ]]
-')
-melanoma \%<>\% resolve
-melanoma \%<>\% group_by(status, ulcer) 
-melanoma \%<>\% tablet 
-melanoma \%>\% as_kable
-melanoma \%>\% tablette
-melanoma \%>\% tablette \%>\% tablet
-  
+example(tablet.tablette)
 }
 \seealso{
 Other tablette: 
-\code{\link{as_tablette.data.frame}()},
-\code{\link{as_tablette}()},
-\code{\link{tablet.tablette}()},
 \code{\link{tablette}()}
+
+Other tablet: 
+\code{\link{as_tablet.data.frame}()},
+\code{\link{as_tablet}()},
+\code{\link{tablet.tablette}()}
 }
+\concept{tablet}
 \concept{tablette}
+\keyword{internal}

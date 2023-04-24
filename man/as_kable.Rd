@@ -20,6 +20,6 @@ with method \code{\link{as_kable.tablet}}.
 }
 \examples{
 example(classifiers)
-as_kable(tablet(groupwise(x)))
+as_kable(tablet(tablette(groupwise(x))))
 }
 \keyword{internal}

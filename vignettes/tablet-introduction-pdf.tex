@@ -1,14 +1,14 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
 ]{article}
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -34,18 +34,6 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  pdftitle={An Introduction to Tablet for PDF},
-  pdfauthor={Tim Bergsma},
-  colorlinks=true,
-  linkcolor=Maroon,
-  filecolor=Maroon,
-  citecolor=Blue,
-  urlcolor=blue,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -118,13 +106,25 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
-\ifluatex
+\ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={An Introduction to Tablet for PDF},
+  pdfauthor={Tim Bergsma},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{An Introduction to Tablet for PDF}
 \author{Tim Bergsma}
-\date{2022-01-13}
+\date{2023-04-24}
 
 \begin{document}
 \maketitle
@@ -254,10 +254,6 @@ move status `Alive' to first position.
 \NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{time, }\SpecialCharTok{{-}}\NormalTok{year)}
 \NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(status)}
 \NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%}\NormalTok{ resolve}
-\NormalTok{x }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{modify}\NormalTok{(}
-\NormalTok{  age, thickness, }
-  \AttributeTok{title =} \FunctionTok{paste0}\NormalTok{(label, }\StringTok{\textquotesingle{} (\textquotesingle{}}\NormalTok{, units, }\StringTok{\textquotesingle{})\textquotesingle{}}\NormalTok{)}
-\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -268,8 +264,6 @@ move status `Alive' to first position.
 \item
   resolve() disambiguates labels, units, and factor levels (actually
   creating factors where appropriate, such as for sex and ulcer).
-\item
-  modify() supplies titles for certain column names.
 \end{itemize}
 
 Now we pass x to tablet() and as\_kable() for a more informative result.

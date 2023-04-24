@@ -20,6 +20,6 @@ with method \code{\link{as_xtable.tablet}}.
 }
 \examples{
 example(classifiers)
-as_xtable(tablet(groupwise(x)))
+as_xtable(tablet(tablette(groupwise(x))))
 }
 \keyword{internal}

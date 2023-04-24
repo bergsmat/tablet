@@ -688,10 +688,10 @@ groupwise <- function(x, ...)UseMethod('groupwise')
 #' @keywords internal
 #' @return class 'groupwise', arranged by groups:
 #' \item{_tablet_name}{observation identifier}
-#' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+#' \item{_tablet_level}{factor level or LHS of formulas in 'num'}
 #' \item{_tablet_N}{number of records}
 #' \item{_tablet_n}{number of records in group}
-#' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
+# \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 #' \item{_tablet_groupfull}{the LHS of formulas in 'fac' and 'num'}
 #' \item{_tablet_groupless}{the LHS of formulas in 'fac' and 'num'}
 
@@ -750,9 +750,9 @@ groupwise.data.frame <- function(
 #' example(tablet.data.frame)
 tablet <- function(x, ...)UseMethod('tablet')
 
-#' Generate a Group-wise Tablet
+#' Generate a Group-wise Tablette
 #'
-#' Generates a group-wise tablet. Calculates statistics
+#' Generates a group-wise tablette. Calculates statistics
 #' for all factors and numerics, with and without grouping
 #' variables.  Column names represent finest level of
 #' grouping, distinguished by attribute 'nest' (the values of
@@ -770,13 +770,13 @@ tablet <- function(x, ...)UseMethod('tablet')
 #' @importFrom rlang as_string
 #' @export
 #' @keywords internal
-#' @return 'tablet', with columns for each combination of groups, and:
+#' @return 'tablette', with columns for each combination of groups, and:
 #' \item{_tablet_name}{observation identifier}
 #' \item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
-#' \item{_tablet_sort}{sorting column}
+# \item{_tablet_sort}{sorting column}
 #' \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 #' \item{All (or value of 'all' argument)}{ungrouped results}
-tablet.groupwise <- function(
+tablette.groupwise <- function(
    x,
    ...,
    all = 'All',
@@ -916,14 +916,14 @@ tablet.groupwise <- function(
   # x <- mutate(x, `_tablet_sort` = as.numeric(`_tablet_level`))
   # x <- mutate(x, `_tablet_level` = as.character(`_tablet_level`))
   # x <- mutate(x, `_tablet_level` = sub('.*_tablet_', '', `_tablet_level`))
-  x$`_tablet_sort` <- as.numeric(x$`_tablet_level`)
+  #x$`_tablet_sort` <- as.numeric(x$`_tablet_level`)
   x$`_tablet_level` <- as.character(x$`_tablet_level`)
   x$`_tablet_level` <- sub('.*_tablet_', '', x$`_tablet_level`)
 
   constitutive <- c(
      '_tablet_name',
      '_tablet_level',
-     '_tablet_sort',
+    # '_tablet_sort',
      '_tablet_stat'
   )
 
@@ -935,13 +935,25 @@ tablet.groupwise <- function(
 
   # this is the only constructor for 'tablet'
   x$`_tablet_name` <- as.character(x$`_tablet_name`)
-  class(x) <- union('tablet', setdiff(class(x), 'groupwise'))
+  
+  x$`_tablet_level` <- as.character(x$`_tablet_level`)
+  x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
+  x$`_tablet_level` <- ifelse(
+     x$`_tablet_level` == 'numeric',
+     x$`_tablet_stat`,
+     x$`_tablet_level`
+  )
+  x$`_tablet_stat` <- NULL
+  
+  
+  class(x) <- union('tablette', setdiff(class(x), 'groupwise'))
+  #x <- tablet(x, ...) # tablet.tablette
   x
 }
 
 #' Create Header List.
 #'
-#' Creates header list.  Generic, with method \code{\link{headerlist.tablet}}.
+#' Creates header list.  Generic, with method \code{\link{headerlist.tablette}}.
 #' @param x object
 #' @param ... passed
 #' @export
@@ -949,7 +961,7 @@ tablet.groupwise <- function(
 #' @keywords internal
 #' @examples
 #' example(classifiers)
-#' headerlist(tablet(groupwise(x)))
+#' headerlist(tablette(groupwise(x)))
 headerlist <- function(x,...)UseMethod('headerlist')
 
 #' Create Header List for Tablet
@@ -960,7 +972,7 @@ headerlist <- function(x,...)UseMethod('headerlist')
 #' @export
 #' @keywords internal
 #' @return list of named integer where each element describes an additional header row with names as indicated, repeated integer times
-headerlist.tablet <- function(x, ...){
+headerlist.tablette <- function(x, ...){
    numheaders <- 0
    out <- list()
    for(i in seq_len(ncol(x))){
@@ -996,7 +1008,7 @@ headerlist.tablet <- function(x, ...){
 
 #' Create Index
 #'
-#' Creates index.  Generic, with method \code{\link{index.tablet}}.
+#' Creates index.  Generic, with method \code{\link{index.tablette}}.
 #' @param x object
 #' @param ... passed
 #' @export
@@ -1004,7 +1016,7 @@ headerlist.tablet <- function(x, ...){
 #' @keywords internal
 #' @examples
 #' example(classifiers)
-#' index(tablet(groupwise(x)))
+#' index(tablette(groupwise(x)))
 index <- function(x,...)UseMethod('index')
 
 #' Create Index for Tablet
@@ -1016,7 +1028,7 @@ index <- function(x,...)UseMethod('index')
 #' @keywords internal
 #' @return named integer giving row groupings with names as indicated, repeated integer times
 
-index.tablet <- function(x, ...) {
+index.tablette <- function(x, ...) {
    out <- numeric(0)
    for (row in seq_len(nrow(x))) {
       r <- as.character(x$`_tablet_name`)[[row]]
@@ -1048,7 +1060,7 @@ index.tablet <- function(x, ...) {
 #' @keywords internal
 #' @examples
 #' example(classifiers)
-#' as_kable(tablet(groupwise(x)))
+#' as_kable(tablet(tablette(groupwise(x))))
 as_kable <- function(x, ...)UseMethod('as_kable')
 # https://colinfay.me/writing-r-extensions/generic-functions-and-methods.html
 # https://stackoverflow.com/questions/13984470/possible-to-create-latex-multicolumns-in-xtable
@@ -1152,7 +1164,7 @@ as_kable.tablet <- function(
    linebreaker = '\n',
    pack_rows = list(escape = escape)
 ){
-
+   x <- tablette(x, ...)
    # if(is.na(escape)){
    #    if (knitr::is_latex_output()){
    #      escape <- FALSE
@@ -1293,11 +1305,11 @@ as_kable.tablet <- function(
 #' NA, the values of arguments beginning with 'na.rm' or 'exclude'
 #' may not matter.
 #'
-#' Output includes the column \code{_tablet_name} which inherits character.
+#' Column 1 of output inherits character.
 #' Its values are typically the names of the original columns
 #' that were factor or numeric but not in groups(x). If the first
 #' of these had a label attribute or (priority) a title attribute
-#' with class 'latex', then \code{_tablet_name} is assigned the
+#' with class 'latex', then column 1 is assigned the
 #' class 'latex' as well. It makes sense therefore to be consistent
 #' across input columns regarding the presence or not of a 'latex'
 #' label or title. By default, \code{\link{as_kable.tablet}} dispatches
@@ -1350,12 +1362,24 @@ as_kable.tablet <- function(
 #' @importFrom dplyr all_of across everything full_join anti_join
 #' @importFrom magrittr %>% %<>%
 #' @export
-#' @return 'tablet', with columns for each combination of groups, and:
-#' \item{_tablet_name}{observation identifier: character, possibly 'latex', see details; has a codelist attribute the values of which are the original column names}
-#' \item{_tablet_level}{factor level, or the LHS of formulas in 'fac' and 'num'}
-# \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
-#' \item{All (or value of 'all' argument)}{ungrouped results}
-# \item{_tablet_sort}{sorting column}
+#' @return 'tablet'
+#' A tablet is a special case of data.frame with grouped rows and columns.
+#'   * There is always one level of row groups.
+#'   * There can be any number of column groups, including zero.
+#'   * All columns inherit character.
+#'   * The first column has empty strings that represent
+#'   the last non-empty value. It can be class 'latex' or 'character'.
+#'   * Leading element(s) of first column are deliberately blank (one space character)
+#'   and correspond to header rows.
+#'   * The second column represents group-specific property 
+#'   names. It is populated always and only where column 1 is not.
+#'   * All other columns represent group-specific property values; 
+#'   elements before the first non-empty group value represent nested headers.
+#'   * Header values may be repeated.
+#'   * Header values may be empty strings, representing the last non-empty value
+#'   to the left, or single spaces, which are deliberately blank.
+#'   * Internally, character NA is equivalent to an empty string.
+#' 
 #' @seealso \code{\link{as_kable.tablet}}
 #' @examples
 #' library(boot)
@@ -1397,7 +1421,7 @@ tablet.data.frame <- function(
    exclude_name = NULL,
    all_levels = FALSE
 ){
-   y <- groupwise( # groupwise.data.frame
+   y <- groupwise( # groupwise.data.frame, returns tablette
       x,
       ...,
       na.rm = na.rm,
@@ -1412,7 +1436,7 @@ tablet.data.frame <- function(
       exclude_name = exclude_name,
       all_levels = all_levels
    )
-   y <- tablet(y, ..., all = all, lab = lab ) # tablet.groupwise
+   y <- tablette(y, ..., all = all, lab = lab ) # tablette.groupwise
    y$`_tablet_name` <- as.character(y$`_tablet_name`)
 
    codes <- unique(y$`_tablet_name`)
@@ -1442,16 +1466,16 @@ tablet.data.frame <- function(
             class(y$`_tablet_name`) <- union('latex', class(y$`_tablet_name`))
       }
    }
-   y$`_tablet_level` <- as.character(y$`_tablet_level`)
-   y$`_tablet_stat` <- as.character(y$`_tablet_stat`)
-   y$`_tablet_level` <- ifelse(
-      y$`_tablet_level` == 'numeric',
-      y$`_tablet_stat`,
-      y$`_tablet_level`
-   )
-   y$`_tablet_stat` <- NULL
-   x$`_tablet_sort` <- NULL
-   
+   # y$`_tablet_level` <- as.character(y$`_tablet_level`)
+   # y$`_tablet_stat` <- as.character(y$`_tablet_stat`)
+   # y$`_tablet_level` <- ifelse(
+   #    y$`_tablet_level` == 'numeric',
+   #    y$`_tablet_stat`,
+   #    y$`_tablet_level`
+   # )
+   # y$`_tablet_stat` <- NULL
+  # x$`_tablet_sort` <- NULL
+   y <- tablet(y, ...)
    y
 }
 
@@ -1502,7 +1526,7 @@ splice.data.frame <- function(x, all = 'All', ...){
       for(i in setdiff(grp, list(group))) this[i] <- NULL
       tot <- all
       if(g < length(grp)) tot <- character(0) # 'all' only for last table
-      that <- tablet(this, all = tot, ...)
+      that <- tablette(tablet(this, all = tot, ...))
       part[[group]] <- that
    }
    names(part) <- NULL
@@ -1520,6 +1544,7 @@ splice.data.frame <- function(x, all = 'All', ...){
    }
    out <- out[,!dupcol, drop = FALSE]
    class(out) <- class(part[[1]])
+   out <- tablet(out)
    out
 }
 

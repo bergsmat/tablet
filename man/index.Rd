@@ -15,10 +15,10 @@ index(x, ...)
 see methods
 }
 \description{
-Creates index.  Generic, with method \code{\link{index.tablet}}.
+Creates index.  Generic, with method \code{\link{index.tablette}}.
 }
 \examples{
 example(classifiers)
-index(tablet(groupwise(x)))
+index(tablette(groupwise(x)))
 }
 \keyword{internal}

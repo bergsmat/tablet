@@ -17,9 +17,6 @@ with method \code{\link{tablette.tablet}}.
 }
 \seealso{
 Other tablette: 
-\code{\link{as_tablette.data.frame}()},
-\code{\link{as_tablette}()},
-\code{\link{tablet.tablette}()},
 \code{\link{tablette.tablet}()}
 }
 \concept{tablette}

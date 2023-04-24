@@ -135,10 +135,6 @@ ulcer:     [ Ulceration, [ Absent: 0, Present: 1 ]]
 x %<>% select(-time, -year)
 x %<>% group_by(status)
 x %<>% resolve
-x %<>% modify(
-  age, thickness, 
-  title = paste0(label, ' (', units, ')')
-)
 ```
 
 * group_by(status) causes statistics to be summarized
@@ -147,8 +143,6 @@ in columns by group.
 * resolve() disambiguates 
 labels, units, and factor levels (actually creating 
 factors where appropriate, such as for sex and ulcer).
-
-* modify() supplies titles for certain column names.
 
 Now we pass x to tablet() and as_kable() for a more
 informative result.

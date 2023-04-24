@@ -27,7 +27,7 @@ test_that('tablet package result is stable',{
 
   expect_equal_to_reference(
     file = '004.rds',
-    data.frame(x = numeric(1)) %>% tablet
+    data.frame(x = numeric(1)) %>% tablet %>% tablette
   )
 
   # expect_equal_to_reference(
@@ -37,7 +37,7 @@ test_that('tablet package result is stable',{
 
   expect_equal_to_reference(
     file = '006.rds',
-    data.frame(x = factor('foo')) %>% tablet
+    data.frame(x = factor('foo')) %>% tablet %>% tablette
   )
   # just one group
   # expect_equal_to_reference(
@@ -83,12 +83,12 @@ test_that('tablet package result is stable',{
 
   expect_equal_to_reference(
     file = '015.rds',
-    data.frame(x = numeric(1), y = numeric(1)) %>% group_by(y) %>% tablet
+    data.frame(x = numeric(1), y = numeric(1)) %>% group_by(y) %>% tablet %>% tablette
   )
 
   expect_equal_to_reference(
     file = '016.rds',
-    data.frame(x = factor('foo'), y = numeric(1)) %>% group_by(y) %>% tablet
+    data.frame(x = factor('foo'), y = numeric(1)) %>% group_by(y) %>% tablet %>% tablette
   )
 
   # problematic names
@@ -102,22 +102,24 @@ test_that('tablet package result is stable',{
 
 })
 
-test_that('tablet lists stats in the order specified by num and fac',{
-  library(boot)
-  library(dplyr)
-  library(magrittr)
-  lev <- melanoma %>%
-   select(-time, -year) %>%
-   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
-   group_by(status) %>%
-   tablet(
-     num = list(
-       `Median (range)` ~ med + ' (' + min + ', ' + max + ')',
-       `Mean (SD)` ~ ave + ' (' + std + ')'
-     )
-   ) %$% `_tablet_stat` %>% levels
-  expect_identical(lev, c(" ","Median (range)", "Mean (SD)"))
-})
+# test_that('tablet lists stats in the order specified by num and fac',{
+#   library(boot)
+#   library(dplyr)
+#   library(magrittr)
+#   lev <- melanoma %>%
+#    select(-time, -year) %>%
+#    mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
+#    group_by(status) %>%
+#    tablet(
+#      num = list(
+#        `Median (range)` ~ med + ' (' + min + ', ' + max + ')',
+#        `Mean (SD)` ~ ave + ' (' + std + ')'
+#      )
+#    ) %>% 
+#     tablette %$% 
+#     `_tablet_stat` %>% levels
+#   expect_identical(lev, c(" ","Median (range)", "Mean (SD)"))
+# })
 
 test_that('tablet works for decorated or undecorated solitary numerics or categoricals',{
   library(magrittr)

@@ -30,10 +30,9 @@
 \value{
 class 'groupwise', arranged by groups:
 \item{_tablet_name}{observation identifier}
-\item{_tablet_level}{factor level (or special value 'numeric' for numerics)}
+\item{_tablet_level}{factor level or LHS of formulas in 'num'}
 \item{_tablet_N}{number of records}
 \item{_tablet_n}{number of records in group}
-\item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
 \item{_tablet_groupfull}{the LHS of formulas in 'fac' and 'num'}
 \item{_tablet_groupless}{the LHS of formulas in 'fac' and 'num'}
 }

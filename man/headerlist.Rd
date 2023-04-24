@@ -15,10 +15,10 @@ headerlist(x, ...)
 see methods
 }
 \description{
-Creates header list.  Generic, with method \code{\link{headerlist.tablet}}.
+Creates header list.  Generic, with method \code{\link{headerlist.tablette}}.
 }
 \examples{
 example(classifiers)
-headerlist(tablet(groupwise(x)))
+headerlist(tablette(groupwise(x)))
 }
 \keyword{internal}

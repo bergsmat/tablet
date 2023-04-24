@@ -58,10 +58,6 @@ ulcer:     [ Ulceration, [ Absent: 0, Present: 1 ]]
 x %<>% select(-time, -year)
 x %<>% group_by(status)
 x %<>% resolve
-x %<>% modify(
-  age, thickness, 
-  title = paste0(label, ' (', units, ')')
-)
 
 ## ----meta---------------------------------------------------------------------
 x %>% tablet %>% as_kable

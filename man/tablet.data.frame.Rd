@@ -63,10 +63,23 @@
 \item{all_levels}{whether to supply records for unobserved levels}
 }
 \value{
-'tablet', with columns for each combination of groups, and:
-\item{_tablet_name}{observation identifier: character, possibly 'latex', see details; has a codelist attribute the values of which are the original column names}
-\item{_tablet_level}{factor level, or the LHS of formulas in 'fac' and 'num'}
-\item{All (or value of 'all' argument)}{ungrouped results}
+'tablet'
+A tablet is a special case of data.frame with grouped rows and columns.
+  * There is always one level of row groups.
+  * There can be any number of column groups, including zero.
+  * All columns inherit character.
+  * The first column has empty strings that represent
+  the last non-empty value. It can be class 'latex' or 'character'.
+  * Leading element(s) of first column are deliberately blank (one space character)
+  and correspond to header rows.
+  * The second column represents group-specific property 
+  names. It is populated always and only where column 1 is not.
+  * All other columns represent group-specific property values; 
+  elements before the first non-empty group value represent nested headers.
+  * Header values may be repeated.
+  * Header values may be empty strings, representing the last non-empty value
+  to the left, or single spaces, which are deliberately blank.
+  * Internally, character NA is equivalent to an empty string.
 }
 \description{
 Generates a 'tablet': a summary table of
@@ -113,11 +126,11 @@ missingness. That said, if aggregate functions are removing
 NA, the values of arguments beginning with 'na.rm' or 'exclude'
 may not matter.
 
-Output includes the column \code{_tablet_name} which inherits character.
+Column 1 of output inherits character.
 Its values are typically the names of the original columns
 that were factor or numeric but not in groups(x). If the first
 of these had a label attribute or (priority) a title attribute
-with class 'latex', then \code{_tablet_name} is assigned the
+with class 'latex', then column 1 is assigned the
 class 'latex' as well. It makes sense therefore to be consistent
 across input columns regarding the presence or not of a 'latex'
 label or title. By default, \code{\link{as_kable.tablet}} dispatches
