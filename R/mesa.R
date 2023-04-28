@@ -34,7 +34,7 @@
 #' @param display.mode passed to \code{\link[shiny]{runApp}}
 #' @param ... passed to \code{\link[shiny]{runApp}}
 #' @importFrom spork as_html as_latex as_spork
-#' @importFrom DT dataTableOutput
+#' @importFrom reactable reactableOutput renderReactable reactable
 #' @export
 #' @return used for side effects: launches shiny application
 
@@ -56,7 +56,8 @@ mesa <- function(launch.browser = TRUE, display.mode = 'normal', ...) {
     'latexpdf',
     'tools',
     'csv',
-    'foreign'
+    'foreign',
+    'tinytex'
   )
   have <- sapply(dependencies, require, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)
   need <- dependencies[!have]

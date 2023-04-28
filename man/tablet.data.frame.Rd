@@ -65,21 +65,21 @@
 \value{
 'tablet'
 A tablet is a special case of data.frame with grouped rows and columns.
-  * There is always one level of row groups.
-  * There can be any number of column groups, including zero.
-  * All columns inherit character.
-  * The first column has empty strings that represent
-  the last non-empty value. It can be class 'latex' or 'character'.
-  * Leading element(s) of first column are deliberately blank (one space character)
-  and correspond to header rows.
-  * The second column represents group-specific property 
-  names. It is populated always and only where column 1 is not.
-  * All other columns represent group-specific property values; 
-  elements before the first non-empty group value represent nested headers.
-  * Header values may be repeated.
-  * Header values may be empty strings, representing the last non-empty value
-  to the left, or single spaces, which are deliberately blank.
-  * Internally, character NA is equivalent to an empty string.
+\item{*}{There is always one level of row groups.}
+\item{*}{There can be any number of column groups, including zero.}
+\item{*}{All columns inherit character.}
+\item{*}{The first column has empty strings that represent
+the last non-empty value. It can be class 'latex' or 'character'.}
+\item{*}{Leading element(s) of first column are deliberately blank (one space character)
+and correspond to header rows.}
+\item{*}{The second column represents group-specific property 
+names. It is populated always and only where column 1 is not.}
+\item{*}{All other columns represent group-specific property values; 
+elements before the first non-empty group value represent nested headers.}
+\item{*}{Header values may be repeated.}
+\item{*}{Header values may be empty strings, representing the last non-empty value
+to the left, or single spaces, which are deliberately blank.}
+\item{*}{Internally, character NA is equivalent to an empty string.}
 }
 \description{
 Generates a 'tablet': a summary table of

@@ -15,6 +15,7 @@ library(tools)
 library(csv)
 library(shinyAce)
 library(spork)
+library(reactable)
 
 ui <- shinyUI(
   navbarPage(
@@ -56,7 +57,7 @@ ui <- shinyUI(
         ),
         mainPanel(
           width = 12,
-          DT::dataTableOutput("data"),
+          reactable::reactableOutput("data"),
         )
       )
     ),
@@ -743,7 +744,10 @@ server <- shinyServer(function(input, output, session) {
     x <- filtered()
     x %<>% mutate_if(is.character, classified)
     suppressWarnings(x %<>% modify(title = label))
-    suppressWarnings(x %<>% modify(title = paste0(label, ' (', .data$units, ')')))
+    #browser()
+    hasUnits <- sapply(x, function(col)'units' %in% names(attributes(col)))
+    hasUnits <- names(hasUnits[hasUnits])
+    suppressWarnings(x %<>% modify(!!!hasUnits, title = paste0(label, ' (', .data$units, ')')))
 
     # conditionally creating scripted labels has the
     # unintended effect of making the pdf and preview displays
@@ -760,7 +764,10 @@ server <- shinyServer(function(input, output, session) {
     suppressWarnings(x %<>% modify(original = name))
     suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$name)))) # default
     suppressWarnings(x %<>% modify(html = as_html(as_spork(.data$label))))
-    suppressWarnings(x %<>% modify(
+    hasUnits <- sapply(x, function(col)'units' %in% names(attributes(col)))
+    hasUnits <- names(hasUnits[hasUnits])
+        suppressWarnings(x %<>% modify(
+      !!!hasUnits,
       html = concatenate(as_html(as_spork(c(.data$label, ' (', .data$units,')'))))
     ))
     #   }
@@ -773,10 +780,13 @@ server <- shinyServer(function(input, output, session) {
         # we need default 'latex' tex attributes for all columns ...
     suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$name))))
     suppressWarnings(x %<>% modify(tex = as_latex(as_spork(.data$label))))
+    hasUnits <- sapply(x, function(col)'units' %in% names(attributes(col)))
+    hasUnits <- names(hasUnits[hasUnits])
     suppressWarnings(x %<>% modify(
+      !!!hasUnits,
       # should retain class 'latex'
       # currently pre-doubled by escape_latex.latex
-      tex = concatenate(as_latex(as_spork(c(.data$label, ' (', .data$units,')'))))
+      tex = concatenate( as_latex(as_spork(c(.data$label, ' (', .data$units,')'))))
     ))
     #   }
     # }else{printer('factorized - no labeltex')}
@@ -847,6 +857,7 @@ server <- shinyServer(function(input, output, session) {
       return()
     }
     x <- do.call(fun, args)
+    x %<>% tablette # 0.6.0 revert to old format
     # browser()
     # remove NA groups
     na <- which(names(x) == 'NA')
@@ -869,6 +880,7 @@ server <- shinyServer(function(input, output, session) {
     imputed <- x$`_tablet_original` %in% names(conf$imputed)
     if(length(imputed) & length(targets)) x[imputed, targets] <- '-'
     x$`_tablet_original` <- NULL
+    x %<>% tablet # 0.6.0 new format
     x %<>% as_kable(caption = conf$title)
     x %<>% kable_classic(full_width = F, html_font = "Cambria")
     x %<>% kable_styling(fixed_thead = T)
@@ -909,6 +921,7 @@ server <- shinyServer(function(input, output, session) {
 
     # call tablet
     x <- do.call(fun, args)
+    x %<>% tablette # 0.10.21 revert to old format
     # remove NA groups
     na <- which(names(x) == 'NA')
     for(i in rev(na))x[[na]] <- NULL
@@ -939,6 +952,7 @@ server <- shinyServer(function(input, output, session) {
     # however, it is created as factor.
     # we flag it as latex to invoke the right method in as_kable(escape_latex = tablet::escape_latex)
     x$`_tablet_name` %<>% as_latex
+    x %<>% tablet # 0.10.21 new format
     x %<>% as_kable(format = 'latex', caption = escape_latex(conf$title), longtable = TRUE)
     if(length(input$repeatheader) == 1){
       if(input$repeatheader == 'yes'){
@@ -1187,14 +1201,18 @@ server <- shinyServer(function(input, output, session) {
     lapply(input$filter_by, myFilter, dat = conf$x)
   })
 
-  output$data <- DT::renderDataTable({
+  output$data <- reactable::renderReactable({
     printer('output$data')
     if(!ncol(conf$x))return(structure(data.frame(` `='data goes here.', check.names = F), row.names = ' '))
     out <- conf$x
     #out %<>% resolve # already done
+    #browser()
     out %<>% modify(name = paste(name, label, sep = ': '))
-    out %<>% modify(name = paste0(name, ' (', .data$units, ')'))
-    out
+    hasUnits <- sapply(out, function(col)'units' %in% names(attributes(col)))
+    hasUnits <- names(hasUnits[hasUnits])
+    #browser()
+    out %<>% modify(!!!hasUnits, name = paste0(name, ' (', .data$units, ')'))
+    reactable(out)
   })
 
   output$preview <- renderText({
@@ -1208,6 +1226,7 @@ server <- shinyServer(function(input, output, session) {
 
   pdf_location <- reactive({
     printer('pdf_location')
+    # browser()
     x <- suppressWarnings(tex())
     if(!length(x))return('1x1.png')
     stem <- isolate(conf$outputid) # basename(tempfile())
@@ -1216,35 +1235,40 @@ server <- shinyServer(function(input, output, session) {
     writeLines(x, con = 'www/cache.tex')
 
     # clean slate
-    unlink(file.path('www', paste0(stem, '.tex')))
-    unlink(file.path('www', paste0(stem, '.pdf')))
-
-    # some tables need to be run twice!  Not sure why!
-    # particularly for repeat headers with nesting.
-    # browser()
-    path <- try(
-      as.pdf(
-        x,
-        dir = 'www',
-        stem = stem,
-        clean = FALSE,
-        ignore.stdout = TRUE
-      )
-    )
-
-    # ignore incomplete pdf
-    unlink(file.path('www', paste0(stem, '.pdf')))
-
-    path <- try(
-      as.pdf(
-        x,
-        dir = 'www',
-        stem = stem,
-        clean = TRUE,
-        ignore.stdout = TRUE
-      )
-    )
-
+    tex <- file.path('www', paste0(stem, '.tex'))
+    pdf <- file.path('www', paste0(stem, '.pdf'))
+    unlink(tex)
+    unlink(pdf)
+    
+    # # some tables need to be run twice!  Not sure why!
+    # # particularly for repeat headers with nesting.
+    # #browser()
+    # path <- try(
+    #   as.pdf(
+    #     x,
+    #     dir = 'www',
+    #     stem = stem,
+    #     clean = FALSE,
+    #     ignore.stdout = TRUE
+    #   )
+    # )
+    # 
+    # # ignore incomplete pdf
+    # unlink(file.path('www', paste0(stem, '.pdf')))
+    # 
+    # path <- try(
+    #   as.pdf(
+    #     x,
+    #     dir = 'www',
+    #     stem = stem,
+    #     clean = TRUE,
+    #     ignore.stdout = TRUE
+    #   )
+    # )
+    # 0.6.0: trying tinytex instead of system command in latexpdf::as.pdf.document
+    # 0.6.0: must now write the tex file manually.
+    writeLines(x, tex)
+    path <- try(tinytex::pdflatex(tex))
 
     if(inherits(path, 'try-error')){
       showNotification(as.character(path), type = 'error', duration = 5)
