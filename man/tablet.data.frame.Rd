@@ -67,11 +67,11 @@
 A tablet is a special case of data.frame with grouped rows and columns.
 \item{*}{There is always one level of row groups.}
 \item{*}{There can be any number of column groups, including zero.}
-\item{*}{All columns inherit character.}
+\item{*}{All columns are character (as tested by \code{is.character()}).}
 \item{*}{The first column has empty strings that represent
 the last non-empty value. It can be class 'latex' or 'character'.}
 \item{*}{Leading element(s) of first column are deliberately blank (one space character)
-and correspond to header rows.}
+and correspond to header rows.  See \code{\link{header_rows}}.}
 \item{*}{The second column represents group-specific property 
 names. It is populated always and only where column 1 is not.}
 \item{*}{All other columns represent group-specific property values; 
@@ -126,7 +126,7 @@ missingness. That said, if aggregate functions are removing
 NA, the values of arguments beginning with 'na.rm' or 'exclude'
 may not matter.
 
-Column 1 of output inherits character.
+Column 1 of output is character.
 Its values are typically the names of the original columns
 that were factor or numeric but not in groups(x). If the first
 of these had a label attribute or (priority) a title attribute

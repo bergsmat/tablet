@@ -2,7 +2,7 @@
 % Please edit documentation in R/tablette.R
 \name{tablet.tablette}
 \alias{tablet.tablette}
-\title{Convert to tablette from 'tablet.}
+\title{Convert to tablette from tablet.}
 \usage{
 \method{tablet}{tablette}(x, ...)
 }
@@ -44,6 +44,7 @@ ulcer:     [ Ulceration, [ Absent: 0, Present: 1             ]]
 melanoma \%<>\% resolve
 melanoma \%<>\% group_by(status, ulcer) 
 melanoma \%<>\% tablet 
+melanoma \%>\% header_rows
 melanoma \%>\% as_kable
 melanoma \%>\% tablette
 melanoma \%>\% tablette \%>\% tablet
@@ -54,6 +55,8 @@ identical(melanoma, tablet(tablette(melanoma)))
 Other tablet: 
 \code{\link{as_tablet.data.frame}()},
 \code{\link{as_tablet}()},
+\code{\link{header_rows.tablet}()},
+\code{\link{header_rows}()},
 \code{\link{tablette.tablet}()}
 }
 \concept{tablet}

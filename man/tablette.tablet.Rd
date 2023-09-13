@@ -28,6 +28,8 @@ Other tablette:
 Other tablet: 
 \code{\link{as_tablet.data.frame}()},
 \code{\link{as_tablet}()},
+\code{\link{header_rows.tablet}()},
+\code{\link{header_rows}()},
 \code{\link{tablet.tablette}()}
 }
 \concept{tablet}

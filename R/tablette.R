@@ -11,7 +11,7 @@
 
 tablette <- function(x, ...)UseMethod('tablette')
 
-#' Convert to tablette from 'tablet.
+#' Convert to tablette from tablet.
 #' 
 #' Converts to 'tablette' from 'tablet'.
 #' I.e., makes compact data.frame that emulates
@@ -51,6 +51,7 @@ tablette <- function(x, ...)UseMethod('tablette')
 #' melanoma %<>% resolve
 #' melanoma %<>% group_by(status, ulcer) 
 #' melanoma %<>% tablet 
+#' melanoma %>% header_rows
 #' melanoma %>% as_kable
 #' melanoma %>% tablette
 #' melanoma %>% tablette %>% tablet
@@ -69,13 +70,15 @@ tablet.tablette <- function(x, ...){
   
   # coerce to character, preserve label, codelist, and subclass
   for(col in seq_len(ncol(x))){
-    if(!inherits(x[[col]], 'character')){
+   # if(!inherits(x[[col]], 'character')){
       label <- attr(x[[col]], 'label')
       codelist <- attr(x[[col]], 'codelist')
+      nest <- attr(x[[col]], 'nest')
       x[[col]] %<>% as.character
-      attr(col, 'label') <- label
-      attr(col, 'codelist') <- codelist
-    }
+      x[[col]] %<>% as_dvec(label = label, codelist = codelist, nest = nest)
+      # attr(col, 'label') <- label
+      # attr(col, 'codelist') <- codelist
+    #}
   }
   
   #capture nested column names
@@ -159,6 +162,37 @@ tablet.tablette <- function(x, ...){
   y
 }
   
+#' Identify Header Rows
+#' 
+#' Identifies header rows.
+#' Generic, with method \code{\link{header_rows.tablet}}.
+#' 
+#' @export
+#' @param x object of dispatch
+#' @param ... passed arguments
+#' @keywords internal
+#' @family tablet
+#' @keywords internal
+header_rows <- function(x, ...)UseMethod('header_rows')
+
+#' Identify Header Rows for tablet
+#' 
+#' Identifies header rows for tablet.
+#' 
+#' @export
+#' @param x tablet
+#' @param ... ignored
+#' @family tablet
+#' @return integer: indices for those rows representing headers
+header_rows.tablet <- function(x, ...){
+  nodes <- !is.na(x[[1]]) & x[[1]] != ' '
+  node <- match(TRUE, nodes)
+  if(is.na(node))stop('no content in column 1')
+  num_head <- node - 1
+  dex <- seq_len(num_head)
+  dex
+}
+
 
 
 #' Convert to tablette from tablet
@@ -178,15 +212,17 @@ tablet.tablette <- function(x, ...){
 tablette.tablet <- function(x, ...){
   stopifnot(ncol(x) >= 2)
   stopifnot(nrow(x) >= 2)
+  latex <- inherits(x[[1]], 'latex')
   
   # standarize name column
   x[[1]][!is.na(x[[1]]) & x[[1]] == ''] <- NA
   
   # capture key structure
   nodes <- !is.na(x[[1]]) & x[[1]] != ' '
-  node <- match(TRUE, nodes)
-  if(is.na(node))stop('no content in column 1')
-  num_head <- node - 1
+  headers <- header_rows(x)
+  # node <- match(TRUE, nodes)
+  # if(is.na(node))stop('no content in column 1')
+  # num_head <- node - 1
   
   # un-sparse column groups
   for(i in 2:nrow(x)){
@@ -197,7 +233,7 @@ tablette.tablet <- function(x, ...){
   
   # un-sparse headers
   if(ncol(x) > 3){
-    for(i in 1:num_head){
+    for(i in header_rows(x)){
       for(j in 4:ncol(x)){
         if(
           is.na(x[i,j]) | x[i,j] == ''){
@@ -213,9 +249,8 @@ tablette.tablet <- function(x, ...){
   
   
   # isolate headers
-  hr <- seq_len(num_head)
-  h <- x[hr, , drop = FALSE]
-  x <- x[-hr, , drop = FALSE]
+  h <- x[headers, , drop = FALSE]
+  x <- x[-headers, , drop = FALSE]
   
   # restore attributes
   for(col in seq_len(ncol(x))){
@@ -241,6 +276,9 @@ tablette.tablet <- function(x, ...){
     }
   }
   rownames(x) <- NULL
+  if(latex){
+    class(x[[1]]) <- union('latex', class(x[[1]]))
+  }
   class(x) <- setdiff(class(x),'tablet')
   class(x) <- union('tablette', class(x))
   x
