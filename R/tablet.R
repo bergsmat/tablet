@@ -361,17 +361,20 @@ observations.data.frame <- function(x, ..., exclude_name = NULL){
    z <- numerics(x, ...)
    x <- bind_rows(y, z)
    # x <- mutate(x, name = factor(exclude = exclude_name, name, levels = intersect(nms, levels(name))))
-   x <- mutate(
-      x,
-      `_tablet_name` = factor(
-         exclude = exclude_name,
-         `_tablet_name`,
-         levels = intersect( # tries to make output order match input across fac, num
-            nms,
-            unique(as.character(`_tablet_name`))
-         )
-      )
-   )
+   
+   
+   # try to make output order match input across fac, num
+   # in a mutate call, 
+   # next step operates once per group
+   # groups may not each have all values
+   # resulting level steps are combined in group order
+   # yielding unpredictable results
+   # we avoid mutate
+   
+   levs <- intersect(nms, unique(as.character(x$`_tablet_name`)))
+   x$`_tablet_name` <- factor(x$`_tablet_name`, exclude = exclude_name, levels = levs)
+   # x <- mutate(x,`_tablet_name` = factor(exclude = exclude_name,`_tablet_name`,levels = intersect( nms, unique(as.character(`_tablet_name`)))))
+   
    x <- group_by(x, `_tablet_name`, .add = TRUE)
    x <- group_by(x, `_tablet_level`, .add = TRUE)
    x <- arrange(x, .by_group = TRUE)
@@ -1094,7 +1097,7 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' @param linebreaker passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, newline is replaced with <br>
 #' @param pack_rows named list passed to \code{\link[kableExtra]{pack_rows}} for finer control of variable names
 #' @importFrom kableExtra kbl pack_rows add_header_above linebreak
-#' @importFrom dplyr rename
+#' @importFrom dplyr rename group_vars
 #' @export
 #' @return like \code{\link[kableExtra]{kbl}}
 #' @examples
@@ -1458,6 +1461,9 @@ tablet.data.frame <- function(
    fac <- unlist(sapply(x, is.factor)) # unlist necessary because 0 columns returns list() instead of logical vector
    num <- unlist(sapply(x, is.numeric))
    col <- names(x)[fac | num]
+   # don't need to consider grouping vars!
+   # they will not contribute to _tablet_name
+   col <- setdiff(col, group_vars(x))
    if(length(col)){
       prime <- col[[1]]
       targets <- intersect(c('title','label'), names(attributes(x[[prime]])))
