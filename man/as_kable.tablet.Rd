@@ -79,8 +79,7 @@ melanoma \%>\%
 
 x <- system.file(package = 'tablet', 'shiny-examples/mesa/data/adsl.sas7bdat')
 x \%<>\% read_sas \%>\% data.frame
-decorations(x) # note weight in pounds
-x \%<>\% mutate(weight = signif(digits = 3, weight * 2.2))
+decorations(x) 
 
 # calculate BMI by assuming all males are 1.75 m, all females 1.63 cm
 x \%<>\% mutate(height = ifelse(sex == 'F', 1.63, 1.75))

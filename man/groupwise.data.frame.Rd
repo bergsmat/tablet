@@ -39,6 +39,5 @@ class 'groupwise', arranged by groups:
 \description{
 Calculates widgets with and without groups.
 Supplies 'groupfull' and 'groupless' (prefixed) columns instead of 'widgets'.
-Column attributes 'label' and 'title' (highest priority) are substituted for column name, if present.
 }
 \keyword{internal}

@@ -31,6 +31,5 @@ higher groups). Column names include 'all' column
 for same statistics without groups. Result columns
 have corresponding attribute 'n'. 'lab' supplies a label attribute
 for each column where the RHS succeeds: by default appending 'n' to result column names.
-Column attributes 'label' and 'title' (highest priority) are substituted for column name, if present.
 }
 \keyword{internal}
