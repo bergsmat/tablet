@@ -1604,7 +1604,12 @@ escape_latex.default <- function(x, secondary = TRUE, ...){
       x = gsub('\\',  '\\\\', x, fixed = TRUE)
       x = sub( '\\\\','\\',   x, fixed = TRUE) # first will be doubled later by as_kable etc.
    }
-   x <- as_latex(x)
+   #x <- as_latex(x)
+   # @ 0.6.5, apparently this formerly set class to latex.
+   # as_latex is defined by spork.
+   # @ spork 0.2.7, there is no default method.
+   # experimentally, we hard code the class 'latex'
+   class(x) <- union('latex', class(x))
    x
 }
 
@@ -1641,7 +1646,8 @@ escape_latex.latex <- function(x, secondary = TRUE, ...){
       x = gsub('\\',  '\\\\', x, fixed = TRUE)
       x = sub( '\\\\','\\',   x, fixed = TRUE) # first will be doubled later by as_kable etc.
    }
-   x <- as_latex(x)
+   # x <- as_latex(x)
+   class(x) <- union('latex', class(x))
    x
 }
 
