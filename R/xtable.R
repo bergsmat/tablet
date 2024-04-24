@@ -68,6 +68,7 @@ as_xtable.tablet <- function(
   x$`_tablet_name` <- match.fun(format_name)(x = x$`_tablet_name`, ...)
   split <- x$`_tablet_name`
   x$`_tablet_name` <- NULL
+  split <- factor(split, levels = unique(split)) # added at 0.6.9 to preserve record order
   # x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
   # x$`_tablet_level` <- ifelse(
   #   x$`_tablet_level` == 'numeric',

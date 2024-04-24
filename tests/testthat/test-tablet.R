@@ -213,3 +213,25 @@ test_that('class latex on first target propagates to c1',{
   expect_true(inherits(z[[1]], 'latex'))
 })
 
+test_that('as_xtable does not sort records',{
+  library(tablet)
+  library(magrittr)
+  library(dplyr)
+  x <- data.frame(
+    id = c(1,2,3,4), 
+    group = c('adult', 'adult', 'ped', 'ped'),
+    auc = c(50, 40, 30, 20)
+  )
+  
+  all <- x %>% select(all = auc) %>% tablet
+  adt <- x %>% filter(group == 'adult') %>% select(adults = auc) %>% tablet
+  ped <- x %>% filter(group == 'ped') %>% select(pediatrics = auc) %>% tablet
+  
+  y <- suppressWarnings(bind_rows(all, adt, ped))
+  z <- as_xtable(y)
+  z <- capture.output(z)
+  z <- z[!grepl('^%', z)]
+  
+  expect_equal_to_reference(file = '017.rds',z)
+
+})

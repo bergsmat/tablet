@@ -17,7 +17,8 @@
   align = "c",
   double_escape = FALSE,
   linebreaker = "\\n",
-  pack_rows = list(escape = escape)
+  pack_rows = list(escape = escape),
+  secondary = TRUE
 )
 }
 \arguments{
@@ -43,9 +44,11 @@
 
 \item{double_escape}{passed to \code{\link[kableExtra]{linebreak}} for column names}
 
-\item{linebreaker}{passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, newline is replaced with <br>}
+\item{linebreaker}{passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, linebreaker is replaced with <br/>}
 
 \item{pack_rows}{named list passed to \code{\link[kableExtra]{pack_rows}} for finer control of variable names}
+
+\item{secondary}{passed to escape_latex}
 }
 \value{
 like \code{\link[kableExtra]{kbl}}

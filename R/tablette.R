@@ -67,6 +67,7 @@ tablet.tablette <- function(x, ...){
   labels <- lapply(x, label)
   counts <- lapply(x, count)
   cdlist <- lapply(x, codes)
+  name_class <- attr(x, 'name_class')
   
   # coerce to character, preserve label, codelist, and subclass
   for(col in seq_len(ncol(x))){
@@ -159,6 +160,7 @@ tablet.tablette <- function(x, ...){
   }
   class(y) <- setdiff(class(y),'tablette')
   y <- as_tablet(y, ...)
+  attr(y, 'name_class') <- name_class
   y
 }
   

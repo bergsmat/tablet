@@ -135,6 +135,10 @@ class 'latex' as well. It makes sense therefore to be consistent
 across input columns regarding the presence or not of a 'latex'
 label or title. By default, \code{\link{as_kable.tablet}} dispatches
 class-specific methods for \code{\link{escape_latex}}.
+
+Similarly, row 1 of output is typically character. As of version 0.6.6,
+if any of the grouping variables inherits 'latex', then the return value
+of tablet.data.frame() has an attribute 'name_class' with value 'latex'.
 }
 \examples{
 library(boot)

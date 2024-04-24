@@ -4,12 +4,12 @@
 \alias{escape_latex.latex}
 \title{Escape Latex for Class 'latex'}
 \usage{
-\method{escape_latex}{latex}(x, secondary = TRUE, ...)
+\method{escape_latex}{latex}(x, secondary = TRUE, primary = FALSE, ...)
 }
 \arguments{
 \item{x}{latex}
 
-\item{secondary}{logical: whether secondary backslashes should be pre-doubled}
+\item{secondary}{logical: whether first backslashes should be pre-doubled}
 
 \item{...}{ignored}
 }

@@ -1094,8 +1094,9 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' @param linebreak whether to invoke \code{\link[kableExtra]{linebreak}} for column names
 #' @param align passed to \code{\link[kableExtra]{linebreak}} for column names
 #' @param double_escape passed to \code{\link[kableExtra]{linebreak}} for column names
-#' @param linebreaker passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, newline is replaced with <br>
+#' @param linebreaker passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, linebreaker is replaced with <br/>
 #' @param pack_rows named list passed to \code{\link[kableExtra]{pack_rows}} for finer control of variable names
+#' @param secondary passed to escape_latex
 #' @importFrom kableExtra kbl pack_rows add_header_above linebreak
 #' @importFrom dplyr rename group_vars
 #' @export
@@ -1166,7 +1167,8 @@ as_kable.tablet <- function(
    align = 'c',
    double_escape = FALSE,
    linebreaker = '\n',
-   pack_rows = list(escape = escape)
+   pack_rows = list(escape = escape),
+   secondary = TRUE
 ){
    x <- tablette(x, ...)
    # if(is.na(escape)){
@@ -1186,7 +1188,18 @@ as_kable.tablet <- function(
    x$`_tablet_name` <- NULL # done
    if(!escape){
       if (knitr::is_latex_output()) {
-         nmsi <- escape_latex(nmsi) # invokes class-specific method, possibly escaping or ignoring latex metacharacters
+         # invokes class-specific method, 
+         #possibly escaping or ignoring latex metacharacters
+         # revisit if kableExtra changes
+         nmsi <- escape_latex(nmsi, secondary = TRUE, primary = TRUE) 
+         if (linebreak){
+           nmsi <- linebreak(
+             nmsi,
+             align = 'l',
+             double_escape = TRUE,
+             linebreaker = linebreaker
+           )
+         }
       } else {
          nmsi <- escape_html(nmsi)
       }
@@ -1212,16 +1225,42 @@ as_kable.tablet <- function(
    #x <- rename(x, !!variable := `_tablet_level`)
    stopifnot(is.character(variable), length(variable) == 1)
    names(x)[names(x) == '_tablet_level'] <- variable
+   
+   
+   # escape is false by default to allow internal discretion
+   # here we handle the escaping of column names
    if(!escape){
       if (knitr::is_latex_output()) {
-         x[] <- lapply(x, escape_latex, ...)
-         names(x) <- escape_latex(names(x), ...)
+         x[] <- lapply(x, escape_latex, secondary = secondary, ...)
+         these <- names(x)
+         if('latex' %in% attr(x,'name_class')){
+           class(these) <- c('latex','character')
+         }
+         these <- escape_latex(these, secondary = FALSE, ...)
+         names(x) <- these
       } else {
          x[] <- lapply(x, escape_html, ...)
          names(x) <- escape_html(names(x), ...)
       }
    }
-
+   
+   # names of each element in headerlist derive from the content
+   # of grouping variables, and are expected to have 
+   # exactly the same escaping needs as names(x)
+   if(!escape){
+     for(i in seq_along(headerlist)){
+       if (knitr::is_latex_output()) {
+         these <- names(headerlist[[i]])
+         if('latex' %in% attr(x,'name_class')){
+           class(these) <- c('latex','character')
+         }
+         these <- escape_latex(these, secondary = FALSE, ...)
+         names(headerlist[[i]]) <- these
+       } else {
+         names(headerlist[[i]]) <- escape_html(names(headerlist[[i]]), ...)
+       }
+     }
+   }
 
    if(is.na(col.names))col.names <- names(x)
    if (linebreak){
@@ -1233,7 +1272,7 @@ as_kable.tablet <- function(
             linebreaker = linebreaker
          )
       } else {
-         col.names <- gsub('\n','<br>', col.names)
+         col.names <- gsub(linebreaker,'<br/>', col.names)
       }
    }
    y <- kableExtra::kbl(
@@ -1244,7 +1283,32 @@ as_kable.tablet <- function(
       ...
    )
    for(i in seq_along(headerlist)){
-      y <- add_header_above(y, headerlist[[i]])
+     this <- headerlist[[i]]
+     
+     if(linebreak){
+       if(knitr::is_latex_output()){
+         names(this) <- linebreak(
+           names(this), 
+           align = align, 
+           double_escape = double_escape, 
+           linebreaker = linebreaker
+         )
+       } else {
+         names(this) <- gsub(linebreaker, '<br/>', names(this))
+       }
+     }
+     
+     # kableExtra:::pdfTable_add_header_above()
+     # uses str_replace(string, pattern, replacement)
+     # which silently deletes orphan backslashes,
+     # i.e. backslashes not followed by an integer
+     # therefore, names(this) must have all backslash doubled
+     # @ 0.6.7 2024-03-22
+     # next action only for latex?
+     if(knitr::is_latex_output()){
+       names(this) <- gsub('\\','\\\\', names(this), fixed = TRUE)
+     }
+     y <- add_header_above(y, this, escape = escape)
    }
 
    # at 0.5.7, skip this if length(index) == 0
@@ -1318,6 +1382,10 @@ as_kable.tablet <- function(
 #' across input columns regarding the presence or not of a 'latex'
 #' label or title. By default, \code{\link{as_kable.tablet}} dispatches
 #' class-specific methods for \code{\link{escape_latex}}.
+#' 
+#' Similarly, row 1 of output is typically character. As of version 0.6.6,
+#' if any of the grouping variables inherits 'latex', then the return value
+#' of tablet.data.frame() has an attribute 'name_class' with value 'latex'.
 #'
 #' @usage
 #' \method{tablet}{data.frame}(
@@ -1484,6 +1552,12 @@ tablet.data.frame <- function(
    # y$`_tablet_stat` <- NULL
   # x$`_tablet_sort` <- NULL
    y <- tablet(y, ...)
+   # propagate name class to protext pre-formatted latex elements
+   for(i in group_vars(x)){
+     if (inherits(x[[i]], 'latex')){
+       attr(y, 'name_class') <- 'latex'
+     }
+   }
    y
 }
 
@@ -1631,6 +1705,7 @@ escape_latex.default <- function(x, secondary = TRUE, ...){
 #' @return latex
 #' @param x latex
 #' @param secondary logical: whether secondary backslashes should be pre-doubled
+#' @param secondary logical: whether first backslashes should be pre-doubled
 #' @param ... ignored
 #' @family escape
 #' @examples
@@ -1639,13 +1714,19 @@ escape_latex.default <- function(x, secondary = TRUE, ...){
 #' escape_latex(escape_latex('([#$%&_{}])'))
 #' )
 #'
-escape_latex.latex <- function(x, secondary = TRUE, ...){
+escape_latex.latex <- function(x, secondary = TRUE, primary = FALSE, ...){
    if(secondary){
       # hotfix for kableExtra::sim_double_escape @1.3.4
       # https://github.com/haozhu233/kableExtra/issues/622
       x = gsub('\\',  '\\\\', x, fixed = TRUE)
-      x = sub( '\\\\','\\',   x, fixed = TRUE) # first will be doubled later by as_kable etc.
+      
+      # first will be doubled later by as_kable etc.
+      x = sub( '\\\\','\\',   x, fixed = TRUE) 
    }
+   if(primary){
+     x = sub('\\',  '\\\\', x, fixed = TRUE)
+   }
+  
    # x <- as_latex(x)
    class(x) <- union('latex', class(x))
    x
