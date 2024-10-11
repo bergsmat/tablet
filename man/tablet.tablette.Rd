@@ -53,10 +53,10 @@ identical(melanoma, tablet(tablette(melanoma)))
 }
 \seealso{
 Other tablet: 
-\code{\link{as_tablet.data.frame}()},
 \code{\link{as_tablet}()},
-\code{\link{header_rows.tablet}()},
+\code{\link{as_tablet.data.frame}()},
 \code{\link{header_rows}()},
+\code{\link{header_rows.tablet}()},
 \code{\link{tablette.tablet}()}
 }
 \concept{tablet}

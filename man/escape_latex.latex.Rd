@@ -38,8 +38,8 @@ escape_latex(escape_latex('([#$\%&_{}])'))
 }
 \seealso{
 Other escape: 
-\code{\link{escape_latex.default}()},
-\code{\link{escape_latex}()}
+\code{\link{escape_latex}()},
+\code{\link{escape_latex.default}()}
 }
 \concept{escape}
 \keyword{internal}

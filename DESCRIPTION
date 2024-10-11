@@ -15,7 +15,7 @@ License: GPL-3
 Encoding: UTF-8
 Imports: dplyr (>= 1.0.2), yamlet (>= 0.10.21), rlang, tidyr, 
   kableExtra (>= 0.9.0), spork (>= 0.2.7), magrittr, fs, reactable
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Suggests: knitr, rmarkdown, boot, 
  testthat, shiny, shinyFiles, haven, yaml, sortable,

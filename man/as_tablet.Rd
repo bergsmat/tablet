@@ -21,8 +21,8 @@ Generic, with method \code{\link{as_tablet.data.frame}}.
 \seealso{
 Other tablet: 
 \code{\link{as_tablet.data.frame}()},
-\code{\link{header_rows.tablet}()},
 \code{\link{header_rows}()},
+\code{\link{header_rows.tablet}()},
 \code{\link{tablet.tablette}()},
 \code{\link{tablette.tablet}()}
 }
