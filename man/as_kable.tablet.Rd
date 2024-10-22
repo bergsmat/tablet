@@ -18,7 +18,7 @@
   double_escape = FALSE,
   linebreaker = "\\n",
   pack_rows = list(escape = escape),
-  secondary = TRUE
+  secondary = FALSE
 )
 }
 \arguments{

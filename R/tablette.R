@@ -75,8 +75,10 @@ tablet.tablette <- function(x, ...){
       label <- attr(x[[col]], 'label')
       codelist <- attr(x[[col]], 'codelist')
       nest <- attr(x[[col]], 'nest')
+      latex <- inherits(x[[col]], 'latex')
       x[[col]] %<>% as.character
       x[[col]] %<>% as_dvec(label = label, codelist = codelist, nest = nest)
+      if(latex) class(x[[col]]) <- union('latex', class(x[[col]]))
       # attr(col, 'label') <- label
       # attr(col, 'codelist') <- codelist
     #}
@@ -132,10 +134,14 @@ tablet.tablette <- function(x, ...){
   for(i in seq_along(first)){
     prime <- first[[i]]
     if(!prime){
-      x[i, 1] <- ''
+      theClass <- class(x[[1]])
+      x[i, 1] <- '' # drops latex?
+      class(x[[1]]) <- theClass # @0.6.10
     } else {
       for(j in 2:ncol(x)){
-        x[i,j] <- ''
+        theClass <- class(x[[j]])
+        x[i,j] <- '' # drops latex
+        class(x[[j]]) <- theClass # @0.6.10
       }
     }
   }
@@ -144,9 +150,17 @@ tablet.tablette <- function(x, ...){
   stopifnot(ncol(header) == ncol(x))
   names(x) <- names(header)
   # support latex
-  class(header[[1]]) <- class(x[[1]])
+  for(i in 1:ncol(x)){
+    # class(header[[1]]) <- class(x[[1]])
+    class(header[[i]]) <- class(x[[i]]) # @0.6.10
+  }
   
-  y <- bind_rows(x %>% slice(0), header, x)
+  
+  y <- bind_rows(x %>% slice(0), header, x) # also drops latex (but not dvec)
+  for(i in 1:ncol(x)){
+    class(y[[i]]) <- class(x[[i]]) # @0.6.10
+  }
+  
   rownames(y) <- NULL
   if(latex){
     class(y[[1]]) <- union('latex', class(y[[1]]))

@@ -15,7 +15,7 @@ escape_latex(x, ...)
 see methods
 }
 \description{
-Escapes special characters in Latex context.  Generic, with method \code{link{escape_latex.default}}.
+Escapes special characters in Latex context.  Generic, with method \code{\link{escape_latex.default}}.
 }
 \examples{
 example(escape_latex.default)

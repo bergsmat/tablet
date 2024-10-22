@@ -1168,7 +1168,7 @@ as_kable.tablet <- function(
    double_escape = FALSE,
    linebreaker = '\n',
    pack_rows = list(escape = escape),
-   secondary = TRUE
+   secondary = FALSE
 ){
    x <- tablette(x, ...)
    # if(is.na(escape)){
@@ -1231,6 +1231,7 @@ as_kable.tablet <- function(
    # here we handle the escaping of column names
    if(!escape){
       if (knitr::is_latex_output()) {
+         # @ 0.6.10: apparently secondary should be FALSE, now default. 
          x[] <- lapply(x, escape_latex, secondary = secondary, ...)
          these <- names(x)
          if('latex' %in% attr(x,'name_class')){
@@ -1510,6 +1511,10 @@ tablet.data.frame <- function(
       all_levels = all_levels
    )
    y <- tablette(y, ..., all = all, lab = lab ) # tablette.groupwise
+   # y$`_tablet_level` may have latex elements from factors @ 0.6.10
+   if(any(sapply(x, function(col)inherits(col,'latex')))){
+     class(y$`_tablet_level`) <- union('latex', class(y$`_tablet_level`))
+   }
    y$`_tablet_name` <- as.character(y$`_tablet_name`)
 
    codes <- unique(y$`_tablet_name`)
@@ -1552,7 +1557,7 @@ tablet.data.frame <- function(
    # y$`_tablet_stat` <- NULL
   # x$`_tablet_sort` <- NULL
    y <- tablet(y, ...)
-   # propagate name class to protext pre-formatted latex elements
+   # propagate name class to protect pre-formatted latex elements
    for(i in group_vars(x)){
      if (inherits(x[[i]], 'latex')){
        attr(y, 'name_class') <- 'latex'
@@ -1632,7 +1637,7 @@ splice.data.frame <- function(x, all = 'All', ...){
 
 #' Escape Special Characters for Latex
 #'
-#' Escapes special characters in Latex context.  Generic, with method \code{link{escape_latex.default}}.
+#' Escapes special characters in Latex context.  Generic, with method \code{\link{escape_latex.default}}.
 #'
 #' @export
 #' @keywords internal
