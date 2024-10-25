@@ -1,8 +1,11 @@
 Package: tablet
 Type: Package
 Title: Tabulate Descriptive Statistics in Multiple Formats
-Version: 0.6.10
-Author: Tim Bergsma
+Version: 0.6.11
+Authors@R: person(given = "Tim",
+                  family = "Bergsma",
+                  role = c("aut", "cre"),
+                  email = "bergsmat@gmail.com")
 Maintainer: Tim Bergsma <bergsmat@gmail.com>
 BugReports: https://github.com/bergsmat/tablet/issues
 Description: Creates a table of descriptive statistics
