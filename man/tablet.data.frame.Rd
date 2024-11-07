@@ -38,7 +38,7 @@
 \arguments{
 \item{x}{data.frame (possibly grouped)}
 
-\item{...}{substitute formulas for elements of fun, fac, num, lab}
+\item{...}{substitute formulas for elements of fun, fac, num, lab; if RHS is NULL, element is removed}
 
 \item{na.rm}{whether to remove NA in general}
 
@@ -128,7 +128,7 @@ may not matter.
 
 Column 1 of output is character.
 Its values are typically the names of the original columns
-that were factor or numeric but not in groups(x). If the first
+that were factor or numeric but not in groups(x). If any
 of these had a label attribute or (priority) a title attribute
 with class 'latex', then column 1 is assigned the
 class 'latex' as well. It makes sense therefore to be consistent

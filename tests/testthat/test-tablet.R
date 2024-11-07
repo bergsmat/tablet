@@ -233,5 +233,19 @@ test_that('as_xtable does not sort records',{
   z <- z[!grepl('^%', z)]
   
   expect_equal_to_reference(file = '017.rds',z)
-
+  
+})
+test_that('null formula removes default widget',{
+  library(tablet)
+  library(magrittr)
+  library(dplyr)
+  x <- data.frame(
+    id = c(1,2,3,4), 
+    group = c('adult', 'adult', 'ped', 'ped'),
+    auc = c(50, 40, 30, 20)
+  )
+  
+  all <- x %>% select(all = auc) %>% tablet(`Mean (SD)` ~ NULL, lab ~ NULL, pct ~ NULL)
+  expect_true(nrow(all) == 3)
+  
 })

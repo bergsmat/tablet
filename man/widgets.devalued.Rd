@@ -19,7 +19,7 @@
 
 \item{num}{a list of formulas to generate widgets for numerics}
 
-\item{...}{formulas with matching LHS replace defaults}
+\item{...}{formulas with matching LHS replace defaults; x ~ NULL removes x}
 }
 \value{
 class 'widgets', arranged by groups:

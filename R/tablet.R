@@ -382,6 +382,65 @@ observations.data.frame <- function(x, ..., exclude_name = NULL){
    x
 }
 
+# Reduce a List to its Formula Members
+# 
+# Reduces a List to its members which are formulas with LHS.
+# Captures LHS as string and returns a thus-named list.
+# @importFrom rlang is_formula f_lhs as_string f_rhs
+# @examples
+# .named_formulas(
+#   list(
+#      3,
+#      'x',
+#      ~ 3,
+#      x ~ 3,
+#      y ~ NULL
+#   )
+# )
+# 
+
+.named_formulas <- function(x, ...){
+  stopifnot(is.list(x))
+  is.formula <- sapply(x, function(f)rlang::is_formula(f, scoped = TRUE, lhs = TRUE))
+  if(!length(is.formula)){
+    is.formula <- logical(0)
+  }
+  x <- x[is.formula]
+  LHS <- sapply(x, rlang::f_lhs)
+  LHS <- sapply(LHS, rlang::as_string)
+  names(x) <- LHS
+  x
+}
+
+# Identify NULL Formulas in a List
+# 
+# Identifies by name the named members of a list of formulas
+# whose RHS are NULL
+# @examples
+# .null_formulas(
+#   .named_formulas(
+#     list(
+#        3,
+#        'x',
+#        ~ 3,
+#        x ~ 3,
+#        y ~ NULL
+#     )
+#   )
+# )
+# 
+
+.null_formulas <- function(x, ...){
+  stopifnot(is.list(x))
+  x <- .named_formulas(x)
+  isNull <- sapply(x, function(f)rlang::is_null(rlang::f_rhs(f)))
+  if(!length(isNull)){
+    isNull <- logical(0)
+  }
+  x <- x[isNull]
+  names(x)
+}
+
 #' Aggregate Values
 #'
 #' Aggregated values.  Generic, with method \code{\link{devalued.observations}}.
@@ -433,17 +492,19 @@ devalued.observations <- function(
    silent = TRUE
 ){
   nms <- names(x)
-  # ns <- nms[grepl('n_',nms)]
-  # for(i in seq_along(ns)){ # alias
-  #    this <- ns[[i]]
-  #    that <- paste0('n_', i)
-  #    x[[that]] <- x[[this]]
-  # }
-  extra <- list(...)
-  form <- sapply(extra, function(f)inherits(f, 'formula'))
-  if(length(form))extra <- extra[form]
-  LHS <- sapply(extra, rlang::f_lhs)
-  LHS <- sapply(LHS, rlang::as_string)
+  
+  # remove from fun all x ~ NULL in list(...)
+  ext <- .named_formulas(list(...))
+  fun <- .named_formulas(fun)
+  nul <- .null_formulas(ext)
+  fun <- fun[!(names(fun) %in% nul)]
+  ext <- ext[!(names(ext) %in% nul)]
+  
+  # form <- sapply(extra, function(f)inherits(f, 'formula'))
+  # if(length(form))extra <- extra[form]
+  # LHS <- sapply(extra, rlang::f_lhs)
+  # LHS <- sapply(LHS, rlang::as_string)
+  
   # guard
   if('x' %in% names(x)){
      x <- rename(x, `_tablet_x` = x)
@@ -461,10 +522,16 @@ devalued.observations <- function(
   x <- rename(x, n = `_tablet_n`)
 
   # evaluate
-  for(i in seq_along(fun)){
-     this <- fun[[i]]
-     lhs <- rlang::as_string(rlang::f_lhs(this))
-     if(lhs %in% LHS)this <- extra[[match(lhs, LHS)]]
+  for(lhs in names(fun)){
+     this <- NULL
+     if(lhs %in% names(ext)){
+       this <- ext[[lhs]]
+     } else {
+       this <- fun[[lhs]]
+     }
+     if(is.null(this))stop('formula cannot be NULL')
+     # lhs <- rlang::as_string(rlang::f_lhs(this))
+     # if(lhs %in% names(ext)) this <- ext[[match(lhs, LHS)]]
      rhs <- rlang::f_rhs(this)
      if(silent){
         x <- suppressWarnings(mutate(x, !!lhs := rlang::eval_tidy(rhs)))
@@ -526,7 +593,7 @@ widgets <- function(x, ...)UseMethod('widgets')
 #' @param x devalued
 #' @param fac a list of formulas to generate widgets for factors
 #' @param num a list of formulas to generate widgets for numerics
-#' @param ... formulas with matching LHS replace defaults
+#' @param ... formulas with matching LHS replace defaults; x ~ NULL removes x
 #' @importFrom rlang f_lhs f_rhs eval_tidy
 #' @importFrom tidyr gather
 #' @importFrom dplyr filter
@@ -562,23 +629,43 @@ widgets.devalued <- function(
       return(res)
    }
    for(i in c('_tablet_stat', '_tablet_widget'))if(i %in% names(x))stop('names x cannot include ',i)
-   extra <- list(...)
-   form <- sapply(extra, function(f)inherits(f, 'formula'))
-   if(length(form))extra <- extra[form]
-   LHS <- sapply(extra, rlang::f_lhs)
-   LHS <- sapply(LHS, rlang::as_string)
+   
+   ext <- .named_formulas(list(...))
+   fac <- .named_formulas(fac)
+   num <- .named_formulas(num)
+   nul <- .null_formulas(ext)
+   fac <- fac[!(names(fac) %in% nul)]
+   num <- num[!(names(num) %in% nul)]
+   ext <- ext[!(names(ext) %in% nul)]
+
+   # form <- sapply(extra, function(f)inherits(f, 'formula'))
+   # if(length(form))extra <- extra[form]
+   # LHS <- sapply(extra, rlang::f_lhs)
+   # LHS <- sapply(LHS, rlang::as_string)
    keep <- unlist(sapply(c(fac, num), rlang::f_lhs))
-   for(i in seq_along(fac)){ # evaluate
-      this <- fac[[i]]
-      lhs <- rlang::as_string(rlang::f_lhs(this))
-      if(lhs %in% LHS)this <- extra[[match(lhs, LHS)]]
+   for(lhs in names(fac)){ # evaluate
+      this <- NULL
+      if(lhs %in% names(ext)){
+        this <- ext[[lhs]]
+      } else {
+        this <- fac[[lhs]]
+      }
+      if(is.null(this))stop('formula cannot be NULL')
+      # lhs <- rlang::as_string(rlang::f_lhs(this))
+      # if(lhs %in% LHS)this <- extra[[match(lhs, LHS)]]
       rhs <- rlang::f_rhs(this)
       x <- mutate(x, !!lhs := ifelse(`_tablet_level` == 'numeric', NA, rlang::eval_tidy(rhs)))
    }
-   for(i in seq_along(num)){ # evaluate
-      this <- num[[i]]
-      lhs <- rlang::as_string(rlang::f_lhs(this))
-      if(lhs %in% LHS)this <- extra[[match(lhs, LHS)]]
+   for(lhs in names(num)){ # evaluate
+      this <- NULL
+      if(lhs %in% names(ext)){
+        this <- ext[[lhs]]
+      } else {
+        this <- num[[lhs]]
+      }
+      if(is.null(this))stop('formula cannot be NULL')
+      # lhs <- rlang::as_string(rlang::f_lhs(this))
+      # if(lhs %in% LHS)this <- extra[[match(lhs, LHS)]]
       rhs <- rlang::f_rhs(this)
       x <- mutate(x, !!lhs := ifelse(`_tablet_level` != 'numeric', NA, rlang::eval_tidy(rhs)))
    }
@@ -765,9 +852,9 @@ tablet <- function(x, ...)UseMethod('tablet')
 #' for each column where the RHS succeeds: by default appending 'n' to result column names.
 # Column attributes 'label' and 'title' (highest priority) are substituted for column name, if present.
 #' @param x groupwise
-#' @param ... ignored
+#' @param ... formulas of the form lab ~ NULL will remove elements of 'lab'
 #' @param all a column name for ungrouped statistics; can have length zero to suppress ungrouped column
-#' @param lab a list of formulas to generate column labels; \\n is translated as <br> in html context
+#' @param lab a list of formulas to generate column labels; \\n is translated as <br> in html context; each formula in succession is applied to each column
 #' @importFrom dplyr groups ungroup select
 #' @importFrom tidyr spread
 #' @importFrom rlang as_string
@@ -892,15 +979,21 @@ tablette.groupwise <- function(
      res <- paste0(e1, e2)
      return(res)
   }
-  extra <- list(...)
-  form <- sapply(extra, function(f)inherits(f, 'formula'))
-  if(length(form))extra <- extra[form]
-  LHS <- sapply(extra, rlang::f_lhs)
-  LHS <- sapply(LHS, rlang::as_string)
-  for(i in seq_along(lab)){ # evaluate
-     this <- lab[[i]]
-     lhs <- rlang::as_string(rlang::f_lhs(this))
-     if(lhs %in% LHS)this <- extra[[match(lhs, LHS)]]
+  ext <- .named_formulas(list(...))
+  lab <- .named_formulas(lab)
+  nul <- .null_formulas(ext)
+  lab <- lab[!(names(lab) %in% nul)]
+  ext <- ext[!(names(ext) %in% nul)]
+  for(lhs in names(lab)){ # evaluate
+    this <- NULL
+    if(lhs %in% names(ext)){
+      this <- ext[[lhs]]
+    } else {
+      this <- lab[[lhs]]
+    }
+    if(is.null(this))stop('formula cannot be NULL')
+    # lhs <- rlang::as_string(rlang::f_lhs(this))
+    #  if(lhs %in% LHS)this <- extra[[match(lhs, LHS)]]
      rhs <- rlang::f_rhs(this)
      for(j in seq_len(ncol(x))){
         nm <- names(x)[[j]]
@@ -1376,7 +1469,7 @@ as_kable.tablet <- function(
 #'
 #' Column 1 of output is character.
 #' Its values are typically the names of the original columns
-#' that were factor or numeric but not in groups(x). If the first
+#' that were factor or numeric but not in groups(x). If any
 #' of these had a label attribute or (priority) a title attribute
 #' with class 'latex', then column 1 is assigned the
 #' class 'latex' as well. It makes sense therefore to be consistent
@@ -1420,7 +1513,7 @@ as_kable.tablet <- function(
 #'  all_levels = FALSE
 #' )
 #' @param x data.frame (possibly grouped)
-#' @param ... substitute formulas for elements of fun, fac, num, lab
+#' @param ... substitute formulas for elements of fun, fac, num, lab; if RHS is NULL, element is removed
 #' @param na.rm whether to remove NA in general
 #' @param all a column name for ungrouped statistics; can have length zero to suppress ungrouped column
 #' @param fun default aggregate functions expressed as formulas
@@ -1495,6 +1588,12 @@ tablet.data.frame <- function(
    exclude_name = NULL,
    all_levels = FALSE
 ){
+   # @ 0.6.12 fun, fac, num, lab must be list
+   if(!length(fun)) fun <- list()
+   if(!length(fac)) fac <- list()
+   if(!length(num)) num <- list()
+   if(!length(lab)) lab <- list()
+  
    y <- groupwise( # groupwise.data.frame, returns tablette
       x,
       ...,
@@ -1538,8 +1637,9 @@ tablet.data.frame <- function(
    # don't need to consider grouping vars!
    # they will not contribute to _tablet_name
    col <- setdiff(col, dplyr::group_vars(x))
-   if(length(col)){
-      prime <- col[[1]]
+ # if(length(col)){
+  for(this in col){
+      prime <- this
       targets <- intersect(c('title','label'), names(attributes(x[[prime]])))
       if(length(targets)){
          target <- targets[[1]]

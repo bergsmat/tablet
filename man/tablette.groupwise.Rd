@@ -9,11 +9,11 @@
 \arguments{
 \item{x}{groupwise}
 
-\item{...}{ignored}
+\item{...}{formulas of the form lab ~ NULL will remove elements of 'lab'}
 
 \item{all}{a column name for ungrouped statistics; can have length zero to suppress ungrouped column}
 
-\item{lab}{a list of formulas to generate column labels; \\n is translated as <br> in html context}
+\item{lab}{a list of formulas to generate column labels; \\n is translated as <br> in html context; each formula in succession is applied to each column}
 }
 \value{
 'tablette', with columns for each combination of groups, and:
