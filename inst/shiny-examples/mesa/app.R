@@ -76,11 +76,25 @@ ui <- shinyUI(
       )
     ),
     tabPanel(
+      'Derivations',
+      sidebarLayout(
+        sidebarPanel(
+          width = 2,
+          uiOutput('saveDeri'),
+          textOutput('deripath')
+        ),
+        mainPanel(
+          width = 12,
+          uiOutput('deri')
+        )
+      )
+    ),
+    tabPanel(
       'Shell',
       sidebarLayout(
         sidebarPanel(
           width = 12,
-          actionButton('submit', 'Save'),
+          actionButton('submit', 'Submit'),
           uiOutput('outputid'),
           uiOutput('caption'),
           uiOutput('footnotes'),
@@ -134,6 +148,7 @@ server <- shinyServer(function(input, output, session) {
   conf <- reactiveValues(
     filepath   = character(0),
     metapath   = character(0),
+    deripath   = character(0),
     confpath   = character(0),
     selected   = character(0),
     filter_by  = character(0),
@@ -151,7 +166,9 @@ server <- shinyServer(function(input, output, session) {
 #    na_string  = 'NA',
     x          = data.frame(),
     mv         = 0,
+    dv         = 0,
     editor     = NULL,
+    editor2    = NULL,
     labelhtml  = 'no',
     labeltex   = 'no',
     repeathead = 'no',
@@ -163,6 +180,7 @@ server <- shinyServer(function(input, output, session) {
     printer('reset_conf')
     conf$filepath   <- character(0)
     conf$metapath   <- character(0)
+    conf$deripath   <- character(0)
     conf$confpath   <- character(0)
     conf$selected   <- character(0)
     conf$filter_by  <- character(0)
@@ -181,7 +199,9 @@ server <- shinyServer(function(input, output, session) {
     conf$x          <- data.frame()
     conf$imputed    <- character()
     conf$mv         <- 0
+    conf$dv         <- 0
     conf$editor     <- NULL
+    conf$editor2    <- NULL
     labelhtml       <- 'no'
     labeltex        <- 'no'
     repeathead      <- 'no'
@@ -311,7 +331,9 @@ server <- shinyServer(function(input, output, session) {
             'x',
             'confpath',
             'editor',
+            'editor2',
             'mv',
+            'dv',
             'imputed'
           )
         ]
@@ -320,6 +342,7 @@ server <- shinyServer(function(input, output, session) {
       vals <- vals[c(
         'filepath',
         'metapath',
+        'deripath',
         'selected',
         'group_by',
         'filter_by',
@@ -341,12 +364,13 @@ server <- shinyServer(function(input, output, session) {
       )]
 
       # note: below is the only place in the application where the configuration is written to storage.
-      # filepath and metapath, like confpath, are stored internally as absolute paths.
+      # filepath and metapath and deripath, like confpath, are stored internally as absolute paths.
       # but on write they are expressed relative to confpath directory,
       # and on read they are understood relative to confpath directory (and converted to absolute).
 
       if(length(vals$filepath))vals$filepath <- relativizePath(vals$filepath, dirname(path))
       if(length(vals$metapath))vals$metapath <- relativizePath(vals$metapath, dirname(path))
+      if(length(vals$deripath))vals$deripath <- relativizePath(vals$deripath, dirname(path))
       res <- try(write_yaml(vals, path)) # only reads on save
       res <- !inherits(res, 'try-error')
       dur <- 10
@@ -502,7 +526,7 @@ server <- shinyServer(function(input, output, session) {
     printer('observeEvent:input$submit(conf$footnotes)')
     conf$footnotes <- input$footnotes
   })
-
+  
   # observeEvent(input$na_string,{
   #   conf$na_string <- input$na_string
   # })
@@ -510,14 +534,17 @@ server <- shinyServer(function(input, output, session) {
     printer('observeEvent:input$repeathead')
     conf$repeathead <- input$repeathead
   })
+  
   observeEvent(input$repeatfoot,{
     printer('observeEvent:input$repeatfoot')
     conf$repeatfoot <- input$repeatfoot
   })
+  
   observeEvent(input$labelhtml,{
     printer('observeEvent:input$labelhtml')
     conf$labelhtml <- input$labelhtml
   })
+  
   observeEvent(input$labeltex,{
     printer('observeEvent:input$labeltex')
     printer(paste0(conf$labeltex,'<-', input$labeltex))
@@ -581,6 +608,7 @@ server <- shinyServer(function(input, output, session) {
 
     if(!is.null(saved$filepath))conf$filepath <- absolutizePath(saved$filepath, dirname(conf$confpath))
     if(!is.null(saved$metapath))conf$metapath <- absolutizePath(saved$metapath, dirname(conf$confpath))
+    if(!is.null(saved$deripath))conf$deripath <- absolutizePath(saved$deripath, dirname(conf$confpath))
     if(!is.null(saved$selected))conf$selected <- saved$selected
     if(!is.null(saved$filter_by))conf$filter_by <- saved$filter_by
     if(!is.null(saved$keep))conf$keep      <- saved$keep
@@ -629,10 +657,12 @@ server <- shinyServer(function(input, output, session) {
   observeEvent({
       conf$filepath # new data selected
       conf$mv # metadata re-written
+      conf$dv # derivations re-written
       1 # prevents NULL from squelching the observation
     },
     {
     printer('observeEvent:conf$filepath')
+    #browser()
 
     # invalidate the keep/filter observers if data changes
     observers <<- list()
@@ -645,18 +675,32 @@ server <- shinyServer(function(input, output, session) {
     theFile <- conf$filepath
     is_data <- grepl('\\.sas7bdat|xpt|csv$', theFile)
     is_meta <- grepl('\\.yaml$', theFile)
-
+    is_deri <- grepl('\\.der$', theFile)
+    
     datafile <- theFile
+    if(is_deri) {
+      datafile <- sub('der$','sas7bdat',theFile)
+      if(!file.exists(datafile)) datafile <- sub('der$','xpt',theFile)
+      if(!file.exists(datafile)) datafile <- sub('der$','csv',theFile)
+    } # try everything
+
     if(is_meta) {
       datafile <- sub('yaml$','sas7bdat',theFile)
       if(!file.exists(datafile)) datafile <- sub('yaml$','xpt',theFile)
       if(!file.exists(datafile)) datafile <- sub('yaml$','csv',theFile)
     } # try everything
-
+    
     metafile <- theFile
     if(is_data) metafile <- sub('sas7bdat|xpt|csv$', 'yaml', theFile)
+    if(is_deri) metafile <- sub('der$', 'yaml', theFile)
+    
+    derifile <- theFile
+    if(is_data) derifile <- sub('sas7bdat|xpt|csv$', 'der', theFile)
+    if(is_meta) derifile <- sub('yaml$', 'der', theFile)
+    
     has_data <- file.exists(datafile)
     has_meta <- file.exists(metafile)
+    has_deri <- file.exists(derifile)
 
    # d <- data.frame() # 2022/04/13 make html() responsive to coerced columns
     d <- conf$x
@@ -670,6 +714,13 @@ server <- shinyServer(function(input, output, session) {
     # at this point, best data has been defined. Define default metadata.
 
     m <- decorations(d)
+#    e <- d %>% mutate(label = NULL, guide = NULL)
+    # default derivations (blank)
+    e <- d %>% 
+      names %>% 
+      sapply(identity, simplify = FALSE) %>% 
+      as.data.frame 
+    n <- decorations(e)
 
     # Either read the metadata or write it.
     if(has_meta){
@@ -685,6 +736,18 @@ server <- shinyServer(function(input, output, session) {
     # now we have best available metadata
     has_meta <- TRUE
     conf$metapath <- metafile # make visible
+    
+    if(has_deri){
+      tryCatch(
+        n <- read_yamlet(derifile),
+        error = function(e) showNotification(duration = NULL, type = 'error', as.character(e))
+      )
+    } else {
+      write_yamlet(n, derifile)
+    }
+    
+    has_deri <- TRUE
+    conf$deripath <- derifile
 
     # make data look like metadata (which may be superset)
 
@@ -947,13 +1010,17 @@ server <- shinyServer(function(input, output, session) {
       showNotification(duration = 5, type = 'error', 'nothing selected')
       return(character(0))
     }
-    # browser()
+    #browser()
     # _tablet_name has been thoroughly pre-escaped for all cases.
     # however, it is created as factor.
     # we flag it as latex to invoke the right method in as_kable(escape_latex = tablet::escape_latex)
     x$`_tablet_name` %<>% as_latex
     x %<>% tablet # 0.10.21 new format
-    x %<>% as_kable(format = 'latex', caption = escape_latex(conf$title), longtable = TRUE)
+    # 0.7.0 multi-line title
+    theTitle <- escape_latex(conf$title)
+    # theTitle %<>% gsub('\\n', '\\\\newline ', .)
+    # theTitle <- paste('\\parbox{0.8\\textwidth}{\\centering ', theTitle, '}')
+    x %<>% as_kable(format = 'latex', caption = theTitle, longtable = TRUE)
     if(length(input$repeatheader) == 1){
       if(input$repeatheader == 'yes'){
         x %<>% kable_styling(latex_options = 'repeat_header', repeat_header_text = '')
@@ -961,7 +1028,7 @@ server <- shinyServer(function(input, output, session) {
     }
     feet <- unlist(strsplit(conf$footnotes, '\n'))
     if(length(feet)){
-    x %<>% footnote(general = ,fixed_small_size = TRUE, general_title = " ",threeparttable = TRUE)
+    x %<>% footnote(general = feet ,fixed_small_size = TRUE, general_title = " ",threeparttable = TRUE)
     }
     x %<>% as.character
 
@@ -1313,12 +1380,21 @@ server <- shinyServer(function(input, output, session) {
   output$metapath <- renderPrint({
     #printer('output$metapath')
     if (!length(conf$metapath)) {
-    cat('No data selected.')
+      cat('No data selected.')
     } else {
       cat(conf$metapath)
     }
   })
-
+  
+  output$deripath <- renderPrint({
+    #printer('output$deripath')
+    if (!length(conf$deripath)) {
+      cat('No data selected.')
+    } else {
+      cat(conf$deripath)
+    }
+  })
+  
   # https://stackoverflow.com/questions/54304518/how-to-edit-a-yml-file-in-shiny
 
   output$saveMeta <- renderUI({
@@ -1326,6 +1402,11 @@ server <- shinyServer(function(input, output, session) {
     actionButton("saveMeta", label = "Save")
   })
 
+  output$saveDeri <- renderUI({
+    printer('output$saveDeri')
+    actionButton("saveDeri", label = "Save")
+  })
+  
   output$meta <- renderUI({
     printer("output$meta")
     current <- conf$editor
@@ -1353,9 +1434,37 @@ server <- shinyServer(function(input, output, session) {
     }
     val
   })
-
+  
+  output$deri <- renderUI({
+    printer("output$deri")
+    #browser()
+    current <- conf$editor2
+    if(!length(conf$deripath))return(current)
+    if(is.na(conf$deripath))return(current)
+    val <- NULL
+    tryCatch(
+      val <- readLines(conf$deripath),
+      error = function(e) showNotification(
+        duration = NULL,
+        type = 'error',
+        as.character(e)
+      )
+    )
+    if(!is.null(val)){
+      val <- aceEditor(
+        outputId = "deri",
+        value = val,
+        mode = 'yaml',
+        tabSize = 2
+      )
+      conf$editor2 <- val
+    } else {
+      val <- conf$editor2
+    }
+    val
+  })
+  
   observeEvent(input$saveMeta, {
-
     printer('observeEvent: input$saveMeta')
     path <- isolate(conf$metapath)
     res <- try(yaml.load(input$meta))
@@ -1370,6 +1479,32 @@ server <- shinyServer(function(input, output, session) {
       write(x = input$meta, file = path)
       # trigger redecoration
       conf$mv <- conf$mv + 1
+    }
+    dur <- 10
+    if(res) dur <- 5
+    showNotification(
+      duration = dur,
+      type = ifelse(res, 'default', 'error'),
+      ui = msg
+    )
+  })
+  
+  observeEvent(input$saveDeri, {
+    
+    printer('observeEvent: input$saveDeri')
+    path <- isolate(conf$deripath)
+    res <- try(yaml.load(input$deri))
+    if(!inherits(res,'try-error')){
+      res <- try(read_yamlet(input$deri))
+    }
+    err <- as.character(res)
+    res <- !inherits(res, 'try-error')
+    msg <- paste(ifelse(res, 'wrote', 'did not write'), path)
+    if(!res) msg <- paste(msg, err)
+    if(res){
+      write(x = input$deri, file = path)
+      # trigger redecoration ?
+      conf$dv <- conf$dv + 1
     }
     dur <- 10
     if(res) dur <- 5
