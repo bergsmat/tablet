@@ -615,7 +615,8 @@ widgets.devalued <- function(
     ),
    num = list(
       `Mean (SD)` ~ ave + ' (' + std + ')',
-      `Median (range)` ~ med + ' (' + min + ', ' + max + ')'
+      `Median (range)` ~ med + ' (' + min + ', ' + max + ')',
+      `Missing` ~ mis
    ),
    ...
 ){
@@ -803,7 +804,8 @@ groupwise.data.frame <- function(
    ),
    num = list(
       `Mean (SD)` ~ ave + ' (' + std + ')',
-      `Median (range)` ~ med + ' (' + min + ', ' + max + ')'
+      `Median (range)` ~ med + ' (' + min + ', ' + max + ')',
+      `Missing` ~ mis
    ),
    ...
 ){
@@ -1504,7 +1506,8 @@ as_kable.tablet <- function(
 #'  ),
 #'  num = list(
 #'   `Mean (SD)` ~ ave + ' (' + std + ')',
-#'   `Median (range)` ~ med + ' (' + min + ', ' + max + ')'
+#'   `Median (range)` ~ med + ' (' + min + ', ' + max + ')',
+#'   `Missing` ~ mis
 #'   ),
 #'  lab = list(
 #'   lab ~ name + '\\n(N = ' + n + ')'
@@ -1559,7 +1562,20 @@ as_kable.tablet <- function(
 #'   select(-time, -year) %>%
 #'   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
 #'   group_by(status) %>%
-#'   tablet
+#'   tablet %>%
+#'   as_kable
+#'   
+#' ## drop 'Missing', redefine 'range'
+#' melanoma %>%
+#'   select(-time, -year) %>%
+#'   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
+#'   group_by(status) %>%
+#'   tablet(
+#'     Missing ~ NULL,
+#'     `Median (range)` ~ med + ' (' + min + ' to ' + max + ')'
+#'   ) %>%
+#'   as_kable
+#'   
 
 tablet.data.frame <- function(
    x,
@@ -1581,7 +1597,8 @@ tablet.data.frame <- function(
    ),
    num = list(
       `Mean (SD)` ~ ave + ' (' + std + ')',
-      `Median (range)` ~ med + ' (' + min + ', ' + max + ')'
+      `Median (range)` ~ med + ' (' + min + ', ' + max + ')',
+      `Missing` ~ mis
    ),
    lab = list(
      lab ~ name + '\n(N = ' + n + ')'

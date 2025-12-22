@@ -13,7 +13,7 @@
     TRUE))),
   fac = list(` ` ~ sum + " (" + pct + "\%" + ")"),
   num = list(`Mean (SD)` ~ ave + " (" + std + ")", `Median (range)` ~ med + " (" + min +
-    ", " + max + ")"),
+    ", " + max + ")", Missing ~ mis),
   ...
 )
 }

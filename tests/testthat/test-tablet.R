@@ -246,6 +246,6 @@ test_that('null formula removes default widget',{
   )
   
   all <- x %>% select(all = auc) %>% tablet(`Mean (SD)` ~ NULL, lab ~ NULL, pct ~ NULL)
-  expect_true(nrow(all) == 3)
+  expect_true(nrow(all) == 4)
   
 })
