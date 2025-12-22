@@ -481,6 +481,7 @@ devalued.observations <- function(
    x,
    ...,
    fun = list(
+      mis ~ sum(is.na(x)),
       sum ~ sum(x, na.rm = TRUE),
       pct ~ signif(digits = 3,    sum / n * 100       ),
       ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),
@@ -788,6 +789,7 @@ groupwise <- function(x, ...)UseMethod('groupwise')
 groupwise.data.frame <- function(
    x,
    fun = list(
+      mis ~ sum(is.na(x)),
       sum ~ sum(x, na.rm = TRUE),
       pct ~ signif(digits = 3,    sum / n * 100    ),
       ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),
@@ -1488,6 +1490,7 @@ as_kable.tablet <- function(
 #'  na.rm = FALSE,
 #'  all = 'All',
 #'  fun = list(
+#'   mis ~ sum(is.na(x)),
 #'   sum ~ sum(x,  na.rm = TRUE),
 #'   pct ~ signif(digits = 3,     sum / n * 100        ),
 #'   ave ~ signif(digits = 3,    mean(x,  na.rm = TRUE)),
@@ -1564,6 +1567,7 @@ tablet.data.frame <- function(
    na.rm = FALSE,
    all = 'All',
    fun = list(
+      mis ~ sum(is.na(x)),
       sum ~ sum(x, na.rm = TRUE),
       pct ~ signif(digits = 3,    sum / n * 100    ),
       ave ~ signif(digits = 3,   mean(x, na.rm = TRUE)),

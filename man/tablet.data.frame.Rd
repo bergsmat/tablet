@@ -10,6 +10,7 @@
  na.rm = FALSE,
  all = 'All',
  fun = list(
+  mis ~ sum(is.na(x)),
   sum ~ sum(x,  na.rm = TRUE),
   pct ~ signif(digits = 3,     sum / n * 100        ),
   ave ~ signif(digits = 3,    mean(x,  na.rm = TRUE)),
