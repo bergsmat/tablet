@@ -7,14 +7,14 @@
 escape_latex.default(x, secondary = TRUE, ...)
 }
 \arguments{
-\item{x}{typically inherits character}
+\item{x}{caracter}
 
 \item{secondary}{logical: whether secondary backslashes should be pre-doubled}
 
 \item{...}{ignored}
 }
 \value{
-latex
+character
 }
 \description{
 Escapes text characters that have special meaning in latex.

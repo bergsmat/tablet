@@ -2,12 +2,12 @@
 % Please edit documentation in R/tablet.R
 \name{escape_latex.latex}
 \alias{escape_latex.latex}
-\title{Escape Latex for Class 'latex'}
+\title{Escape Latex for Latex-formated Text}
 \usage{
 escape_latex.latex(x, secondary = TRUE, primary = FALSE, ...)
 }
 \arguments{
-\item{x}{latex}
+\item{x}{character}
 
 \item{secondary}{logical: whether secondary backslashes should be pre-doubled}
 
@@ -16,7 +16,7 @@ escape_latex.latex(x, secondary = TRUE, primary = FALSE, ...)
 \item{...}{ignored}
 }
 \value{
-latex
+character
 }
 \description{
 Returns argument typically unmodified.

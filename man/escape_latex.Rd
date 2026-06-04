@@ -12,7 +12,7 @@ escape_latex(x, ...)
 \item{...}{passed arguments}
 }
 \value{
-'latex', 'character'
+character
 }
 \description{
 Escapes special characters in Latex context.  

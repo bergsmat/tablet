@@ -1169,15 +1169,15 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' Coerce Tablet to Kable
 #'
 #' Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
-#' special features like grouped columns.
-#'
+#' special features like grouped columns. 
 #' See also \code{\link{tablet.data.frame}}.
-#' Column \code{_tablet_name} must inherit 'character' and
-#' by default (in a latex render context) its values
-#' will eventually be processed by \code{escape_latex}.
-#' Thus, elements of \code{_tablet_name} that appear to be latex
-#' will be handled internally by \code{\link{escape_latex.latex}}
-#' (which tries not to re-escape metacharacters).
+#'
+# Column \code{_tablet_name} must inherit 'character' and
+# by default (in a latex render context) its values
+# will eventually be processed by \code{escape_latex}.
+# Thus, elements of \code{_tablet_name} that appear to be latex
+# will be handled internally by \code{\link{escape_latex.latex}}
+# (which tries not to re-escape metacharacters).
 #'
 #'
 #' @param x \code{\link{tablet}}
@@ -1278,15 +1278,15 @@ as_kable.tablet <- function(
    stopifnot(is.logical(escape), length(escape) == 1)
    # x$`_tablet_sort` <- NULL
    index <- index(x)
-   # draws on _tablet_name, which should be character or c('latex', 'character')
+   # draws on _tablet_name, which should be character
    nmsi <- names(index) # isolate to assign class
-   stopifnot(is.character(x$`_tablet_name`))
-   class(nmsi) <- class(x$`_tablet_name`) # class propagation
+   #stopifnot(is.character(x$`_tablet_name`))
+   # class(nmsi) <- class(x$`_tablet_name`) # class propagation irrelevant with 0.7.2
    x$`_tablet_name` <- NULL # done
    if(!escape){
       if (knitr::is_latex_output()) {
-         # invokes class-specific method, 
-         #possibly escaping or ignoring latex metacharacters
+         # invokes type-specific function,
+         # possibly escaping or ignoring latex metacharacters
          # revisit if kableExtra changes
          nmsi <- escape_latex(nmsi, secondary = TRUE, primary = TRUE) 
          if (linebreak){
@@ -1633,9 +1633,10 @@ tablet.data.frame <- function(
    )
    y <- tablette(y, ..., all = all, lab = lab ) # tablette.groupwise
    # y$`_tablet_level` may have latex elements from factors @ 0.6.10
-   if(any(sapply(x, function(col)inherits(col,'latex')))){
-     class(y$`_tablet_level`) <- union('latex', class(y$`_tablet_level`))
-   }
+   # as of 0.7.2, this is moot.  Commenting next.
+   # if(any(sapply(x, function(col)inherits(col,'latex')))){
+   #   class(y$`_tablet_level`) <- union('latex', class(y$`_tablet_level`))
+   # }
    y$`_tablet_name` <- as.character(y$`_tablet_name`)
 
    codes <- unique(y$`_tablet_name`)
@@ -1660,15 +1661,18 @@ tablet.data.frame <- function(
    # they will not contribute to _tablet_name
    col <- setdiff(col, dplyr::group_vars(x))
  # if(length(col)){
-  for(this in col){
-      prime <- this
-      targets <- intersect(c('title','label'), names(attributes(x[[prime]])))
-      if(length(targets)){
-         target <- targets[[1]]
-         if(inherits(attr(x[[prime]], target), 'latex'))
-            class(y$`_tablet_name`) <- union('latex', class(y$`_tablet_name`))
-      }
-   }
+   
+  # as of 0.7.2 next seems no longer relevant
+  # for(this in col){
+  #     prime <- this
+  #     targets <- intersect(c('title','label'), names(attributes(x[[prime]])))
+  #     if(length(targets)){
+  #        target <- targets[[1]]
+  #        if(inherits(attr(x[[prime]], target), 'latex'))
+  #           class(y$`_tablet_name`) <- union('latex', class(y$`_tablet_name`))
+  #     }
+  # }
+   
    # y$`_tablet_level` <- as.character(y$`_tablet_level`)
    # y$`_tablet_stat` <- as.character(y$`_tablet_stat`)
    # y$`_tablet_level` <- ifelse(
@@ -1778,7 +1782,7 @@ splice.data.frame <- function(x, all = 'All', ...){
 #' @export
 #' @importFrom dplyr if_else
 #' @keywords internal
-#' @return 'latex', 'character'
+#' @return character
 #' @param x typically inherits character
 #' @param ... passed arguments
 #' @family escape
@@ -1786,13 +1790,13 @@ splice.data.frame <- function(x, all = 'All', ...){
 #' example(escape_latex.default)
 escape_latex <- function(x, ...){
   stopifnot(is.character(x))
-  isLatex <- grepl('^(\\\\\\(|\\{\\})',x) 
+  isLatex <- grepl('^(\\\\\\(|\\{\\})',x) # starts with \(  or {}
   default <- escape_latex.default(x, ...)
   # signal "class" change ...
   default <- paste0('{}', default)
   latex   <- paste0(escape_latex.latex(x, ...)) # coerce to character
   blend <- if_else(isLatex, latex, default) # if_else needs compatible classes
-  class(blend) <- union('latex', class(blend))
+  # class(blend) <- union('latex', class(blend))
   blend
 }
 
@@ -1811,8 +1815,8 @@ escape_latex <- function(x, ...){
 #'
 #' @export
 #' @keywords internal
-#' @return latex
-#' @param x typically inherits character
+#' @return character
+#' @param x caracter
 #' @param secondary logical: whether secondary backslashes should be pre-doubled
 #' @param ... ignored
 #' @family escape
@@ -1835,11 +1839,11 @@ escape_latex.default <- function(x, secondary = TRUE, ...){
    # as_latex is defined by spork.
    # @ spork 0.2.7, there is no default method.
    # experimentally, we hard code the class 'latex'
-   class(x) <- union('latex', class(x))
+   # class(x) <- union('latex', class(x))
    x
 }
 
-#' Escape Latex for Class 'latex'
+#' Escape Latex for Latex-formated Text
 #'
 #' Returns argument typically unmodified.
 #' Prevents accidental double-escaping
@@ -1854,8 +1858,8 @@ escape_latex.default <- function(x, secondary = TRUE, ...){
 
 #' @export
 #' @keywords internal
-#' @return latex
-#' @param x latex
+#' @return character
+#' @param x character
 #' @param secondary logical: whether secondary backslashes should be pre-doubled
 #' @param primary logical: whether first backslashes should be pre-doubled
 #' @param ... ignored
@@ -1880,7 +1884,7 @@ escape_latex.latex <- function(x, secondary = TRUE, primary = FALSE, ...){
    }
   
    # x <- as_latex(x)
-   class(x) <- union('latex', class(x))
+   # class(x) <- union('latex', class(x))
    x
 }
 

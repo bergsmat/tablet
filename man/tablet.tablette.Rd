@@ -14,7 +14,7 @@
 \value{
 tablette : a data.frame
  with columns for each combination of groups, and:
-\item{_tablet_name}{observation identifier: character, possibly 'latex'; 
+\item{_tablet_name}{observation identifier: character 
 has a codelist attribute the values of which are the original column names}
 \item{_tablet_level}{factor level, or the LHS of formulas in 'num'}
 \item{All (or value of 'all' argument)}{ungrouped results}
@@ -23,7 +23,7 @@ has a codelist attribute the values of which are the original column names}
 Converts to 'tablette' from 'tablet'.
 I.e., makes compact data.frame that emulates
 the layout expected by \code{\link{as_kable}}.
-Preserves attributes 'n', 'label', 'codelist', and 'latex' class if present.
+Preserves attributes 'n', 'label', and 'codelist' where present.
 }
 \examples{
 library(boot)

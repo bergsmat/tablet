@@ -16,7 +16,7 @@ tablette <- function(x, ...)UseMethod('tablette')
 #' Converts to 'tablette' from 'tablet'.
 #' I.e., makes compact data.frame that emulates
 #' the layout expected by \code{\link{as_kable}}.
-#' Preserves attributes 'n', 'label', 'codelist', and 'latex' class if present.
+#' Preserves attributes 'n', 'label', and 'codelist' where present.
 #'
 #' @export
 #' @keywords internal
@@ -25,7 +25,7 @@ tablette <- function(x, ...)UseMethod('tablette')
 #' @param ... passed arguments
 #' @return tablette : a data.frame
 #'  with columns for each combination of groups, and:
-#' \item{_tablet_name}{observation identifier: character, possibly 'latex'; 
+#' \item{_tablet_name}{observation identifier: character 
 #' has a codelist attribute the values of which are the original column names}
 #' \item{_tablet_level}{factor level, or the LHS of formulas in 'num'}
 # \item{_tablet_stat}{the LHS of formulas in 'fac' and 'num'}
@@ -60,7 +60,7 @@ tablette <- function(x, ...)UseMethod('tablette')
 tablet.tablette <- function(x, ...){
   
   # capture supported attributes
-  latex <- inherits(x[[1]],'latex')
+  # latex <- inherits(x[[1]],'latex') # dropped at 0.7.3
   label <- function(x)attr(x,'label')
   count <- function(x)attr(x, 'n')
   codes <- function(x)attr(x, 'codelist')
@@ -75,10 +75,10 @@ tablet.tablette <- function(x, ...){
       label <- attr(x[[col]], 'label')
       codelist <- attr(x[[col]], 'codelist')
       nest <- attr(x[[col]], 'nest')
-      latex <- inherits(x[[col]], 'latex')
+      # latex <- inherits(x[[col]], 'latex') # dropped at 0.7.3
       x[[col]] %<>% as.character
       x[[col]] %<>% as_dvec(label = label, codelist = codelist, nest = nest)
-      if(latex) class(x[[col]]) <- union('latex', class(x[[col]]))
+      # if(latex) class(x[[col]]) <- union('latex', class(x[[col]])) # dropped at 0.7.3
       # attr(col, 'label') <- label
       # attr(col, 'codelist') <- codelist
     #}
@@ -162,9 +162,7 @@ tablet.tablette <- function(x, ...){
   }
   
   rownames(y) <- NULL
-  if(latex){
-    class(y[[1]]) <- union('latex', class(y[[1]]))
-  }
+  # if(latex){class(y[[1]]) <- union('latex', class(y[[1]]))} # dropped at 0.7.3
   stopifnot(length(labels) == ncol(y))
   for(col in seq_len(ncol(y))){
     attr(y[[col]], 'label') <- labels[[col]]
@@ -228,7 +226,7 @@ header_rows.tablet <- function(x, ...){
 tablette.tablet <- function(x, ...){
   stopifnot(ncol(x) >= 2)
   stopifnot(nrow(x) >= 2)
-  latex <- inherits(x[[1]], 'latex')
+  #latex <- inherits(x[[1]], 'latex') # dropped at 0.7.3
   
   # standarize name column
   x[[1]][!is.na(x[[1]]) & x[[1]] == ''] <- NA
@@ -292,9 +290,7 @@ tablette.tablet <- function(x, ...){
     }
   }
   rownames(x) <- NULL
-  if(latex){
-    class(x[[1]]) <- union('latex', class(x[[1]]))
-  }
+  # if(latex){class(x[[1]]) <- union('latex', class(x[[1]]))} # dropped at 0.7.3
   class(x) <- setdiff(class(x),'tablet')
   class(x) <- union('tablette', class(x))
   x
