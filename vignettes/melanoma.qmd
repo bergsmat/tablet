@@ -1,0 +1,41 @@
+---
+title: "Untitled"
+format: 
+  pdf:
+    keep-tex: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: tbl-melanoma
+#| echo: false
+#| message: false
+#| warning: false
+library(boot)
+library(dplyr)
+library(magrittr)
+library(tablet)
+library(yamlet)
+library(kableExtra)
+#knitr::opts_knit$set(out.format = 'latex')
+#knitr::is_latex_output()
+melanoma %<>% redecorate('
+time: [ Time, day ]
+status: [ Patient Status, [ Died^1: 1, Alive^2: 2, Unrelated: 3 ]]
+sex: [ Sex^3, [ Male: 1, Female^4: 0 ]]
+age: [ Age, year ]
+year: [ Year of Operation ]
+ulcer: [ Ulceration, [ Present: 1, Absent: 0 ]]
+thickness: [ Tumor Thickness, mm ]
+')
+
+melanoma %>%
+  select(-time, -year) %>%
+  group_by(status, ulcer) %>%
+  enscript %>%
+  tablet(Missing~NULL) %>% 
+  as_kable(booktabs = TRUE) %>%
+  kable_styling(latex_options = 'scale_down')
+
+```

@@ -1175,8 +1175,8 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #' Column \code{_tablet_name} must inherit 'character' and
 #' by default (in a latex render context) its values
 #' will eventually be processed by \code{escape_latex}.
-#' Thus, if \code{_tablet_name} is of class 'latex'
-#' it will be handled by method \code{\link{escape_latex.latex}}
+#' Thus, elements of \code{_tablet_name} that appear to be latex
+#' will be handled internally by \code{\link{escape_latex.latex}}
 #' (which tries not to re-escape metacharacters).
 #'
 #'
@@ -1331,9 +1331,9 @@ as_kable.tablet <- function(
          # @ 0.6.10: apparently secondary should be FALSE, now default. 
          x[] <- lapply(x, escape_latex, secondary = secondary, ...)
          these <- names(x)
-         if('latex' %in% attr(x,'name_class')){
-           class(these) <- c('latex','character')
-         }
+         # if('latex' %in% attr(x,'name_class')){
+         #   class(these) <- c('latex','character')
+         # }
          these <- escape_latex(these, secondary = FALSE, ...)
          names(x) <- these
       } else {
@@ -1349,9 +1349,9 @@ as_kable.tablet <- function(
      for(i in seq_along(headerlist)){
        if (knitr::is_latex_output()) {
          these <- names(headerlist[[i]])
-         if('latex' %in% attr(x,'name_class')){
-           class(these) <- c('latex','character')
-         }
+         # if('latex' %in% attr(x,'name_class')){
+         #   class(these) <- c('latex','character')
+         # }
          these <- escape_latex(these, secondary = FALSE, ...)
          names(headerlist[[i]]) <- these
        } else {
@@ -1471,19 +1471,20 @@ as_kable.tablet <- function(
 #' NA, the values of arguments beginning with 'na.rm' or 'exclude'
 #' may not matter.
 #'
-#' Column 1 of output is character.
-#' Its values are typically the names of the original columns
-#' that were factor or numeric but not in groups(x). If any
-#' of these had a label attribute or (priority) a title attribute
-#' with class 'latex', then column 1 is assigned the
-#' class 'latex' as well. It makes sense therefore to be consistent
-#' across input columns regarding the presence or not of a 'latex'
-#' label or title. By default, \code{\link{as_kable.tablet}} dispatches
-#' class-specific methods for \code{\link{escape_latex}}.
-#' 
-#' Similarly, row 1 of output is typically character. As of version 0.6.6,
-#' if any of the grouping variables inherits 'latex', then the return value
-#' of tablet.data.frame() has an attribute 'name_class' with value 'latex'.
+# Dropping what follows as of 0.7.2.  escaping to be element-specific.
+# Column 1 of output is character.
+# Its values are typically the names of the original columns
+# that were factor or numeric but not in groups(x). If any
+# of these had a label attribute or (priority) a title attribute
+# with class 'latex', then column 1 is assigned the
+# class 'latex' as well. It makes sense therefore to be consistent
+# across input columns regarding the presence or not of a 'latex'
+# label or title. By default, \code{\link{as_kable.tablet}} dispatches
+# class-specific methods for \code{\link{escape_latex}}.
+# 
+# Similarly, row 1 of output is typically character. As of version 0.6.6,
+# if any of the grouping variables inherits 'latex', then the return value
+# of tablet.data.frame() has an attribute 'name_class' with value 'latex'.
 #'
 #' @usage
 #' \method{tablet}{data.frame}(
@@ -1679,11 +1680,11 @@ tablet.data.frame <- function(
   # x$`_tablet_sort` <- NULL
    y <- tablet(y, ...)
    # propagate name class to protect pre-formatted latex elements
-   for(i in group_vars(x)){
-     if (inherits(x[[i]], 'latex')){
-       attr(y, 'name_class') <- 'latex'
-     }
-   }
+   # for(i in group_vars(x)){
+   #   if (inherits(x[[i]], 'latex')){
+   #     attr(y, 'name_class') <- 'latex'
+   #   }
+   # }
    y
 }
 
@@ -1758,17 +1759,42 @@ splice.data.frame <- function(x, all = 'All', ...){
 
 #' Escape Special Characters for Latex
 #'
-#' Escapes special characters in Latex context.  Generic, with method \code{\link{escape_latex.default}}.
+#' Escapes special characters in Latex context.  
+#' Operates element-wise, using \code{\link{escape_latex.default}}
+#' or \code{\link{escape_latex.latex}} depending
+#' on whether the element appears to be latex-formatted.
 #'
+#' An element is considered latex-formatted if it begins
+#' with "\(" or "{}".  Note that even though
+#' latex-like elements likely have already had reserved
+#' characters escaped, \code{\link{escape_latex.latex}}
+#' will attempt to fix certain anticipated escaping issues.
+#' The function \code{\link{escape_latex.default}}
+#' performs conventional escaping; the result is 
+#' prepended with "{}" as a signal to downstream
+#' processes that the text is considered latex-ready
+#' (and needn't be escaped again).
+#' 
 #' @export
+#' @importFrom dplyr if_else
 #' @keywords internal
-#' @return see methods
+#' @return 'latex', 'character'
 #' @param x typically inherits character
 #' @param ... passed arguments
 #' @family escape
 #' @examples
 #' example(escape_latex.default)
-escape_latex <- function(x, ...)UseMethod('escape_latex')
+escape_latex <- function(x, ...){
+  stopifnot(is.character(x))
+  isLatex <- grepl('^(\\\\\\(|\\{\\})',x) 
+  default <- escape_latex.default(x, ...)
+  # signal "class" change ...
+  default <- paste0('{}', default)
+  latex   <- paste0(escape_latex.latex(x, ...)) # coerce to character
+  blend <- if_else(isLatex, latex, default) # if_else needs compatible classes
+  class(blend) <- union('latex', class(blend))
+  blend
+}
 
 #' Escape Special Characters for Latex by Default
 #'
@@ -1831,7 +1857,7 @@ escape_latex.default <- function(x, secondary = TRUE, ...){
 #' @return latex
 #' @param x latex
 #' @param secondary logical: whether secondary backslashes should be pre-doubled
-#' @param secondary logical: whether first backslashes should be pre-doubled
+#' @param primary logical: whether first backslashes should be pre-doubled
 #' @param ... ignored
 #' @family escape
 #' @examples

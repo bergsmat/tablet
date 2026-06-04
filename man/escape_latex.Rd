@@ -12,10 +12,25 @@ escape_latex(x, ...)
 \item{...}{passed arguments}
 }
 \value{
-see methods
+'latex', 'character'
 }
 \description{
-Escapes special characters in Latex context.  Generic, with method \code{\link{escape_latex.default}}.
+Escapes special characters in Latex context.  
+Operates element-wise, using \code{\link{escape_latex.default}}
+or \code{\link{escape_latex.latex}} depending
+on whether the element appears to be latex-formatted.
+}
+\details{
+An element is considered latex-formatted if it begins
+with "\(" or "{}".  Note that even though
+latex-like elements likely have already had reserved
+characters escaped, \code{\link{escape_latex.latex}}
+will attempt to fix certain anticipated escaping issues.
+The function \code{\link{escape_latex.default}}
+performs conventional escaping; the result is 
+prepended with "{}" as a signal to downstream
+processes that the text is considered latex-ready
+(and needn't be escaped again).
 }
 \examples{
 example(escape_latex.default)

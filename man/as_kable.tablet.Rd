@@ -62,8 +62,8 @@ See also \code{\link{tablet.data.frame}}.
 Column \code{_tablet_name} must inherit 'character' and
 by default (in a latex render context) its values
 will eventually be processed by \code{escape_latex}.
-Thus, if \code{_tablet_name} is of class 'latex'
-it will be handled by method \code{\link{escape_latex.latex}}
+Thus, elements of \code{_tablet_name} that appear to be latex
+will be handled internally by \code{\link{escape_latex.latex}}
 (which tries not to re-escape metacharacters).
 }
 \examples{

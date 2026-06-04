@@ -4,7 +4,7 @@
 \alias{escape_latex.default}
 \title{Escape Special Characters for Latex by Default}
 \usage{
-\method{escape_latex}{default}(x, secondary = TRUE, ...)
+escape_latex.default(x, secondary = TRUE, ...)
 }
 \arguments{
 \item{x}{typically inherits character}
