@@ -1780,25 +1780,39 @@ splice.data.frame <- function(x, all = 'All', ...){
 #' (and needn't be escaped again).
 #' 
 #' @export
-#' @importFrom dplyr if_else
+#' @importFrom dplyr case_when
 #' @keywords internal
 #' @return character
 #' @param x typically inherits character
 #' @param ... passed arguments
 #' @family escape
 #' @examples
-#' example(escape_latex.default)
+#'   escape_latex(
+#'     c(
+#'       '',
+#'       ' ',
+#'       '\t',
+#'       '{}a',
+#'       NA,
+#'       '\\()',
+#'       '3%'
+#'     )
+#'   )
+
 escape_latex <- function(x, ...){
   stopifnot(is.character(x))
-  isLatex <- grepl('^(\\\\\\(|\\{\\})',x) # starts with \(  or {}
-  default <- escape_latex.default(x, ...)
-  # signal "class" change ...
-  default <- paste0('{}', default)
-  latex   <- paste0(escape_latex.latex(x, ...)) # coerce to character
-  blend <- if_else(isLatex, latex, default) # if_else needs compatible classes
-  # class(blend) <- union('latex', class(blend))
-  blend
+  latex   <- paste0(escape_latex.latex(x, ...))  # limited escape
+  default <- escape_latex.default(x, ...)  # conventional escape
+  default <- paste0('{}', default)         # signal escape check
+  out <- case_when(
+    is.na(x) ~ x,                          # don't touch NA
+    grepl("^\\s*$", x) ~ x,                # ignore white space or empty string
+    grepl("^(\\\\\\(|\\{\\})", x) ~ latex, # starts with \( or {}
+    TRUE ~ default
+  )
+  out
 }
+
 
 #' Escape Special Characters for Latex by Default
 #'

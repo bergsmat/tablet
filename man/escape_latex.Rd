@@ -33,7 +33,17 @@ processes that the text is considered latex-ready
 (and needn't be escaped again).
 }
 \examples{
-example(escape_latex.default)
+  escape_latex(
+    c(
+      '',
+      ' ',
+      '\t',
+      '{}a',
+      NA,
+      '\\\\()',
+      '3\%'
+    )
+  )
 }
 \seealso{
 Other escape: 
