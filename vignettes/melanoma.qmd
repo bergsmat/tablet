@@ -30,11 +30,19 @@ ulcer: [ Ulceration, [ Present: 1, Absent: 0 ]]
 thickness: [ Tumor Thickness, mm ]
 ')
 
-melanoma %>%
+tbl <- melanoma %>%
   select(-time, -year) %>%
   group_by(status, ulcer) %>%
   enscript %>%
-  tablet(Missing~NULL) %>% 
+  tablet(Missing~NULL)
+tbl %>% io_tablet('tablet-melanoma.csv')
+tab <- io_tablet('tablet-melanoma.csv')
+
+
+tbl %>%
+  as_kable(booktabs = TRUE) %>%
+  kable_styling(latex_options = 'scale_down')
+tab %>%
   as_kable(booktabs = TRUE) %>%
   kable_styling(latex_options = 'scale_down')
 
