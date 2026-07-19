@@ -39,11 +39,11 @@ globalVariables(c('c1','c2','label'))
 #' tab <- path %>% io_tablet
 #' 
 #' tbl %>% 
-#' as_kable(booktabs = TRUE) %>%
+#' kbl(booktabs = TRUE) %>%
 #' kable_styling(latex_options = 'scale_down')
 #' 
 #' tab %>% 
-#' as_kable(booktabs = TRUE) %>%
+#' kbl(booktabs = TRUE) %>%
 #' kable_styling(latex_options = 'scale_down')
 
 

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Tim Bergsma" />
 
-<meta name="date" content="2024-03-26" />
+<meta name="date" content="2026-07-17" />
 
 <title>An Introduction to Tablet for HTML</title>
 
@@ -576,7 +576,7 @@ display: none;
 
 <h1 class="title toc-ignore">An Introduction to Tablet for HTML</h1>
 <h4 class="author">Tim Bergsma</h4>
-<h4 class="date">2024-03-26</h4>
+<h4 class="date">2026-07-17</h4>
 
 </div>
 
@@ -629,7 +629,7 @@ x %&lt;&gt;% select(-time, -year)</code></pre>
 <h1>Simple Case</h1>
 <p>For starters, we’ll just coerce two variables to factor to show that
 they are categorical, and then pass the whole thing to tablet(). Then we
-forward to as_kable() for rendering (calls kableExtra::kbl and adds some
+forward to kbl() for rendering (calls kableExtra::kbl and adds some
 magic).</p>
 <pre class="r"><code>x %&gt;%
   mutate(
@@ -637,25 +637,44 @@ magic).</p>
     ulcer = factor(ulcer)
   ) %&gt;%
   tablet %&gt;%
-  as_kable</code></pre>
+  kbl</code></pre>
 <table>
 <thead>
 <tr>
 <th style="text-align:left;">
+c1
 </th>
 <th style="text-align:left;">
-All<br>(N = 205)
+c2
+</th>
+<th style="text-align:left;">
+c3
 </th>
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>status</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+All
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+status
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -663,20 +682,38 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
 2 (1, 3)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>sex</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+sex
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
@@ -684,20 +721,28 @@ Median (range)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 1
 </td>
 <td style="text-align:left;">
 79 (38.5%)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>age</strong>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -705,20 +750,38 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
 54 (4, 95)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>thickness</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+thickness
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -726,20 +789,38 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
 1.94 (0.1, 17.4)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>ulcer</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+ulcer
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
@@ -747,7 +828,9 @@ Median (range)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 1
 </td>
 <td style="text-align:left;">
@@ -781,7 +864,8 @@ ulcer:     [ Ulceration, [ Absent: 0, Present: 1 ]]
 &#39;)
 x %&lt;&gt;% select(-time, -year)
 x %&lt;&gt;% group_by(status)
-x %&lt;&gt;% resolve</code></pre>
+x %&lt;&gt;% resolve
+</code></pre>
 <ul>
 <li><p>group_by(status) causes statistics to be summarized in columns by
 group.</p></li>
@@ -789,36 +873,70 @@ group.</p></li>
 (actually creating factors where appropriate, such as for sex and
 ulcer).</p></li>
 </ul>
-<p>Now we pass x to tablet() and as_kable() for a more informative
+<p>Now we pass x to tablet() and kbl() for a more informative
 result.</p>
-<pre class="r"><code>x %&gt;% tablet %&gt;% as_kable</code></pre>
+<pre class="r"><code>x %&gt;% tablet %&gt;% kbl</code></pre>
 <table>
 <thead>
 <tr>
 <th style="text-align:left;">
+c1
 </th>
 <th style="text-align:left;">
-Alive<br>(N = 134)
+c2
 </th>
 <th style="text-align:left;">
-Melanoma Death<br>(N = 57)
+c3
 </th>
 <th style="text-align:left;">
-Unrelated Death<br>(N = 14)
+c4
 </th>
 <th style="text-align:left;">
-All<br>(N = 205)
+c5
+</th>
+<th style="text-align:left;">
+c6
 </th>
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Sex</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Alive
+</td>
+<td style="text-align:left;">
+Melanoma Death
+</td>
+<td style="text-align:left;">
+Unrelated Death
+</td>
+<td style="text-align:left;">
+All
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Male
 </td>
 <td style="text-align:left;">
@@ -835,7 +953,9 @@ Male
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Female
 </td>
 <td style="text-align:left;">
@@ -851,13 +971,25 @@ Female
 126 (61.5%)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Age at Time of Operation (year)</strong>
+<tr>
+<td style="text-align:left;">
+Age at Time of Operation (year)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -874,7 +1006,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -890,13 +1024,44 @@ Median (range)
 54 (4, 95)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Tumor Thickness (mm)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Tumor Thickness (mm)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -913,7 +1078,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -929,13 +1096,44 @@ Median (range)
 1.94 (0.1, 17.4)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Ulceration</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Ulceration
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Absent
 </td>
 <td style="text-align:left;">
@@ -952,7 +1150,9 @@ Absent
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Present
 </td>
 <td style="text-align:left;">
@@ -981,15 +1181,15 @@ the grouping variable(s), and</li>
 names.</li>
 </ul>
 <p>If you don’t particularly care for some aspect of the presentation,
-you can jump in between tablet() and as_kable() to fix things up. For
+you can jump in between tablet() and kbl() to fix things up. For
 example, if you don’t want the “All” column you can just say</p>
 <ul>
-<li><code>x %&gt;% tablet %&gt;% select(-All) %&gt;% as_kable</code>.</li>
+<li><code>x %&gt;% tablet %&gt;% select(-All) %&gt;% kbl</code>.</li>
 </ul>
 <p>If you <strong>only</strong> want the the “All” column, you can just
 remove the group(s):</p>
 <ul>
-<li><code>x %&gt;% ungroup %&gt;% select(-1) %&gt;% tablet %&gt;% as_kable</code>.</li>
+<li><code>x %&gt;% ungroup %&gt;% select(-1) %&gt;% tablet %&gt;% kbl</code>.</li>
 </ul>
 <p>By the way, you can also pass <code>all = NULL</code> to suppress the
 ‘All’ column.</p>
@@ -1005,45 +1205,83 @@ x %&lt;&gt;% modify(class, label = &#39;class&#39;)                  # change it
 levels(x$status) &lt;- c(&#39;Alive&#39;,&#39;Melanoma&#39;,&#39;Unrelated&#39;)  # tweak current group
 levels(x$class)  &lt;- c(&#39; &#39;,    &#39;Death&#39;,   &#39;Death&#39;)      # cluster groups
 x %&lt;&gt;% group_by(class, status)                         # nest groups
-x %&gt;% tablet %&gt;% as_kable                              # render</code></pre>
+x %&gt;% tablet %&gt;% kbl                              # render</code></pre>
 <table>
 <thead>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="2">
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Death
-</div>
-</th>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-</tr>
-<tr>
 <th style="text-align:left;">
+c1
 </th>
 <th style="text-align:left;">
-Alive<br>(N = 134)
+c2
 </th>
 <th style="text-align:left;">
-Melanoma<br>(N = 57)
+c3
 </th>
 <th style="text-align:left;">
-Unrelated<br>(N = 14)
+c4
 </th>
 <th style="text-align:left;">
-All<br>(N = 205)
+c5
+</th>
+<th style="text-align:left;">
+c6
 </th>
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Sex</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Death
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Alive
+</td>
+<td style="text-align:left;">
+Melanoma
+</td>
+<td style="text-align:left;">
+Unrelated
+</td>
+<td style="text-align:left;">
+All
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Male
 </td>
 <td style="text-align:left;">
@@ -1060,7 +1298,9 @@ Male
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Female
 </td>
 <td style="text-align:left;">
@@ -1076,13 +1316,25 @@ Female
 126 (61.5%)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Age at Time of Operation (year)</strong>
+<tr>
+<td style="text-align:left;">
+Age at Time of Operation (year)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -1099,7 +1351,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -1115,13 +1369,44 @@ Median (range)
 54 (4, 95)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Tumor Thickness (mm)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Tumor Thickness (mm)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -1138,7 +1423,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -1154,13 +1441,44 @@ Median (range)
 1.94 (0.1, 17.4)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Ulceration</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Ulceration
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Absent
 </td>
 <td style="text-align:left;">
@@ -1177,7 +1495,9 @@ Absent
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Present
 </td>
 <td style="text-align:left;">
@@ -1205,64 +1525,115 @@ column group above and instead nest sex within status …</p>
 x %&lt;&gt;% select(-class)
 x %&gt;% 
   tablet %&gt;% 
-  as_kable</code></pre>
+  kbl</code></pre>
 <table>
 <thead>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Alive
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Melanoma
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Unrelated
-</div>
-</th>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-</tr>
-<tr>
 <th style="text-align:left;">
+c1
 </th>
 <th style="text-align:left;">
-Male<br>(N = 43)
+c2
 </th>
 <th style="text-align:left;">
-Female<br>(N = 91)
+c3
 </th>
 <th style="text-align:left;">
-Male<br>(N = 29)
+c4
 </th>
 <th style="text-align:left;">
-Female<br>(N = 28)
+c5
 </th>
 <th style="text-align:left;">
-Male<br>(N = 7)
+c6
 </th>
 <th style="text-align:left;">
-Female<br>(N = 7)
+c7
 </th>
 <th style="text-align:left;">
-All<br>(N = 205)
+c8
+</th>
+<th style="text-align:left;">
+c9
 </th>
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
-<td colspan="8" style="border-bottom: 1px solid;">
-<strong>Age at Time of Operation (year)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Alive
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Melanoma
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Unrelated
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+All
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age at Time of Operation (year)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -1288,7 +1659,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -1313,13 +1686,59 @@ Median (range)
 54 (4, 95)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="8" style="border-bottom: 1px solid;">
-<strong>Tumor Thickness (mm)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Tumor Thickness (mm)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -1345,7 +1764,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -1370,13 +1791,59 @@ Median (range)
 1.94 (0.1, 17.4)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="8" style="border-bottom: 1px solid;">
-<strong>Ulceration</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Ulceration
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Absent
 </td>
 <td style="text-align:left;">
@@ -1402,7 +1869,9 @@ Absent
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Present
 </td>
 <td style="text-align:left;">
@@ -1433,64 +1902,115 @@ Present
 <pre class="r"><code>x %&lt;&gt;% group_by(status, ulcer)
 x %&gt;% 
   tablet %&gt;% 
-  as_kable</code></pre>
+  kbl</code></pre>
 <table>
 <thead>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Alive
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Melanoma
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Unrelated
-</div>
-</th>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-</tr>
-<tr>
 <th style="text-align:left;">
+c1
 </th>
 <th style="text-align:left;">
-Absent<br>(N = 92)
+c2
 </th>
 <th style="text-align:left;">
-Present<br>(N = 42)
+c3
 </th>
 <th style="text-align:left;">
-Absent<br>(N = 16)
+c4
 </th>
 <th style="text-align:left;">
-Present<br>(N = 41)
+c5
 </th>
 <th style="text-align:left;">
-Absent<br>(N = 7)
+c6
 </th>
 <th style="text-align:left;">
-Present<br>(N = 7)
+c7
 </th>
 <th style="text-align:left;">
-All<br>(N = 205)
+c8
+</th>
+<th style="text-align:left;">
+c9
 </th>
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
-<td colspan="8" style="border-bottom: 1px solid;">
-<strong>Sex</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Alive
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Melanoma
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Unrelated
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Absent
+</td>
+<td style="text-align:left;">
+Present
+</td>
+<td style="text-align:left;">
+Absent
+</td>
+<td style="text-align:left;">
+Present
+</td>
+<td style="text-align:left;">
+Absent
+</td>
+<td style="text-align:left;">
+Present
+</td>
+<td style="text-align:left;">
+All
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Male
 </td>
 <td style="text-align:left;">
@@ -1516,7 +2036,9 @@ Male
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Female
 </td>
 <td style="text-align:left;">
@@ -1541,13 +2063,31 @@ Female
 126 (61.5%)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="8" style="border-bottom: 1px solid;">
-<strong>Age at Time of Operation (year)</strong>
+<tr>
+<td style="text-align:left;">
+Age at Time of Operation (year)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -1573,7 +2113,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -1598,13 +2140,59 @@ Median (range)
 54 (4, 95)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="8" style="border-bottom: 1px solid;">
-<strong>Tumor Thickness (mm)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Tumor Thickness (mm)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -1630,7 +2218,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -1655,124 +2245,247 @@ Median (range)
 1.94 (0.1, 17.4)
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
 </tbody>
 </table>
 <p>… or where it makes sense, use multiple levels of nesting.</p>
 <pre class="r"><code>x %&lt;&gt;% group_by(status, ulcer, sex)
 x %&gt;% 
   tablet %&gt;% 
-  as_kable</code></pre>
+  kbl</code></pre>
 <table>
 <thead>
 <tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Alive
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Melanoma
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Unrelated
-</div>
-</th>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-</tr>
-<tr>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Absent
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Present
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Absent
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Present
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Absent
-</div>
-</th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
-<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Present
-</div>
-</th>
-<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
-</th>
-</tr>
-<tr>
 <th style="text-align:left;">
+c1
 </th>
 <th style="text-align:left;">
-Male<br>(N = 24)
+c2
 </th>
 <th style="text-align:left;">
-Female<br>(N = 68)
+c3
 </th>
 <th style="text-align:left;">
-Male<br>(N = 19)
+c4
 </th>
 <th style="text-align:left;">
-Female<br>(N = 23)
+c5
 </th>
 <th style="text-align:left;">
-Male<br>(N = 8)
+c6
 </th>
 <th style="text-align:left;">
-Female<br>(N = 8)
+c7
 </th>
 <th style="text-align:left;">
-Male<br>(N = 21)
+c8
 </th>
 <th style="text-align:left;">
-Female<br>(N = 20)
+c9
 </th>
 <th style="text-align:left;">
-Male<br>(N = 4)
+c10
 </th>
 <th style="text-align:left;">
-Female<br>(N = 3)
+c11
 </th>
 <th style="text-align:left;">
-Male<br>(N = 3)
+c12
 </th>
 <th style="text-align:left;">
-Female<br>(N = 4)
+c13
 </th>
 <th style="text-align:left;">
-All<br>(N = 205)
+c14
+</th>
+<th style="text-align:left;">
+c15
 </th>
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
-<td colspan="14" style="border-bottom: 1px solid;">
-<strong>Age at Time of Operation (year)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Alive
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Melanoma
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Unrelated
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Absent
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Present
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Absent
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Present
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Absent
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Present
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+All
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age at Time of Operation (year)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -1816,7 +2529,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -1859,13 +2574,89 @@ Median (range)
 54 (4, 95)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="14" style="border-bottom: 1px solid;">
-<strong>Tumor Thickness (mm)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Tumor Thickness (mm)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -1909,7 +2700,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -1952,6 +2745,52 @@ Median (range)
 1.94 (0.1, 17.4)
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1975,34 +2814,68 @@ x %&gt;%
     lab ~ name,
     `Median (range)` ~ med + &#39; (&#39; + min + &#39; - &#39; + max + &#39;)&#39;
   ) %&gt;% 
-  as_kable</code></pre>
+  kbl</code></pre>
 <table>
 <thead>
 <tr>
 <th style="text-align:left;">
+c1
 </th>
 <th style="text-align:left;">
-Alive
+c2
 </th>
 <th style="text-align:left;">
-Melanoma
+c3
 </th>
 <th style="text-align:left;">
-Unrelated
+c4
 </th>
 <th style="text-align:left;">
-All
+c5
+</th>
+<th style="text-align:left;">
+c6
 </th>
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Age at Time of Operation (year)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Alive
+</td>
+<td style="text-align:left;">
+Melanoma
+</td>
+<td style="text-align:left;">
+Unrelated
+</td>
+<td style="text-align:left;">
+All
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Age at Time of Operation (year)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -2019,7 +2892,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -2035,13 +2910,44 @@ Median (range)
 54 (4 - 95)
 </td>
 </tr>
-<tr grouplength="2">
-<td colspan="5" style="border-bottom: 1px solid;">
-<strong>Tumor Thickness (mm)</strong>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+Tumor Thickness (mm)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Mean (SD)
 </td>
 <td style="text-align:left;">
@@ -2058,7 +2964,9 @@ Mean (SD)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 Median (range)
 </td>
 <td style="text-align:left;">
@@ -2072,6 +2980,25 @@ Median (range)
 </td>
 <td style="text-align:left;">
 1.94 (0.1 - 17.4)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Missing
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 </tbody>
@@ -2093,8 +3020,8 @@ levels in the data. Result columns can be grouped arbitrarily deep by
 supplying extra groups. Column labels and titles are respected.
 Rendering is largely the responsibility of <code>kableExtra</code> and
 can be extended. Further customization is possible by manipulating data
-after calling tablet() but before calling as_kable(). Powerful results
-are possible with very little code.</p>
+after calling tablet() but before calling kbl(). Powerful results are
+possible with very little code.</p>
 </div>
 
 

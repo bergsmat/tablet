@@ -1170,7 +1170,9 @@ as_kable <- function(x, ...)UseMethod('as_kable')
 #'
 #' Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
 #' special features like grouped columns. 
-#' See also \code{\link{tablet.data.frame}}.
+#' See also \code{\link{tablet.data.frame}}.  
+#' As of 0.9.0, calling \code{\link{kbl}} is equivalent to 
+#' calling \code{\link{as_kable}}.
 #'
 # Column \code{_tablet_name} must inherit 'character' and
 # by default (in a latex render context) its values
@@ -1267,163 +1269,23 @@ as_kable.tablet <- function(
    pack_rows = list(escape = escape),
    secondary = FALSE
 ){
-   x <- tablette(x, ...)
-   # if(is.na(escape)){
-   #    if (knitr::is_latex_output()){
-   #      escape <- FALSE
-   #    } else {
-   #       escape <- FALSE # for <br>
-   #    }
-   # }
-   stopifnot(is.logical(escape), length(escape) == 1)
-   # x$`_tablet_sort` <- NULL
-   index <- index(x)
-   # draws on _tablet_name, which should be character
-   nmsi <- names(index) # isolate to assign class
-   #stopifnot(is.character(x$`_tablet_name`))
-   # class(nmsi) <- class(x$`_tablet_name`) # class propagation irrelevant with 0.7.2
-   x$`_tablet_name` <- NULL # done
-   if(!escape){
-      if (knitr::is_latex_output()) {
-         # invokes type-specific function,
-         # possibly escaping or ignoring latex metacharacters
-         # revisit if kableExtra changes
-         nmsi <- escape_latex(nmsi, secondary = TRUE, primary = TRUE) 
-         if (linebreak){
-           nmsi <- linebreak(
-             nmsi,
-             align = 'l',
-             double_escape = TRUE,
-             linebreaker = linebreaker
-           )
-         }
-      } else {
-         nmsi <- escape_html(nmsi)
-      }
-   }
-   # nmsi now as informed as possible ... assign back
-   names(index) <- nmsi
-   #x$`_tablet_level` <- as.character(x$`_tablet_level`)
-   # x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
-   # x$`_tablet_level` <- ifelse(
-   #    x$`_tablet_level` == 'numeric',
-   #    x$`_tablet_stat`,
-   #    x$`_tablet_level`
-   # )
-   # x$`_tablet_stat` <- NULL
-   # names(x)[names(x) == 'level'] <- ''
-   headerlist <- headerlist(x)
-   for(i in seq_len(ncol(x))){
-      lab <- attr(x[[i]], 'label')
-      if(length(lab)){
-         names(x)[[i]] <- lab
-      }
-   }
-   #x <- rename(x, !!variable := `_tablet_level`)
-   stopifnot(is.character(variable), length(variable) == 1)
-   names(x)[names(x) == '_tablet_level'] <- variable
-   
-   
-   # escape is false by default to allow internal discretion
-   # here we handle the escaping of column names
-   if(!escape){
-      if (knitr::is_latex_output()) {
-         # @ 0.6.10: apparently secondary should be FALSE, now default. 
-         x[] <- lapply(x, escape_latex, secondary = secondary, ...)
-         these <- names(x)
-         # if('latex' %in% attr(x,'name_class')){
-         #   class(these) <- c('latex','character')
-         # }
-         these <- escape_latex(these, secondary = FALSE, ...)
-         names(x) <- these
-      } else {
-         x[] <- lapply(x, escape_html, ...)
-         names(x) <- escape_html(names(x), ...)
-      }
-   }
-   
-   # names of each element in headerlist derive from the content
-   # of grouping variables, and are expected to have 
-   # exactly the same escaping needs as names(x)
-   if(!escape){
-     for(i in seq_along(headerlist)){
-       if (knitr::is_latex_output()) {
-         these <- names(headerlist[[i]])
-         # if('latex' %in% attr(x,'name_class')){
-         #   class(these) <- c('latex','character')
-         # }
-         these <- escape_latex(these, secondary = FALSE, ...)
-         names(headerlist[[i]]) <- these
-       } else {
-         names(headerlist[[i]]) <- escape_html(names(headerlist[[i]]), ...)
-       }
-     }
-   }
-
-   if(is.na(col.names))col.names <- names(x)
-   if (linebreak){
-      if(knitr::is_latex_output()) {
-         col.names <- linebreak(
-            col.names,
-            align = align,
-            double_escape = double_escape,
-            linebreaker = linebreaker
-         )
-      } else {
-         col.names <- gsub(linebreaker,'<br/>', col.names)
-      }
-   }
-   y <- kableExtra::kbl(
-      x,
-      booktabs = booktabs,
-      escape = escape,
-      col.names = col.names,
-      ...
-   )
-   for(i in seq_along(headerlist)){
-     this <- headerlist[[i]]
-     
-     if(linebreak){
-       if(knitr::is_latex_output()){
-         names(this) <- linebreak(
-           names(this), 
-           align = align, 
-           double_escape = double_escape, 
-           linebreaker = linebreaker
-         )
-       } else {
-         names(this) <- gsub(linebreaker, '<br/>', names(this))
-       }
-     }
-     
-     # kableExtra:::pdfTable_add_header_above()
-     # uses str_replace(string, pattern, replacement)
-     # which silently deletes orphan backslashes,
-     # i.e. backslashes not followed by an integer
-     # therefore, names(this) must have all backslash doubled
-     # @ 0.6.7 2024-03-22
-     # next action only for latex?
-     if(knitr::is_latex_output()){
-       names(this) <- gsub('\\','\\\\', names(this), fixed = TRUE)
-     }
-     y <- add_header_above(y, this, escape = escape)
-   }
-
-   # at 0.5.7, skip this if length(index) == 0
-   # attempt to prevent error in mesa() when
-   # tabulating virtual category agegr1 in isolation:
-   # Error in `$<-.data.frame`(`*tmp*`, "start", value = 1) : replacement has 1 row, data has 0
-
-   #if(length(index) > 0){
-     y <- do.call(
-        kableExtra::pack_rows,
-        c(
-           list(y, index = index), # @0.4.9 removing ', escape = escape
-           pack_rows
-        )
-     )
-  # }
-   y
+  out <- kbl.tablet(
+    x = x,
+    ...,
+    booktabs = booktabs,
+    escape = escape,
+    escape_latex = escape_latex,
+    escape_html = escape_html,
+    variable = variable,
+    col.names = col.names,
+    linebreak = linebreak,
+    align = align,
+    double_escape = double_escape,
+    linebreaker = linebreaker,
+    pack_rows = pack_rows,
+    secondary = secondary
+  )
+  out
 }
 
 #' Generate a Tablet for Data Frame
@@ -1554,7 +1416,7 @@ as_kable.tablet <- function(
 #' to the left, or single spaces, which are deliberately blank.}
 #' \item{*}{Internally, character NA is equivalent to an empty string.}
 #' 
-#' @seealso \code{\link{as_kable.tablet}}
+#' @seealso \code{\link{as_kable.tablet}} \code{\link{kbl.tablet}}
 #' @examples
 #' library(boot)
 #' library(dplyr)
@@ -1564,7 +1426,7 @@ as_kable.tablet <- function(
 #'   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
 #'   group_by(status) %>%
 #'   tablet %>%
-#'   as_kable
+#'   kbl
 #'   
 #' ## drop 'Missing', redefine 'range'
 #' melanoma %>%
@@ -1575,7 +1437,7 @@ as_kable.tablet <- function(
 #'     Missing ~ NULL,
 #'     `Median (range)` ~ med + ' (' + min + ' to ' + max + ')'
 #'   ) %>%
-#'   as_kable
+#'   kbl
 #'   
 
 tablet.data.frame <- function(

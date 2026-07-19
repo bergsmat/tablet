@@ -40,10 +40,10 @@ tab <- io_tablet('tablet-melanoma.csv')
 
 
 tbl %>%
-  as_kable(booktabs = TRUE) %>%
+  kbl(booktabs = TRUE) %>%
   kable_styling(latex_options = 'scale_down')
 tab %>%
-  as_kable(booktabs = TRUE) %>%
+  kbl(booktabs = TRUE) %>%
   kable_styling(latex_options = 'scale_down')
 
 ```

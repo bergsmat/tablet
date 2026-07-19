@@ -1,4 +1,4 @@
-## ----setup, include = FALSE-----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -6,7 +6,7 @@ knitr::opts_chunk$set(
 #knitr::opts_chunk$set(package.startup.message = FALSE)
 options(xtable.comment = FALSE)
 
-## ----software, include = FALSE--------------------------------------------
+## ----software, include = FALSE------------------------------------------------
 library(tidyr)
 library(dplyr)
 library(magrittr)
@@ -16,29 +16,29 @@ library(yamlet)
 library(tablet)
 # options(knitr.table.format = "latex") # not needed since kableExtra 0.9.0
 
-## ----software2, eval = FALSE----------------------------------------------
-#  library(tidyr)
-#  library(dplyr)
-#  library(magrittr)
-#  library(kableExtra)
-#  library(boot)
-#  library(yamlet)
-#  library(tablet)
+## ----software2, eval = FALSE--------------------------------------------------
+# library(tidyr)
+# library(dplyr)
+# library(magrittr)
+# library(kableExtra)
+# library(boot)
+# library(yamlet)
+# library(tablet)
 
-## ---- data----------------------------------------------------------------
+## ----data---------------------------------------------------------------------
 x <- melanoma
 x %<>% select(-time, -year)
 
-## ---- easy----------------------------------------------------------------
+## ----easy---------------------------------------------------------------------
 x %>%
   mutate(
     sex = factor(sex), 
     ulcer = factor(ulcer)
   ) %>%
   tablet %>%
-  as_kable
+  kbl
 
-## -------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 x <- melanoma
 
 x %<>% decorate('
@@ -59,10 +59,10 @@ x %<>% select(-time, -year)
 x %<>% group_by(status)
 x %<>% resolve
 
-## ----meta-----------------------------------------------------------------
-x %>% tablet %>% as_kable
+## ----meta---------------------------------------------------------------------
+x %>% tablet %>% kbl
 
-## ----xtable, results = 'asis'---------------------------------------------
+## ----xtable, results = 'asis'-------------------------------------------------
 library(xtable)
   x %>% 
     filter(!(status == 'Alive' & sex == 'Male')) %>%
@@ -72,40 +72,40 @@ library(xtable)
       include.rownames = FALSE 
     )
 
-## ---- grouped-------------------------------------------------------------
+## ----grouped------------------------------------------------------------------
 x %<>% mutate(class = status)                          # copy the current group
 x %<>% modify(class, label = 'class')                  # change its label
 levels(x$status) <- c('Alive','Melanoma','Unrelated')  # tweak current group
 levels(x$class)  <- c(' ',    'Death',   'Death')      # cluster groups
 x %<>% group_by(class, status)                         # nest groups
-x %>% tablet %>% as_kable                              # render
+x %>% tablet %>% kbl                              # render
 
-## ---- transposed----------------------------------------------------------
+## ----transposed---------------------------------------------------------------
 x %<>% group_by(status, sex)
 x %<>% select(-class)
 x %>% 
   tablet %>% 
-  as_kable %>% 
+  kbl %>% 
   kable_styling(latex_options = 'scale_down')
 
 
-## ---- transposed2---------------------------------------------------------
+## ----transposed2--------------------------------------------------------------
 x %<>% group_by(status, ulcer)
 x %>% 
   tablet %>% 
-  as_kable %>% 
+  kbl %>% 
   kable_styling(latex_options = 'scale_down')
 
 
-## ---- transposed3---------------------------------------------------------
+## ----transposed3--------------------------------------------------------------
 x %<>% group_by(status, ulcer, sex)
 x %>% 
   tablet %>% 
-  as_kable %>% 
+  kbl %>% 
   kable_styling(latex_options = 'scale_down') # %>% landscape ?
 
 
-## ---- aesthetics----------------------------------------------------------
+## ----aesthetics---------------------------------------------------------------
 x %<>% group_by(status)
 x %>% 
   tablet(
@@ -113,6 +113,6 @@ x %>%
     lab ~ name,
     `Median (range)` ~ med + ' (' + min + ' - ' + max + ')'
   ) %>% 
-  as_kable
+  kbl
 
 

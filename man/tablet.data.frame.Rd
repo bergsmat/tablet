@@ -137,7 +137,7 @@ melanoma \%>\%
   mutate(sex = factor(sex), ulcer = factor(ulcer)) \%>\%
   group_by(status) \%>\%
   tablet \%>\%
-  as_kable
+  kbl
   
 ## drop 'Missing', redefine 'range'
 melanoma \%>\%
@@ -148,9 +148,9 @@ melanoma \%>\%
     Missing ~ NULL,
     `Median (range)` ~ med + ' (' + min + ' to ' + max + ')'
   ) \%>\%
-  as_kable
+  kbl
   
 }
 \seealso{
-\code{\link{as_kable.tablet}}
+\code{\link{as_kable.tablet}} \code{\link{kbl.tablet}}
 }

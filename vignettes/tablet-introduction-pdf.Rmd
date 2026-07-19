@@ -95,7 +95,7 @@ x %<>% select(-time, -year)
 # Simple Case
 For starters, we'll just coerce two variables to factor
 to show that they are categorical, and then pass the whole
-thing to tablet(). Then we forward to as_kable() for rendering
+thing to tablet(). Then we forward to kbl() for rendering
 (calls kableExtra::kbl and adds some magic).
 
 ```{r, easy}
@@ -105,7 +105,7 @@ x %>%
     ulcer = factor(ulcer)
   ) %>%
   tablet %>%
-  as_kable
+  kbl
 ```
 
 # With Metadata
@@ -144,11 +144,11 @@ in columns by group.
 labels, units, and factor levels (actually creating 
 factors where appropriate, such as for sex and ulcer).
 
-Now we pass x to tablet() and as_kable() for a more
+Now we pass x to tablet() and kbl() for a more
 informative result.
 
 ```{r meta}
-x %>% tablet %>% as_kable
+x %>% tablet %>% kbl
 ```
 
 Notice that:
@@ -159,16 +159,16 @@ Notice that:
 * labels and titles (highest priority) are substituted for item names.
 
 If you don't particularly care for some aspect of the
-presentation, you can jump in between tablet() and as_kable()
+presentation, you can jump in between tablet() and kbl()
 to fix things up.  For example, if you don't want the "All"
 column you can just say 
 
-* ```x %>% tablet %>% select(-All) %>% as_kable```.  
+* ```x %>% tablet %>% select(-All) %>% kbl```.  
 
 If you **only** want the the "All" column,
 you can just remove the group(s): 
 
-* ```x %>% ungroup %>% select(-1) %>% tablet %>% as_kable```.
+* ```x %>% ungroup %>% select(-1) %>% tablet %>% kbl```.
 
 By the way, you can also pass ```all = NULL``` to suppress the 'All' column.
 
@@ -203,7 +203,7 @@ x %<>% modify(class, label = 'class')                  # change its label
 levels(x$status) <- c('Alive','Melanoma','Unrelated')  # tweak current group
 levels(x$class)  <- c(' ',    'Death',   'Death')      # cluster groups
 x %<>% group_by(class, status)                         # nest groups
-x %>% tablet %>% as_kable                              # render
+x %>% tablet %>% kbl                              # render
 ```
 
 # Transposed Groups
@@ -218,7 +218,7 @@ x %<>% group_by(status, sex)
 x %<>% select(-class)
 x %>% 
   tablet %>% 
-  as_kable %>% 
+  kbl %>% 
   kable_styling(latex_options = 'scale_down')
 
 ```
@@ -229,7 +229,7 @@ x %>%
 x %<>% group_by(status, ulcer)
 x %>% 
   tablet %>% 
-  as_kable %>% 
+  kbl %>% 
   kable_styling(latex_options = 'scale_down')
 
 ```
@@ -240,7 +240,7 @@ x %>%
 x %<>% group_by(status, ulcer, sex)
 x %>% 
   tablet %>% 
-  as_kable %>% 
+  kbl %>% 
   kable_styling(latex_options = 'scale_down') # %>% landscape ?
 
 ```
@@ -267,7 +267,7 @@ x %>%
     lab ~ name,
     `Median (range)` ~ med + ' (' + min + ' - ' + max + ')'
   ) %>% 
-  as_kable
+  kbl
 
 ```
 
@@ -297,7 +297,7 @@ Column labels and titles are respected.
 Rendering is largely the 
 responsibility of ```kableExtra``` and can be extended.
 Further customization is possible by manipulating
-data after calling tablet() but before calling as_kable().
+data after calling tablet() but before calling kbl().
 Powerful results are possible with very little code.
 
 

@@ -80,7 +80,7 @@
 #' ) %>%
 #' as_gridtable
 #' 
-#' We can integrate decorations:
+#' # We can integrate decorations:
 #' 
 #' '
 #' +-------+----------+
@@ -460,13 +460,15 @@ print.gridtable <- function(x, ...) {
 
 #' Coerce a gridtable to a Calibrated Data Frame
 #'
-#' Render a validated gridtable object to a calibrated data frame.
+#' Parse a validated gridtable object directly to a calibrated data frame.
 #' Columns have \code{width} attributes suggested by the grid table spans.
+#' Continuation lines within a grid-table cell are collapsed with single spaces.
+#' Cell markup is otherwise left untouched for downstream renderers.
 #'
 #' @param x Character scalar with class \code{gridtable}.
 #' @param row.names Optional row names for the returned data frame.
-#' @param optional Logical scalar passed to \code{as.data.frame} when
-#'   normalizing the parsed table.
+#' @param optional Currently unused; accepted for compatibility with
+#'   \code{as.data.frame}.
 #' @param ... Currently unused.
 #' @param scale Numeric scalar multiplier applied to grid-table dash counts
 #'   when deriving column-level \code{width} attributes.
@@ -477,9 +479,6 @@ print.gridtable <- function(x, ...) {
 #' @family gridtable
 #' @seealso \code{\link{as_gridtable.character}}, \code{\link{as_calibrated.data.frame}}
 #' @method as.data.frame gridtable
-#' @importFrom rmarkdown pandoc_convert
-#' @importFrom rvest html_table
-#' @importFrom xml2 read_html
 #' @export
 as.data.frame.gridtable <- function(
     x,
@@ -492,68 +491,88 @@ as.data.frame.gridtable <- function(
     stop("`scale` must be a positive finite numeric scalar.", call. = FALSE)
   }
   
-  grid_table_column_widths <- function(table_text, scale) {
-    lines <- strsplit(table_text, "\\r?\\n", perl = TRUE)[[1]]
-    lines <- trimws(lines)
-    lines <- lines[nzchar(lines)]
-    boundary_rows <- lines[startsWith(lines, "+") & endsWith(lines, "+")]
+  split_delimited <- function(value, delimiter) {
+    positions <- gregexpr(delimiter, value, fixed = TRUE)[[1]]
     
-    if (!length(boundary_rows)) {
-      stop("No grid table boundary row found for width extraction.", call. = FALSE)
+    if (positions[1L] == -1L) {
+      return(value)
     }
     
-    first_boundary <- boundary_rows[1L]
-    inner <- substring(first_boundary, 2L, nchar(first_boundary) - 1L)
-    spans <- strsplit(inner, "\\+", perl = TRUE)[[1]]
-    
-    if (!length(spans) || any(!grepl("^-+$", spans))) {
-      stop("The first boundary row must contain only '-' spans for width extraction.", call. = FALSE)
+    substring(value, c(1L, positions + 1L), c(positions - 1L, nchar(value)))
+  }
+  
+  parse_boundary <- function(line) {
+    line <- trimws(line)
+    if (!startsWith(line, "+") || !endsWith(line, "+")) {
+      return(NULL)
     }
-    
-    dash_counts <- nchar(spans, type = "width")
-    paste0(format(dash_counts * 0.44 * scale, trim = TRUE, scientific = FALSE), "em")
+    inner <- substring(line, 2L, nchar(line) - 1L)
+    split_delimited(inner, "+")
   }
   
-  x <- as.character(x)
-  
-  column_widths <- grid_table_column_widths(x, scale = scale)
-  input <- tempfile(fileext = ".md")
-  output <- tempfile(fileext = ".html")
-  on.exit(unlink(c(input, output)), add = TRUE)
-  
-  writeLines(x, input, useBytes = TRUE)
-  
-  rmarkdown::pandoc_convert(
-    input = input,
-    to = "html",
-    from = "markdown",
-    output = output,
-    verbose = FALSE
-  )
-  
-  tables <- rvest::html_table(
-    xml2::read_html(output),
-    header = TRUE,
-    trim = TRUE,
-    convert = FALSE
-  )
-  
-  if (!length(tables)) {
-    stop("No grid table found in Markdown string.", call. = FALSE)
+  parse_text <- function(line, ncol) {
+    line <- trimws(line)
+    if (!startsWith(line, "|") || !endsWith(line, "|")) {
+      stop("Each text row must start and end with '|'.", call. = FALSE)
+    }
+    inner <- substring(line, 2L, nchar(line) - 1L)
+    cells <- split_delimited(inner, "|")
+    if (length(cells) != ncol) {
+      stop("Each text row must contain the same number of '|' delimiters.", call. = FALSE)
+    }
+    trimws(cells)
   }
   
-  out <- base::as.data.frame(tables[[1L]], stringsAsFactors = FALSE, optional = optional)
+  collapse_cell <- function(values) {
+    values <- trimws(values)
+    values <- values[nzchar(values)]
+    if (!length(values)) {
+      return("")
+    }
+    trimws(gsub("[[:space:]]+", " ", paste(values, collapse = " ")))
+  }
+  
+  table_text <- as.character(as_gridtable(as.character(x)))
+  lines <- strsplit(table_text, "\\r?\\n", perl = TRUE)[[1]]
+  lines <- lines[nzchar(trimws(lines))]
+  
+  boundary <- lapply(lines, parse_boundary)
+  is_boundary <- vapply(boundary, Negate(is.null), logical(1L))
+  boundary_index <- which(is_boundary)
+  boundary <- boundary[is_boundary]
+  ncol <- length(boundary[[1L]])
+  
+  column_widths <- paste0(
+    format(nchar(boundary[[1L]], type = "width") * 0.44 * scale, trim = TRUE, scientific = FALSE),
+    "em"
+  )
+  
+  text_groups <- vector("list", length(boundary_index) - 1L)
+  for (i in seq_along(text_groups)) {
+    from <- boundary_index[i] + 1L
+    to <- boundary_index[i + 1L] - 1L
+    text_groups[[i]] <- do.call(
+      rbind,
+      lapply(lines[from:to], parse_text, ncol = ncol)
+    )
+  }
+  
+  header_names <- text_groups[[1L]][1L, ]
+  body_groups <- text_groups[-1L]
+  values <- do.call(
+    rbind,
+    lapply(body_groups, function(group) {
+      vapply(seq_len(ncol), function(column_index) {
+        collapse_cell(group[, column_index])
+      }, character(1L))
+    })
+  )
+  
+  out <- base::as.data.frame(values, stringsAsFactors = FALSE, optional = optional)
+  names(out) <- header_names
   if (!is.null(row.names)) {
     row.names(out) <- row.names
   }
-  
-  out[] <- lapply(out, function(column) {
-    if (is.character(column)) {
-      trimws(gsub("[[:space:]]+", " ", column))
-    } else {
-      column
-    }
-  })
   
   as_calibrated(out, column_widths)
 }
@@ -679,17 +698,264 @@ kbl.gridtable <- function(x, ...) {
 }
 
 
-#' Render a tablet with kbl
+#' Render tablet with kbl()
 #'
-#' Delegate tablet rendering to \code{\link{as_kable.tablet}}.
+#' Renders a tablet.  Calls \code{\link[kableExtra]{kbl}} and implements
+#' special features like grouped columns. 
+#' See also \code{\link{tablet.data.frame}}.  
+#' As of 0.9.0, calling \code{\link{kbl}} is equivalent to 
+#' calling \code{\link{as_kable}}.
 #'
-#' @param x A data frame with class \code{tablet}.
-#' @param ... Additional arguments passed to \code{\link{as_kable.tablet}}.
+# Column \code{_tablet_name} must inherit 'character' and
+# by default (in a latex render context) its values
+# will eventually be processed by \code{escape_latex}.
+# Thus, elements of \code{_tablet_name} that appear to be latex
+# will be handled internally by \code{\link{escape_latex.latex}}
+# (which tries not to re-escape metacharacters).
 #'
-#' @return A kable object.
-#' @family gridtable
-#' @seealso \code{\link{kbl}}, \code{\link[tablet]{as_kable}}
+#'
+#' @param x \code{\link{tablet}}
+#' @param ... passed to \code{\link[kableExtra]{kbl}}
+#' @param booktabs passed to \code{\link[kableExtra]{kbl}}
+#' @param escape passed to \code{\link[kableExtra]{kbl}}; defaults FALSE to allow header linebreaks
+#' @param escape_latex a function to pre-process column names and content if 'escape' is FALSE (e.g., manual escaping, latex only); default \code{\link{escape_latex}}
+#' @param escape_html  a function to pre-process column names and content if 'escape' is FALSE (e.g., manual escaping, html only)
+#' @param variable a column name for the variables
+#' @param col.names passed to \code{\link[kableExtra]{kbl}} after any linebreaking
+#' @param linebreak whether to invoke \code{\link[kableExtra]{linebreak}} for column names
+#' @param align passed to \code{\link[kableExtra]{linebreak}} for column names
+#' @param double_escape passed to \code{\link[kableExtra]{linebreak}} for column names
+#' @param linebreaker passed to \code{\link[kableExtra]{linebreak}} for column names in latex; for html, linebreaker is replaced with <br/>
+#' @param pack_rows named list passed to \code{\link[kableExtra]{pack_rows}} for finer control of variable names
+#' @param secondary passed to escape_latex
+#' @importFrom kableExtra kbl pack_rows add_header_above linebreak
+#' @importFrom dplyr rename group_vars
 #' @export
-kbl.tablet <- function(x, ...) {
-  as_kable.tablet(x, ...)
+#' @return like \code{\link[kableExtra]{kbl}}
+#' @examples
+#' library(boot)
+#' library(dplyr)
+#' library(magrittr)
+#' library(haven)
+#' library(yamlet)
+#' library(spork)
+#' melanoma %>%
+#'   select(-time, -year) %>%
+#'   mutate(sex = factor(sex), ulcer = factor(ulcer)) %>%
+#'   group_by(status) %>%
+#'   tablet %>%
+#'   kbl
+#'
+#' x <- system.file(package = 'tablet', 'shiny-examples/mesa/data/adsl.sas7bdat')
+#' x %<>% read_sas %>% data.frame
+#' decorations(x) 
+# note weight in pounds
+# x %<>% mutate(weight = signif(digits = 3, weight * 2.2))
+#'
+#' # calculate BMI by assuming all males are 1.75 m, all females 1.63 cm
+#' x %<>% mutate(height = ifelse(sex == 'F', 1.63, 1.75))
+#' x %<>% mutate(bmi = signif(digits = 3, weight / (height^2)))
+#' x %<>% filter(saffl == 'Y')
+#' x %<>% select(trt01a, age, sex, weight, bmi)
+#' x %<>% redecorate('
+#' trt01a: [ Treatment, [ Placebo, TRT 10 mg, TRT 20 mg ]]
+#' age:    [ Age, year ]
+#' sex:    [ Sex, [ Female: F, Male: M ]]
+#' weight: [ Body Weight, kg ]
+#' bmi:    [ Index_body mass, kg/m^2 ]
+#' ')
+#' x %<>% resolve
+#' x %<>% group_by(trt01a)
+#'
+#' x %>% tablet %>% kbl
+#'
+#' # supply default and unit-conditional latex titles
+#' x %<>% modify(title = concatenate(as_latex(as_spork(c(.data$label)))))
+#' x %<>% modify(
+#' age, weight, bmi,
+#'   title = concatenate(
+#'     sep = '',  # default ok in pdf
+#'     as_latex(
+#'       as_spork(
+#'         c(.data$label, ' (', .data$units, ')')
+#'       )
+#'     )
+#'   )
+#' )
+#' x %>% tablet %>% kbl
+
+
+kbl.tablet <- function(
+    x,
+    ...,
+    booktabs = TRUE,
+    escape = FALSE,
+    escape_latex = tablet::escape_latex,
+    escape_html = function(x, ...)x,
+    variable = ' ',
+    col.names = NA,
+    linebreak = TRUE,
+    align = 'c',
+    double_escape = FALSE,
+    linebreaker = '\n',
+    pack_rows = list(escape = escape),
+    secondary = FALSE
+){
+  x <- tablette(x, ...)
+  # if(is.na(escape)){
+  #    if (knitr::is_latex_output()){
+  #      escape <- FALSE
+  #    } else {
+  #       escape <- FALSE # for <br>
+  #    }
+  # }
+  stopifnot(is.logical(escape), length(escape) == 1)
+  # x$`_tablet_sort` <- NULL
+  index <- index(x)
+  # draws on _tablet_name, which should be character
+  nmsi <- names(index) # isolate to assign class
+  #stopifnot(is.character(x$`_tablet_name`))
+  # class(nmsi) <- class(x$`_tablet_name`) # class propagation irrelevant with 0.7.2
+  x$`_tablet_name` <- NULL # done
+  if(!escape){
+    if (knitr::is_latex_output()) {
+      # invokes type-specific function,
+      # possibly escaping or ignoring latex metacharacters
+      # revisit if kableExtra changes
+      nmsi <- escape_latex(nmsi, secondary = TRUE, primary = TRUE) 
+      if (linebreak){
+        nmsi <- linebreak(
+          nmsi,
+          align = 'l',
+          double_escape = TRUE,
+          linebreaker = linebreaker
+        )
+      }
+    } else {
+      nmsi <- escape_html(nmsi)
+    }
+  }
+  # nmsi now as informed as possible ... assign back
+  names(index) <- nmsi
+  #x$`_tablet_level` <- as.character(x$`_tablet_level`)
+  # x$`_tablet_stat` <- as.character(x$`_tablet_stat`)
+  # x$`_tablet_level` <- ifelse(
+  #    x$`_tablet_level` == 'numeric',
+  #    x$`_tablet_stat`,
+  #    x$`_tablet_level`
+  # )
+  # x$`_tablet_stat` <- NULL
+  # names(x)[names(x) == 'level'] <- ''
+  headerlist <- headerlist(x)
+  for(i in seq_len(ncol(x))){
+    lab <- attr(x[[i]], 'label')
+    if(length(lab)){
+      names(x)[[i]] <- lab
+    }
+  }
+  #x <- rename(x, !!variable := `_tablet_level`)
+  stopifnot(is.character(variable), length(variable) == 1)
+  names(x)[names(x) == '_tablet_level'] <- variable
+  
+  
+  # escape is false by default to allow internal discretion
+  # here we handle the escaping of column names
+  if(!escape){
+    if (knitr::is_latex_output()) {
+      # @ 0.6.10: apparently secondary should be FALSE, now default. 
+      x[] <- lapply(x, escape_latex, secondary = secondary, ...)
+      these <- names(x)
+      # if('latex' %in% attr(x,'name_class')){
+      #   class(these) <- c('latex','character')
+      # }
+      these <- escape_latex(these, secondary = FALSE, ...)
+      names(x) <- these
+    } else {
+      x[] <- lapply(x, escape_html, ...)
+      names(x) <- escape_html(names(x), ...)
+    }
+  }
+  
+  # names of each element in headerlist derive from the content
+  # of grouping variables, and are expected to have 
+  # exactly the same escaping needs as names(x)
+  if(!escape){
+    for(i in seq_along(headerlist)){
+      if (knitr::is_latex_output()) {
+        these <- names(headerlist[[i]])
+        # if('latex' %in% attr(x,'name_class')){
+        #   class(these) <- c('latex','character')
+        # }
+        these <- escape_latex(these, secondary = FALSE, ...)
+        names(headerlist[[i]]) <- these
+      } else {
+        names(headerlist[[i]]) <- escape_html(names(headerlist[[i]]), ...)
+      }
+    }
+  }
+  
+  if(is.na(col.names))col.names <- names(x)
+  if (linebreak){
+    if(knitr::is_latex_output()) {
+      col.names <- linebreak(
+        col.names,
+        align = align,
+        double_escape = double_escape,
+        linebreaker = linebreaker
+      )
+    } else {
+      col.names <- gsub(linebreaker,'<br/>', col.names)
+    }
+  }
+  y <- kableExtra::kbl(
+    x,
+    booktabs = booktabs,
+    escape = escape,
+    col.names = col.names,
+    ...
+  )
+  for(i in seq_along(headerlist)){
+    this <- headerlist[[i]]
+    
+    if(linebreak){
+      if(knitr::is_latex_output()){
+        names(this) <- linebreak(
+          names(this), 
+          align = align, 
+          double_escape = double_escape, 
+          linebreaker = linebreaker
+        )
+      } else {
+        names(this) <- gsub(linebreaker, '<br/>', names(this))
+      }
+    }
+    
+    # kableExtra:::pdfTable_add_header_above()
+    # uses str_replace(string, pattern, replacement)
+    # which silently deletes orphan backslashes,
+    # i.e. backslashes not followed by an integer
+    # therefore, names(this) must have all backslash doubled
+    # @ 0.6.7 2024-03-22
+    # next action only for latex?
+    if(knitr::is_latex_output()){
+      names(this) <- gsub('\\','\\\\', names(this), fixed = TRUE)
+    }
+    y <- add_header_above(y, this, escape = escape)
+  }
+  
+  # at 0.5.7, skip this if length(index) == 0
+  # attempt to prevent error in mesa() when
+  # tabulating virtual category agegr1 in isolation:
+  # Error in `$<-.data.frame`(`*tmp*`, "start", value = 1) : replacement has 1 row, data has 0
+  
+  #if(length(index) > 0){
+  y <- do.call(
+    kableExtra::pack_rows,
+    c(
+      list(y, index = index), # @0.4.9 removing ', escape = escape
+      pack_rows
+    )
+  )
+  # }
+  y
 }
