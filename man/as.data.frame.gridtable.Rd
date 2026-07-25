@@ -17,8 +17,8 @@
 
 \item{row.names}{Optional row names for the returned data frame.}
 
-\item{optional}{Logical scalar passed to \code{as.data.frame} when
-normalizing the parsed table.}
+\item{optional}{Currently unused; accepted for compatibility with
+\code{as.data.frame}.}
 
 \item{...}{Currently unused.}
 
@@ -31,8 +31,10 @@ A data frame with class \code{c("calibrated", "data.frame")}.
   table dash count multiplied by \code{scale} and encoded as an em width.
 }
 \description{
-Render a validated gridtable object to a calibrated data frame.
+Parse a validated gridtable object directly to a calibrated data frame.
 Columns have \code{width} attributes suggested by the grid table spans.
+Continuation lines within a grid-table cell are collapsed with single spaces.
+Cell markup is otherwise left untouched for downstream renderers.
 }
 \seealso{
 \code{\link{as_gridtable.character}}, \code{\link{as_calibrated.data.frame}}
