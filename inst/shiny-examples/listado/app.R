@@ -435,7 +435,7 @@ server <- shinyServer(function(input, output, session) {
     conf$rhead2     <- saved$rhead2     %||% conf$rhead2
     conf$footnotes  <- saved$footnotes  %||% conf$footnotes
     conf$cont       <- saved$cont       %||% conf$cont
-    conf$output_dir <- if (is.null(saved$output_dir)) character(0) else absolutizePath(saved$output_dir, dirname(conf$confpath))
+    conf$output_dir <- if (is.null(saved$output_dir) || !length(saved$output_dir)) character(0) else absolutizePath(saved$output_dir, dirname(conf$confpath))
     conf$render_pdf <- if (is.null(saved$render_pdf)) conf$render_pdf else saved$render_pdf
 
     if (!is.null(saved$tablet) && !identical(saved$tablet, conf$tablet)) {
